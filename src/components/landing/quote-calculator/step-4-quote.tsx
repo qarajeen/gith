@@ -138,8 +138,8 @@ export function Step4Quote({
                             </div>
                         </div>
                         <div className="text-right text-gray-500">
-                            <p>+971 50 123 4567</p>
-                            <p>hello@wrhenigma.com</p>
+                            <p>+971586583939</p>
+                            <p>hi@wrh.ae</p>
                             <p>Dubai, United Arab Emirates</p>
                         </div>
                     </div>
