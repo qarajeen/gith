@@ -21,6 +21,7 @@ const SummarizeQuoteInputSchema = z.object({
 type SummarizeQuoteInput = z.infer<typeof SummarizeQuoteInputSchema>;
 
 const SummarizeQuoteOutputSchema = z.object({
+  projectTitle: z.string().describe('A short, creative, and professional project title for the quote. Examples: "The Dubai Corporate Headshot Package", "Your Brand Vision Promotional Video", "Luxury Real Estate Photography".'),
   summary: z
     .string()
     .describe('A friendly, professional summary of the project quote, written as if from a media production company.'),
@@ -37,12 +38,14 @@ const prompt = ai.definePrompt({
   output: { schema: SummarizeQuoteOutputSchema },
   prompt: `You are a friendly and professional sales assistant for a creative media production company called WRH Enigma.
 Your task is to generate a short, encouraging, and professional summary for a customer's price quote based on their selections.
+You also need to generate a creative and professional project title for the quote.
 
-Start with a friendly opening.
+First, generate the projectTitle. It should be concise and sound professional.
+Then, generate the summary. Start with a friendly opening.
 Briefly describe the core service they've chosen.
-Mention the location and location type.
+Mention the location and location type if applicable.
 List any add-ons they've selected in a conversational way.
-Keep it concise and positive, between 2-4 sentences.
+Keep the summary concise and positive, between 2-4 sentences.
 
 Quote Details:
 - Service: {{{serviceType}}}
@@ -50,7 +53,7 @@ Quote Details:
 - Location: {{{location}}}, {{{locationType}}}
 - Add-ons: {{#if addons.length}}{{#each addons}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}None{{/if}}
 
-Generate the summary.`,
+Generate the projectTitle and the summary.`,
 });
 
 const summarizeQuoteFlow = ai.defineFlow(

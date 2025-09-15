@@ -125,17 +125,15 @@ type FormData = {
     postPhotoEditingQuantity: number;
     postPhotoEditingPrice: number;
 
-    // Step 2: Location
+    // Step 2: Location & Add-ons
     location: string;
     locationType: string;
-
-    // Step 3: Add-ons & Modifiers
     secondCamera: boolean;
     timelapseExtraCamera: boolean;
     deliveryTimeline: "standard" | "rush";
 
 
-    // Step 4: Contact
+    // Step 3: Contact
     name: string;
     email: string;
     phone: string;
@@ -202,6 +200,7 @@ export function QuoteCalculator() {
         message: "",
     });
     const [aiSummary, setAiSummary] = useState("");
+    const [aiProjectTitle, setAiProjectTitle] = useState("");
     const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
     const { toast } = useToast();
 
@@ -234,18 +233,18 @@ export function QuoteCalculator() {
             toast({ title: "Post-Production Type Required", description: "Please select a post-production sub-type to continue.", variant: "destructive" });
             return;
         }
-        if (step === 4) {
+        if (step === 3) {
             if (!formData.name || !formData.email || !formData.phone) {
                 toast({ title: "Missing Information", description: "Please fill out your name, email, and phone number.", variant: "destructive" });
                 return;
             }
         }
-        setStep((prev) => (prev < 5 ? prev + 1 : prev));
+        setStep((prev) => (prev < 4 ? prev + 1 : prev));
     }
     const prevStep = () => setStep((prev) => (prev > 1 ? prev - 1 : prev));
     
     useEffect(() => {
-        if (step === 5 && !aiSummary) {
+        if (step === 4 && !aiSummary) {
           const generateSummary = async () => {
             setIsGeneratingSummary(true);
             try {
@@ -277,9 +276,11 @@ export function QuoteCalculator() {
               };
               const result = await summarizeQuote(input);
               setAiSummary(result.summary);
+              setAiProjectTitle(result.projectTitle);
             } catch (error) {
               console.error("Error generating AI summary:", error);
               setAiSummary("Here is a summary of your quote selections.");
+              setAiProjectTitle("Your Project Quote");
             } finally {
               setIsGeneratingSummary(false);
             }
@@ -420,7 +421,7 @@ export function QuoteCalculator() {
         subtotal += basePrice;
         items.push({ name: itemName, price: basePrice });
         
-        // Photography Add-ons (from Step 3)
+        // Photography Add-ons
         const p = formData.photographySubType;
         if (formData.serviceType === 'photography' && (p === 'event' || p === 'fashion' || p === 'wedding')) {
             if (formData.secondCamera) {
@@ -428,11 +429,6 @@ export function QuoteCalculator() {
                 items.push({ name: 'Second Camera', price });
                 subtotal += price;
             }
-        }
-        if (formData.serviceType === 'photography' && p === 'event' && formData.photoEventDuration === 'perHour') {
-            const price = formData.photoEventHours > 1 ? (formData.photoEventHours - 1) * 300 : 0;
-            // The base price for perHour already includes the first hour, so we only add for additional hours.
-            // Wait, this is not right. The base price is already calculated with the hours. I should remove this.
         }
 
         // Video Add-ons
@@ -485,12 +481,12 @@ export function QuoteCalculator() {
             other: 200,
         };
         const travelFee = travelFees[formData.location as keyof typeof travelFees] || 0;
-        if (travelFee > 0) {
+        if (travelFee > 0 && formData.serviceType !== 'post') {
             items.push({ name: `Logistics & Travel Fee (${formData.location.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())})`, price: travelFee });
             total += travelFee;
         }
 
-        if (formData.deliveryTimeline === 'rush') {
+        if (formData.deliveryTimeline === 'rush' && formData.serviceType !== 'post') {
             const rushFee = subtotal * 0.5;
             items.push({ name: 'Rush Delivery (24 hours)', price: rushFee });
             total += rushFee;
@@ -1024,45 +1020,6 @@ export function QuoteCalculator() {
                 );
             case 2:
                 const needsLocation = formData.serviceType !== 'post';
-                if (!needsLocation) {
-                    return <p className="text-muted-foreground text-center py-10 animate-fade-in-up">No location details required for this service.</p>;
-                }
-                return (
-                    <div className="space-y-8 animate-fade-in-up">
-                        <div>
-                            <Label htmlFor="location" className="font-semibold text-lg">Location</Label>
-                            <Select value={formData.location} onValueChange={(v) => handleInputChange("location", v)}>
-                                <SelectTrigger id="location" className="mt-2">
-                                    <SelectValue placeholder="Select a location" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="dubai">Dubai</SelectItem>
-                                    <SelectItem value="sharjah">Sharjah</SelectItem>
-                                    <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
-                                    <SelectItem value="other">Other UAE</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <h3 className="font-semibold mb-4 text-lg">Location Type</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {locationTypeOptions.map((type) => (
-                                    <Button
-                                        key={type}
-                                        variant="outline"
-                                        onClick={() => handleInputChange("locationType", type)}
-                                        className={cn("h-auto py-4 text-base transition-all hover:bg-accent/50",
-                                            formData.locationType === type ? 'border-primary bg-accent' : 'border-border'
-                                        )}
-                                    >
-                                        {type}
-                                    </Button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                );
-            case 3:
                 const pSubType = formData.photographySubType;
                 const vSubType = formData.videoSubType;
                 const canHaveSecondCamera = (formData.serviceType === 'photography' && (pSubType === 'event' || pSubType === 'fashion' || pSubType === 'wedding'))
@@ -1071,45 +1028,85 @@ export function QuoteCalculator() {
                 const isPostProduction = formData.serviceType === 'post';
 
                 return (
-                    <div className="space-y-6 animate-fade-in-up">
-                        <h3 className="font-semibold text-lg">Options & Modifiers</h3>
-                         <div className="space-y-4">
-                             {canHaveSecondCamera && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.secondCamera ? 'border-primary bg-accent' : 'border-border')}>
-                                    <Label htmlFor="secondCamera" className="cursor-pointer flex-grow">Second Camera (+100% of Base Price)</Label>
-                                    <Switch id="secondCamera" checked={formData.secondCamera} onCheckedChange={(v) => handleInputChange('secondCamera', v)} />
-                                </div>
-                            )}
-                            {isTimelapse && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.timelapseExtraCamera ? 'border-primary bg-accent' : 'border-border')}>
-                                    <Label htmlFor="timelapseExtraCamera" className="cursor-pointer flex-grow">Extra Camera (+100% of Base Price)</Label>
-                                    <Switch id="timelapseExtraCamera" checked={formData.timelapseExtraCamera} onCheckedChange={(v) => handleInputChange('timelapseExtraCamera', v)} />
-                                </div>
-                            )}
-                            {!isPostProduction && (
+                    <div className="space-y-8 animate-fade-in-up">
+                        {needsLocation ? (
+                            <>
                                 <div>
-                                    <Label className="font-semibold text-base">Delivery Timeline</Label>
-                                    <RadioGroup value={formData.deliveryTimeline} onValueChange={(v) => handleInputChange("deliveryTimeline", v)} className="flex gap-4 mt-2">
-                                        {[
-                                            { value: 'standard', label: 'Standard Delivery' },
-                                            { value: 'rush', label: 'Rush Delivery (24h, +50%)' }
-                                        ].map(({ value, label }) => (
-                                            <div className="flex-1" key={value}>
-                                                <RadioGroupItem value={value} id={`delivery-${value}`} className="sr-only" />
-                                                <Label htmlFor={`delivery-${value}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
-                                                    formData.deliveryTimeline === value ? 'border-primary bg-accent' : 'border-border'
-                                                )}>
-                                                    {label}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </RadioGroup>
+                                    <Label htmlFor="location" className="font-semibold text-lg">Location</Label>
+                                    <Select value={formData.location} onValueChange={(v) => handleInputChange("location", v)}>
+                                        <SelectTrigger id="location" className="mt-2">
+                                            <SelectValue placeholder="Select a location" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="dubai">Dubai</SelectItem>
+                                            <SelectItem value="sharjah">Sharjah</SelectItem>
+                                            <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
+                                            <SelectItem value="other">Other UAE</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
-                             )}
+                                <div>
+                                    <h3 className="font-semibold mb-4 text-lg">Location Type</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        {locationTypeOptions.map((type) => (
+                                            <Button
+                                                key={type}
+                                                variant="outline"
+                                                onClick={() => handleInputChange("locationType", type)}
+                                                className={cn("h-auto py-4 text-base transition-all hover:bg-accent/50",
+                                                    formData.locationType === type ? 'border-primary bg-accent' : 'border-border'
+                                                )}
+                                            >
+                                                {type}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <p className="text-muted-foreground text-center py-10">No location or add-ons required for this service.</p>
+                        )}
+                        
+                        <div className="space-y-6">
+                            <h3 className="font-semibold text-lg">Options & Modifiers</h3>
+                             <div className="space-y-4">
+                                 {canHaveSecondCamera && (
+                                    <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.secondCamera ? 'border-primary bg-accent' : 'border-border')}>
+                                        <Label htmlFor="secondCamera" className="cursor-pointer flex-grow">Second Camera (+100% of Base Price)</Label>
+                                        <Switch id="secondCamera" checked={formData.secondCamera} onCheckedChange={(v) => handleInputChange('secondCamera', v)} />
+                                    </div>
+                                )}
+                                {isTimelapse && (
+                                    <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.timelapseExtraCamera ? 'border-primary bg-accent' : 'border-border')}>
+                                        <Label htmlFor="timelapseExtraCamera" className="cursor-pointer flex-grow">Extra Camera (+100% of Base Price)</Label>
+                                        <Switch id="timelapseExtraCamera" checked={formData.timelapseExtraCamera} onCheckedChange={(v) => handleInputChange('timelapseExtraCamera', v)} />
+                                    </div>
+                                )}
+                                {!isPostProduction && (
+                                    <div>
+                                        <Label className="font-semibold text-base">Delivery Timeline</Label>
+                                        <RadioGroup value={formData.deliveryTimeline} onValueChange={(v) => handleInputChange("deliveryTimeline", v)} className="flex gap-4 mt-2">
+                                            {[
+                                                { value: 'standard', label: 'Standard Delivery' },
+                                                { value: 'rush', label: 'Rush Delivery (24h, +50%)' }
+                                            ].map(({ value, label }) => (
+                                                <div className="flex-1" key={value}>
+                                                    <RadioGroupItem value={value} id={`delivery-${value}`} className="sr-only" />
+                                                    <Label htmlFor={`delivery-${value}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                                                        formData.deliveryTimeline === value ? 'border-primary bg-accent' : 'border-border'
+                                                    )}>
+                                                        {label}
+                                                    </Label>
+                                                </div>
+                                            ))}
+                                        </RadioGroup>
+                                    </div>
+                                 )}
+                            </div>
                         </div>
                     </div>
                 );
-            case 4:
+            case 3:
                 return (
                      <div className="space-y-4 animate-fade-in-up">
                         <h3 className="font-semibold text-lg">Contact Information</h3>
@@ -1131,14 +1128,20 @@ export function QuoteCalculator() {
                         </div>
                     </div>
                 );
-            case 5:
+            case 4:
                 return (
                      <div className="printable-area animate-fade-in-up">
                          <div id="quote-preview" className="p-8 bg-card rounded-lg border-2 border-primary/20">
-                            <CardTitle className="text-3xl font-bold text-center pb-4">Your Quote</CardTitle>
+                            <CardTitle className="text-3xl font-bold text-center pb-2">
+                                {isGeneratingSummary ? (
+                                    <Skeleton className="h-8 w-2/3 mx-auto" />
+                                ) : (
+                                    aiProjectTitle
+                                )}
+                            </CardTitle>
                              <CardDescription className="text-center pb-6 min-h-[40px] text-lg">
                                 {isGeneratingSummary ? (
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 mt-2">
                                         <Skeleton className="h-4 w-3/4 mx-auto" />
                                         <Skeleton className="h-4 w-1/2 mx-auto" />
                                     </div>
@@ -1173,7 +1176,7 @@ export function QuoteCalculator() {
         }
     };
     
-    const stepTitles = ["Service", "Details", "Add-ons", "Contact", "Quote"];
+    const stepTitles = ["Service", "Details", "Contact", "Quote"];
 
     return (
         <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10">
@@ -1208,8 +1211,8 @@ export function QuoteCalculator() {
                 {step > 1 ? (
                     <Button variant="outline" onClick={prevStep} size="lg"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
                 ) : <div />}
-                {step < 5 && (
-                    <Button onClick={nextStep} size="lg">{step === 4 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                {step < 4 && (
+                    <Button onClick={nextStep} size="lg">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
                 )}
             </CardFooter>
         </Card>
