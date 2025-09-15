@@ -57,7 +57,8 @@ export const toursSubServices: SubServices = {
     studio: { name: "Studio Apartment" },
     '1-bedroom': { name: "1-Bedroom Apartment" },
     '2-bedroom': { name: "2-Bedroom Apartment" },
-    '3-bedroom': { name: "3-Bedroom Villa" },
+    '3-bedroom': { name: "3-Bedroom Apartment" },
+    'villa': { name: "Villa" },
 };
 
 // Post-Production Sub-Services

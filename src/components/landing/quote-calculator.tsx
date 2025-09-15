@@ -269,7 +269,7 @@ export function QuoteCalculator() {
                 case 'real_estate':
                     const prices = { studio: 700, '1-bedroom': 1000, '2-bedroom': 1350, '3-bedroom': 1750, villa: 2500 };
                     basePrice = prices[formData.videoRealEstatePropertyType];
-                    itemName += ` (${formData.videoRealEstatePropertyType})`;
+                    itemName += ` (${formData.videoRealEstatePropertyType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())})`;
                     break;
                 case 'wedding':
                     basePrice = formData.videoWeddingPrice;
@@ -283,7 +283,7 @@ export function QuoteCalculator() {
         } else if (formData.serviceType === '360tours' && formData.toursSubType) {
             const subTypeName = toursSubServices[formData.toursSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
-            const prices = { studio: 750, '1-bedroom': 1000, '2-bedroom': 1350, '3-bedroom': 1750 };
+            const prices = { studio: 750, '1-bedroom': 1000, '2-bedroom': 1350, '3-bedroom': 1750, 'villa': 3000 };
             basePrice = prices[formData.toursSubType as keyof typeof prices];
         } else if (formData.serviceType === 'post' && formData.postSubType) {
             const subTypeName = postProductionSubServices[formData.postSubType].name;
@@ -347,7 +347,7 @@ export function QuoteCalculator() {
             }
             
             if (v === 'promo') {
-                if (formData.videoPromoFullDay) { subtotal += 5000; items.push({ name: 'Full-Day Production', price: 5000 }); }
+                if (formData.videoPromoFullDay) { subtotal += 5000; items.push({ name: 'Additional Full-Day Production', price: 5000 }); }
                 if (formData.videoPromoMultiLoc > 0) { subtotal += formData.videoPromoMultiLoc * 2000; items.push({ name: `Additional Locations (x${formData.videoPromoMultiLoc})`, price: formData.videoPromoMultiLoc * 2000 }); }
                 if (formData.videoPromoConcept) { subtotal += 3000; items.push({ name: 'Advanced Storyboarding & Concept', price: 3000 }); }
                 if (formData.videoPromoGraphics) { subtotal += 4000; items.push({ name: 'Advanced 2D/3D Motion Graphics', price: 4000 }); }
