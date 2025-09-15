@@ -28,7 +28,7 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
         <div className="space-y-4 animate-fade-in-up">
             <div className={cn("p-4 border-2 rounded-lg transition-all", validationError ? 'border-destructive' : 'border-transparent')}>
                 <h3 className="font-semibold mb-4 text-lg">Select Post-Production Type</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {Object.entries(postProductionSubServices).map(([id, { name }]) => (
                         <Button
                             key={id}
