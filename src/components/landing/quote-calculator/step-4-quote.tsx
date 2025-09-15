@@ -131,7 +131,7 @@ export function Step4Quote({
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
                     <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
                         <div className="flex items-center gap-4">
-                           <Image src="/logo1.png" alt="logo" width="48" height="48" />
+                           <Image src="/logo.svg" alt="logo" width="48" height="48" />
                             <div>
                                 <h1 className="text-4xl font-bold text-violet-600 mb-0">WRH Enigma</h1>
                                 <p className="text-gray-500">Creative Media Production</p>
