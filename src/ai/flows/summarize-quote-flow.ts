@@ -67,6 +67,10 @@ const summarizeQuoteFlow = ai.defineFlow(
     name: 'summarizeQuoteFlow',
     inputSchema: SummarizeQuoteInputSchema,
     outputSchema: SummarizeQuoteOutputSchema,
+    config: {
+        // Add retry logic for transient errors like 503.
+        retries: 2,
+    }
   },
   async (input) => {
     const { output } = await prompt(input);
