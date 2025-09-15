@@ -1,0 +1,179 @@
+import * as React from 'react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { cn } from '@/lib/utils';
+import type { FormData } from './types';
+import { videoSubServices } from './types';
+
+type VideoOptionsProps = {
+  formData: FormData;
+  handleInputChange: (field: keyof FormData, value: any) => void;
+};
+
+export function VideoOptions({ formData, handleInputChange }: VideoOptionsProps) {
+  return (
+    <div className="space-y-4 animate-fade-in-up">
+      <h3 className="font-semibold mb-4 text-lg">Select Video Production Type</h3>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {Object.entries(videoSubServices).map(([id, { name }]) => (
+          <Button
+            key={id}
+            variant="outline"
+            size="lg"
+            onClick={() => handleInputChange("videoSubType", id)}
+            className={cn(
+              "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+              formData.videoSubType === id ? 'border-primary bg-accent' : 'border-border'
+            )}
+          >
+            {name}
+          </Button>
+        ))}
+      </div>
+
+      {formData.videoSubType === 'event' && (
+        <div className="pt-4 space-y-4 animate-fade-in-up">
+          <h4 className="font-semibold">Event Details</h4>
+          <RadioGroup value={formData.videoEventDuration} onValueChange={(v) => handleInputChange("videoEventDuration", v)} className="flex gap-4">
+            {['perHour', 'halfDay', 'fullDay'].map(dur => (
+              <div className="flex-1" key={dur}>
+                <RadioGroupItem value={dur} id={`video-event-${dur}`} className="sr-only" />
+                <Label htmlFor={`video-event-${dur}`} className={cn("flex flex-col items-center justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                  formData.videoEventDuration === dur ? 'border-primary bg-accent' : 'border-border'
+                )}>
+                  {dur === 'perHour' ? 'Per Hour' : dur === 'halfDay' ? 'Half Day (4hrs)' : 'Full Day (8hrs)'}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+          {formData.videoEventDuration === 'perHour' && (
+            <div>
+              <Label htmlFor="videoEventHours">Hours</Label>
+              <Input id="videoEventHours" type="number" value={formData.videoEventHours} onChange={(e) => handleInputChange("videoEventHours", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+            </div>
+          )}
+        </div>
+      )}
+
+      {formData.videoSubType === 'corporate' && (
+        <div className="pt-4 space-y-4 animate-fade-in-up">
+          <h4 className="font-semibold">Corporate Video Details (Basic Package: AED 3,000)</h4>
+          <div className="space-y-3">
+            <div>
+              <Label>Extended Filming</Label>
+              <RadioGroup value={formData.videoCorporateExtendedFilming} onValueChange={(v) => handleInputChange("videoCorporateExtendedFilming", v)} className="flex gap-4 mt-2">
+                {[['none', 'None'], ['halfDay', 'Half-Day (+1,500)'], ['fullDay', 'Full-Day (+3,500)']].map(([val, label]) => (
+                  <div className="flex-1" key={val}>
+                    <RadioGroupItem value={val} id={`corp-film-${val}`} className="sr-only" />
+                    <Label htmlFor={`corp-film-${val}`} className={cn("flex items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                      formData.videoCorporateExtendedFilming === val ? 'border-primary bg-accent' : 'border-border'
+                    )}>
+                      {label as string}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoCorporateTwoCam">Two-Camera Interview Setup (+ AED 950)</Label>
+              <Switch id="videoCorporateTwoCam" checked={formData.videoCorporateTwoCam} onCheckedChange={(v) => handleInputChange("videoCorporateTwoCam", v)} />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoCorporateScripting">Full Scriptwriting & Storyboarding (+ AED 1,500)</Label>
+              <Switch id="videoCorporateScripting" checked={formData.videoCorporateScripting} onCheckedChange={(v) => handleInputChange("videoCorporateScripting", v)} />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoCorporateEditing">Advanced Editing & Color Grading (+ AED 1,000)</Label>
+              <Switch id="videoCorporateEditing" checked={formData.videoCorporateEditing} onCheckedChange={(v) => handleInputChange("videoCorporateEditing", v)} />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoCorporateGraphics">Custom Motion Graphics (+ AED 800)</Label>
+              <Switch id="videoCorporateGraphics" checked={formData.videoCorporateGraphics} onCheckedChange={(v) => handleInputChange("videoCorporateGraphics", v)} />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoCorporateVoiceover">Professional Voice-over (+ AED 500)</Label>
+              <Switch id="videoCorporateVoiceover" checked={formData.videoCorporateVoiceover} onCheckedChange={(v) => handleInputChange("videoCorporateVoiceover", v)} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {formData.videoSubType === 'promo' && (
+        <div className="pt-4 space-y-4 animate-fade-in-up">
+          <h4 className="font-semibold">Promotional Video Details (Foundation Package: AED 8,000)</h4>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoPromoFullDay">Full-Day Production (+ AED 5,000)</Label>
+              <Switch id="videoPromoFullDay" checked={formData.videoPromoFullDay} onCheckedChange={(v) => handleInputChange("videoPromoFullDay", v)} />
+            </div>
+            <div>
+              <Label htmlFor="videoPromoMultiLoc">Additional Locations (+ AED 2,000 each)</Label>
+              <Input id="videoPromoMultiLoc" type="number" value={formData.videoPromoMultiLoc} onChange={(e) => handleInputChange("videoPromoMultiLoc", Math.max(0, parseInt(e.target.value, 10) || 0))} min="0" className="mt-2" />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoPromoConcept">Advanced Storyboarding & Concept (+ AED 3,000)</Label>
+              <Switch id="videoPromoConcept" checked={formData.videoPromoConcept} onCheckedChange={(v) => handleInputChange("videoPromoConcept", v)} />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoPromoGraphics">Advanced 2D/3D Motion Graphics (+ AED 4,000)</Label>
+              <Switch id="videoPromoGraphics" checked={formData.videoPromoGraphics} onCheckedChange={(v) => handleInputChange("videoPromoGraphics", v)} />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoPromoSound">Custom Sound Design & Mixing (+ AED 3,000)</Label>
+              <Switch id="videoPromoSound" checked={formData.videoPromoSound} onCheckedChange={(v) => handleInputChange("videoPromoSound", v)} />
+            </div>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <Label htmlFor="videoPromoMakeup">Hair & Makeup Artist (+ AED 2,000)</Label>
+              <Switch id="videoPromoMakeup" checked={formData.videoPromoMakeup} onCheckedChange={(v) => handleInputChange("videoPromoMakeup", v)} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {formData.videoSubType === 'real_estate' && (
+        <div className="pt-4 space-y-4 animate-fade-in-up">
+          <h4 className="font-semibold">Real Estate Details</h4>
+          <div>
+            <Label htmlFor="videoRealEstatePropertyType">Property Type</Label>
+            <Select value={formData.videoRealEstatePropertyType} onValueChange={(v) => handleInputChange("videoRealEstatePropertyType", v)}>
+              <SelectTrigger id="videoRealEstatePropertyType" className="mt-2">
+                <SelectValue placeholder="Select property type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="studio">Studio</SelectItem>
+                <SelectItem value="1-bedroom">1-Bedroom Apartment</SelectItem>
+                <SelectItem value="2-bedroom">2-Bedroom Apartment</SelectItem>
+                <SelectItem value="3-bedroom">3-Bedroom Apartment</SelectItem>
+                <SelectItem value="villa">Villa</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
+      
+      {formData.videoSubType === 'wedding' && (
+        <div className="pt-4 space-y-4 animate-fade-in-up">
+          <h4 className="font-semibold">Wedding Videography Details</h4>
+          <div>
+            <Label>Base Price (AED 3,000 - 10,000)</Label>
+            <div className="flex items-center gap-4 mt-2">
+              <Slider
+                value={[formData.videoWeddingPrice]}
+                onValueChange={(v) => handleInputChange('videoWeddingPrice', v[0])}
+                min={3000}
+                max={10000}
+                step={100}
+              />
+              <span className="font-semibold w-24 text-center">{formData.videoWeddingPrice.toLocaleString()} AED</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
