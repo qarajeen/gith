@@ -348,7 +348,7 @@ export function QuoteCalculator() {
             
             if (v === 'promo') {
                 if (formData.videoPromoFullDay) { subtotal += 5000; items.push({ name: 'Full-Day Production', price: 5000 }); }
-                if (formData.videoPromoMultiLoc > 0) { subtotal += formData.videoPromoMultiLoc * 2000; items.push({ name: `Multi-Location Shoot (x${formData.videoPromoMultiLoc})`, price: formData.videoPromoMultiLoc * 2000 }); }
+                if (formData.videoPromoMultiLoc > 0) { subtotal += formData.videoPromoMultiLoc * 2000; items.push({ name: `Additional Locations (x${formData.videoPromoMultiLoc})`, price: formData.videoPromoMultiLoc * 2000 }); }
                 if (formData.videoPromoConcept) { subtotal += 3000; items.push({ name: 'Advanced Storyboarding & Concept', price: 3000 }); }
                 if (formData.videoPromoGraphics) { subtotal += 4000; items.push({ name: 'Advanced 2D/3D Motion Graphics', price: 4000 }); }
                 if (formData.videoPromoSound) { subtotal += 3000; items.push({ name: 'Custom Sound Design & Mixing', price: 3000 }); }
@@ -403,13 +403,13 @@ export function QuoteCalculator() {
 
 
         // Universal Modifiers
-        const travelFees = {
+        const travelFees: { [key: string]: number } = {
             dubai: 0,
             sharjah: 100,
             'abu-dhabi': 200,
             other: 200,
         };
-        const travelFee = travelFees[formData.location as keyof typeof travelFees] || 0;
+        const travelFee = travelFees[formData.location] || 0;
         if (travelFee > 0 && formData.serviceType !== 'post') {
             items.push({ name: `Logistics & Travel Fee (${formData.location.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())})`, price: travelFee });
             total += travelFee;
