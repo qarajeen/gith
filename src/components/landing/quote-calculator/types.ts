@@ -84,7 +84,9 @@ export type FormData = {
     photoRealEstateFurnished: boolean;
     photoHeadshotsPeople: number;
     photoProductPhotos: number;
+    photoProductPrice: number;
     photoFoodPhotos: number;
+    photoFoodPrice: number;
     photoFashionPrice: number;
     photoWeddingPrice: number;
     

@@ -16,6 +16,10 @@ type PhotographyOptionsProps = {
 };
 
 export function PhotographyOptions({ formData, handleInputChange }: PhotographyOptionsProps) {
+  const isProduct = formData.photographySubType === 'product';
+  const isFood = formData.photographySubType === 'food';
+  const priceConfig = isProduct ? { min: 100, max: 400 } : { min: 150, max: 400 };
+
   return (
     <div className="space-y-4 animate-fade-in-up">
       <h3 className="font-semibold mb-4 text-lg">Select Photography Type</h3>
@@ -103,22 +107,37 @@ export function PhotographyOptions({ formData, handleInputChange }: PhotographyO
         </div>
       )}
 
-      {(formData.photographySubType === 'product' || formData.photographySubType === 'food') && (
+      {(isProduct || isFood) && (
         <div className="pt-4 space-y-4 animate-fade-in-up">
-          <h4 className="font-semibold">{formData.photographySubType === 'product' ? 'Product' : 'Food'} Photography Details</h4>
-          <div>
-            <Label>Number of Photos</Label>
-             <div className="flex items-center gap-4 mt-2">
-                 <Slider
-                    value={[formData.photographySubType === 'product' ? formData.photoProductPhotos : formData.photoFoodPhotos]}
-                    onValueChange={(v) => handleInputChange(formData.photographySubType === 'product' ? "photoProductPhotos" : "photoFoodPhotos", v[0])}
-                    min={1}
-                    max={100}
-                    step={1}
-                />
-                <span className="font-semibold w-24 text-center">{formData.photographySubType === 'product' ? formData.photoProductPhotos : formData.photoFoodPhotos} photos</span>
+          <h4 className="font-semibold">{isProduct ? 'Product' : 'Food'} Photography Details</h4>
+          <div className="space-y-4">
+            <div>
+                <Label>Number of Photos</Label>
+                 <div className="flex items-center gap-4 mt-2">
+                     <Slider
+                        value={[isProduct ? formData.photoProductPhotos : formData.photoFoodPhotos]}
+                        onValueChange={(v) => handleInputChange(isProduct ? "photoProductPhotos" : "photoFoodPhotos", v[0])}
+                        min={1}
+                        max={100}
+                        step={1}
+                    />
+                    <span className="font-semibold w-24 text-center">{isProduct ? formData.photoProductPhotos : formData.photoFoodPhotos} photos</span>
+                </div>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">{formData.photographySubType === 'product' ? 'AED 100 - 400 per photo' : 'AED 150 - 400 per photo'}. Final price depends on complexity.</p>
+             <div>
+                <Label>Price per Photo (AED {priceConfig.min} - {priceConfig.max})</Label>
+                 <div className="flex items-center gap-4 mt-2">
+                     <Slider
+                        value={[isProduct ? formData.photoProductPrice : formData.photoFoodPrice]}
+                        onValueChange={(v) => handleInputChange(isProduct ? "photoProductPrice" : "photoFoodPrice", v[0])}
+                        min={priceConfig.min}
+                        max={priceConfig.max}
+                        step={10}
+                    />
+                    <span className="font-semibold w-24 text-center">{(isProduct ? formData.photoProductPrice : formData.photoFoodPrice).toLocaleString()} AED</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">Adjust the price based on complexity, styling, and lighting requirements.</p>
+            </div>
           </div>
         </div>
       )}

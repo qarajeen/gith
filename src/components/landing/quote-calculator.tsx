@@ -29,8 +29,10 @@ const initialFormData: FormData = {
     photoRealEstatePropertyType: "studio",
     photoRealEstateFurnished: false,
     photoHeadshotsPeople: 1,
-    photoProductPhotos: 1,
-    photoFoodPhotos: 1,
+    photoProductPhotos: 10,
+    photoProductPrice: 100,
+    photoFoodPhotos: 10,
+    photoFoodPrice: 150,
     photoFashionPrice: 1500,
     photoWeddingPrice: 5000,
     
@@ -177,12 +179,12 @@ export function QuoteCalculator() {
                     itemName += ` (${formData.photoHeadshotsPeople} people)`;
                     break;
                 case 'product':
-                    basePrice = formData.photoProductPhotos * 250; // Using average for simplicity
-                    itemName += ` (${formData.photoProductPhotos} photos)`;
+                    basePrice = formData.photoProductPhotos * formData.photoProductPrice;
+                    itemName += ` (${formData.photoProductPhotos} photos @ ${formData.photoProductPrice} AED/photo)`;
                     break;
                 case 'food':
-                    basePrice = formData.photoFoodPhotos * 275; // Using average
-                    itemName += ` (${formData.photoFoodPhotos} photos)`;
+                    basePrice = formData.photoFoodPhotos * formData.photoFoodPrice;
+                    itemName += ` (${formData.photoFoodPhotos} photos @ ${formData.photoFoodPrice} AED/photo)`;
                     break;
                 case 'fashion':
                     basePrice = formData.photoFashionPrice;
