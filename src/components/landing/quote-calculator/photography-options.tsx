@@ -7,15 +7,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import type { FormData } from './types';
+import type { FormData, RealEstateProperty } from './types';
 import { photographySubServices } from './types';
+import { PlusCircle, XCircle } from 'lucide-react';
 
 type PhotographyOptionsProps = {
   formData: FormData;
   handleInputChange: (field: keyof FormData, value: any) => void;
+  handleRealEstateChange: (index: number, field: keyof RealEstateProperty, value: any) => void;
+  addRealEstateProperty: () => void;
+  removeRealEstateProperty: (index: number) => void;
 };
 
-export function PhotographyOptions({ formData, handleInputChange }: PhotographyOptionsProps) {
+export function PhotographyOptions({ 
+    formData, 
+    handleInputChange, 
+    handleRealEstateChange,
+    addRealEstateProperty,
+    removeRealEstateProperty,
+}: PhotographyOptionsProps) {
   const isProduct = formData.photographySubType === 'product';
   const isFood = formData.photographySubType === 'food';
   const priceConfig = isProduct ? { min: 100, max: 400 } : { min: 150, max: 400 };
@@ -67,29 +77,47 @@ export function PhotographyOptions({ formData, handleInputChange }: PhotographyO
       {formData.photographySubType === 'real_estate' && (
         <div className="pt-4 space-y-4 animate-fade-in-up">
           <h4 className="font-semibold">Real Estate Details</h4>
-           <div>
-                <Label htmlFor="photoRealEstateProperties">Number of Properties</Label>
-                <Input id="photoRealEstateProperties" type="number" value={formData.photoRealEstateProperties} onChange={(e) => handleInputChange("photoRealEstateProperties", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
-            </div>
-          <div>
-            <Label htmlFor="photoRealEstatePropertyType">Property Type</Label>
-            <Select value={formData.photoRealEstatePropertyType} onValueChange={(v) => handleInputChange("photoRealEstatePropertyType", v)}>
-              <SelectTrigger id="photoRealEstatePropertyType" className="mt-2">
-                <SelectValue placeholder="Select property type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="studio">Studio</SelectItem>
-                <SelectItem value="1-bedroom">1-Bedroom</SelectItem>
-                <SelectItem value="2-bedroom">2-Bedroom</SelectItem>
-                <SelectItem value="3-bedroom">3-Bedroom</SelectItem>
-                <SelectItem value="villa">Villa</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-4">
+            {formData.photoRealEstateProperties.map((prop, index) => (
+                <div key={prop.id} className="p-4 border rounded-lg space-y-4 relative bg-background/50">
+                    <Label className='font-semibold'>Property #{index + 1}</Label>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                        <div>
+                            <Label htmlFor={`prop-type-${prop.id}`}>Property Type</Label>
+                            <Select value={prop.type} onValueChange={(v) => handleRealEstateChange(index, "type", v)}>
+                            <SelectTrigger id={`prop-type-${prop.id}`} className="mt-2">
+                                <SelectValue placeholder="Select property type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="studio">Studio</SelectItem>
+                                <SelectItem value="1-bedroom">1-Bedroom</SelectItem>
+                                <SelectItem value="2-bedroom">2-Bedroom</SelectItem>
+                                <SelectItem value="3-bedroom">3-Bedroom</SelectItem>
+                                <SelectItem value="villa">Villa</SelectItem>
+                            </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex items-center justify-between p-4 border rounded-lg mt-auto h-[40px]">
+                            <Label htmlFor={`prop-furnished-${prop.id}`}>Furnished / Staged</Label>
+                            <Switch id={`prop-furnished-${prop.id}`} checked={prop.furnished} onCheckedChange={(v) => handleRealEstateChange(index, "furnished", v)} />
+                        </div>
+                    </div>
+                     {formData.photoRealEstateProperties.length > 1 && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeRealEstateProperty(index)}
+                            className="absolute -top-3 -right-3 text-muted-foreground hover:text-destructive"
+                        >
+                            <XCircle className="w-6 h-6" />
+                        </Button>
+                    )}
+                </div>
+            ))}
           </div>
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <Label htmlFor="photoRealEstateFurnished">Property is Furnished / Staged</Label>
-            <Switch id="photoRealEstateFurnished" checked={formData.photoRealEstateFurnished} onCheckedChange={(v) => handleInputChange("photoRealEstateFurnished", v)} />
-          </div>
+           <Button variant="outline" onClick={addRealEstateProperty} className="w-full">
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Another Property
+          </Button>
         </div>
       )}
       {formData.photographySubType === 'headshots' && (

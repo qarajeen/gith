@@ -68,6 +68,12 @@ export const postProductionSubServices: SubServices = {
 
 export const locationTypeOptions = ["Indoor", "Outdoor", "Studio", "Exhibition Center", "Hotel", "Other"];
 
+export type RealEstateProperty = {
+    id: number;
+    type: "studio" | "1-bedroom" | "2-bedroom" | "3-bedroom" | "villa";
+    furnished: boolean;
+};
+
 export type FormData = {
     // Step 1: Service Selection
     serviceType: keyof typeof serviceOptions | "";
@@ -80,9 +86,7 @@ export type FormData = {
     // Step 1.5: Photography Details
     photoEventDuration: "perHour" | "halfDay" | "fullDay";
     photoEventHours: number;
-    photoRealEstatePropertyType: "studio" | "1-bedroom" | "2-bedroom" | "3-bedroom" | "villa";
-    photoRealEstateFurnished: boolean;
-    photoRealEstateProperties: number;
+    photoRealEstateProperties: RealEstateProperty[];
     photoHeadshotsPeople: number;
     photoProductPhotos: number;
     photoProductPrice: number;

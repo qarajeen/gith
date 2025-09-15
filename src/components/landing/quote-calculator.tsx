@@ -10,7 +10,7 @@ import { ArrowRight, ArrowLeft, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-import { FormData, serviceOptions, photographySubServices, videoSubServices, timelapseSubServices, toursSubServices, postProductionSubServices } from './quote-calculator/types';
+import { FormData, RealEstateProperty, serviceOptions, photographySubServices, videoSubServices, timelapseSubServices, toursSubServices, postProductionSubServices } from './quote-calculator/types';
 import { Step1Service } from "./quote-calculator/step-1-service";
 import { Step2Details } from "./quote-calculator/step-2-details";
 import { Step3Contact } from "./quote-calculator/step-3-contact";
@@ -26,9 +26,7 @@ const initialFormData: FormData = {
 
     photoEventDuration: "perHour",
     photoEventHours: 1,
-    photoRealEstatePropertyType: "studio",
-    photoRealEstateFurnished: false,
-    photoRealEstateProperties: 1,
+    photoRealEstateProperties: [{ id: 1, type: "studio", furnished: false }],
     photoHeadshotsPeople: 1,
     photoProductPhotos: 10,
     photoProductPrice: 100, // This will be set by complexity now
@@ -90,6 +88,31 @@ export function QuoteCalculator() {
 
     const handleInputChange = useCallback((field: keyof FormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
+    }, []);
+
+    const handleRealEstateChange = useCallback((index: number, field: keyof RealEstateProperty, value: any) => {
+        setFormData(prev => {
+            const newProperties = [...prev.photoRealEstateProperties];
+            newProperties[index] = { ...newProperties[index], [field]: value };
+            return { ...prev, photoRealEstateProperties: newProperties };
+        });
+    }, []);
+    
+    const addRealEstateProperty = useCallback(() => {
+        setFormData(prev => ({
+            ...prev,
+            photoRealEstateProperties: [
+                ...prev.photoRealEstateProperties,
+                { id: Date.now(), type: 'studio', furnished: false }
+            ]
+        }));
+    }, []);
+
+    const removeRealEstateProperty = useCallback((index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            photoRealEstateProperties: prev.photoRealEstateProperties.filter((_, i) => i !== index)
+        }));
     }, []);
 
     const handleReset = () => {
@@ -166,18 +189,35 @@ export function QuoteCalculator() {
                         itemName += ' (Full Day)';
                     }
                     break;
-                case 'real_estate':
+                case 'real_estate': {
                     const propPrices = {
-                        studio: [500, 8000],
+                        studio: [500, 800],
                         '1-bedroom': [700, 1100],
                         '2-bedroom': [900, 1400],
                         '3-bedroom': [1100, 1600],
                         villa: [1500, 3000],
                     };
-                    const singlePropPrice = propPrices[formData.photoRealEstatePropertyType][formData.photoRealEstateFurnished ? 1 : 0];
-                    basePrice = singlePropPrice * formData.photoRealEstateProperties;
-                    itemName += ` (${formData.photoRealEstateProperties} x ${formData.photoRealEstatePropertyType}, ${formData.photoRealEstateFurnished ? 'Furnished' : 'Unfurnished'})`;
+                    let totalRealEstatePrice = 0;
+                    const propertyCounts: { [key: string]: { count: number, furnished: number } } = {};
+            
+                    formData.photoRealEstateProperties.forEach(prop => {
+                        const price = propPrices[prop.type][prop.furnished ? 1 : 0];
+                        totalRealEstatePrice += price;
+
+                        const key = `${prop.type} (${prop.furnished ? 'Furnished' : 'Unfurnished'})`;
+                        if (!propertyCounts[key]) {
+                            propertyCounts[key] = { count: 0, furnished: prop.furnished ? 1 : 0 };
+                        }
+                        propertyCounts[key].count++;
+                    });
+            
+                    basePrice = totalRealEstatePrice;
+                    const summary = Object.entries(propertyCounts)
+                        .map(([desc, { count }]) => `${count} x ${desc.replace(/\b\w/g, l => l.toUpperCase())}`)
+                        .join(', ');
+                    itemName += ` (${summary})`;
                     break;
+                }
                 case 'headshots':
                     basePrice = formData.photoHeadshotsPeople * 350;
                     itemName += ` (${formData.photoHeadshotsPeople} people)`;
@@ -244,7 +284,7 @@ export function QuoteCalculator() {
             const subTypeName = toursSubServices[formData.toursSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
             const prices = { studio: 750, '1-bedroom': 1000, '2-bedroom': 1350, '3-bedroom': 1750 };
-            basePrice = prices[formData.toursSubType];
+            basePrice = prices[formData.toursSubType as keyof typeof prices];
         } else if (formData.serviceType === 'post' && formData.postSubType) {
             const subTypeName = postProductionSubServices[formData.postSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
@@ -397,6 +437,9 @@ export function QuoteCalculator() {
                     <Step1Service
                         formData={formData}
                         handleInputChange={handleInputChange}
+                        handleRealEstateChange={handleRealEstateChange}
+                        addRealEstateProperty={addRealEstateProperty}
+                        removeRealEstateProperty={removeRealEstateProperty}
                     />
                 );
             case 2:

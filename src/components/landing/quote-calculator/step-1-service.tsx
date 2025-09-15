@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Camera, Video, Wand2, Orbit, Hourglass } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { FormData, ServiceOption, ServiceOptions } from './types';
+import type { FormData, RealEstateProperty, ServiceOption, ServiceOptions } from './types';
 import { PhotographyOptions } from './photography-options';
 import { VideoOptions } from './video-options';
 import { TimelapseOptions } from './timelapse-options';
@@ -12,6 +12,9 @@ import { PostProductionOptions } from './post-production-options';
 type Step1ServiceProps = {
   formData: FormData;
   handleInputChange: (field: keyof FormData, value: any) => void;
+  handleRealEstateChange: (index: number, field: keyof RealEstateProperty, value: any) => void;
+  addRealEstateProperty: () => void;
+  removeRealEstateProperty: (index: number) => void;
 };
 
 const serviceOptions: ServiceOptions = {
@@ -22,7 +25,13 @@ const serviceOptions: ServiceOptions = {
     timelapse: { name: "Time Lapse", icon: <Hourglass className="w-8 h-8 mb-2" /> },
 };
 
-export function Step1Service({ formData, handleInputChange }: Step1ServiceProps) {
+export function Step1Service({ 
+  formData, 
+  handleInputChange,
+  handleRealEstateChange,
+  addRealEstateProperty,
+  removeRealEstateProperty,
+}: Step1ServiceProps) {
 
   const handleBackToServices = () => {
     handleInputChange('serviceType', '');
@@ -36,7 +45,13 @@ export function Step1Service({ formData, handleInputChange }: Step1ServiceProps)
   const renderSubServiceOptions = () => {
     switch (formData.serviceType) {
       case 'photography':
-        return <PhotographyOptions formData={formData} handleInputChange={handleInputChange} />;
+        return <PhotographyOptions 
+                  formData={formData} 
+                  handleInputChange={handleInputChange} 
+                  handleRealEstateChange={handleRealEstateChange}
+                  addRealEstateProperty={addRealEstateProperty}
+                  removeRealEstateProperty={removeRealEstateProperty}
+                />;
       case 'video':
         return <VideoOptions formData={formData} handleInputChange={handleInputChange} />;
       case 'timelapse':
