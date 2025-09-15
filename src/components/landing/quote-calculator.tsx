@@ -373,7 +373,7 @@ export function QuoteCalculator() {
         let total = subtotal;
 
         // Studio Rental Fee
-        if (formData.locationType === 'Studio') {
+        if (formData.locationType === 'Studio' && formData.serviceType !== 'post') {
             let studioFee = 0;
             let studioItemName = 'Studio Rental';
             let duration = '';
@@ -519,10 +519,7 @@ export function QuoteCalculator() {
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-1 lg:sticky top-8">
-            <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
-        </div>
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 order-2 lg:order-1">
             <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10">
                 <CardHeader>
                     <div className="flex justify-center items-center mb-4">
@@ -536,7 +533,7 @@ export function QuoteCalculator() {
                                         {index + 1}
                                     </div>
                                     <p className={cn(
-                                        `mt-2 text-xs md:text-sm font-medium transition-colors`,
+                                        `mt-2 text-xs md:text-sm font-medium transition-colors hidden md:block`,
                                         index + 1 <= step ? 'text-primary-foreground' : 'text-muted-foreground'
                                     )}>{title}</p>
                                 </div>
@@ -571,8 +568,9 @@ export function QuoteCalculator() {
                 </CardFooter>
             </Card>
         </div>
+        <div className="lg:col-span-1 order-1 lg:order-2 lg:sticky top-8">
+            <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
+        </div>
       </div>
     );
 }
-
-    
