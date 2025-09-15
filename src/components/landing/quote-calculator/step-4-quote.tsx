@@ -21,7 +21,7 @@ type Step4QuoteProps = {
 };
 
 // Base64 encoded SVG for the logo
-const logoSvgDataUri = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGc+CiAgICA8cGF0aCBmaWxsPSIjNzY0YWZmIiBkPSJNNTAsMEMyMi4zOSwwLDAsMjIuMzksMCw1MGMwLDI3LjYxLDIyLjM5LDUwLDUwLDUwczUwLTIyLjM5LDUwLTUwQzEwMCwyMi4zOSw3Ny42MSwwLDUwLDBaIE01MCw5MC43MiBDMjcuNTYsOTAuNzIsOS4yOCw3Mi40NCw5LjI4LDUwQzkuMjgsMjcuNTYsMjcuNTYsOS4yOCw1MCw5LjI4QzcyLjQ0LDkuMjgsOTAuNzIsMjcuNTYsOTAuNzIsNTBDOTAuNzIsNzIuNDQsNzIuNDQsOTAuNzIsNTAsOTAuNzJaIi8+CiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMzUgMzAgTCA0NSA3MCBMIDU1IDMwIEwgNjUgNzAgTCA3NSAzMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjUiIGZpbGw9Im5vbmUiLz4KICA8L2c+Cjwvc3ZnPgo=";
+const logoSvgDataUri = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIxNSIgZmlsbD0iIzc2NGFmZiIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjYwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiPldSPC90ZXh0Pgo8L3N2Zz4K";
 
 
 export function Step4Quote({
@@ -131,32 +131,33 @@ export function Step4Quote({
             </div>
              {/* Hidden printable version */}
             <div id="pdf-quote-preview-container" className="hidden">
-                <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
-                    <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
+                <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base font-sans">
+                    <div className="flex justify-between items-start mb-12 border-b-2 pb-8 border-gray-200">
                         <img src={logoSvgDataUri} alt="Company Logo" className="w-24 h-24" />
-                        <div className="text-right text-gray-500">
-                            <p>+971586583939</p>
-                            <p>hi@wrh.ae</p>
-                            <p>Dubai, United Arab Emirates</p>
+                        <div className="text-right">
+                            <div className="text-right">
+                                <h1 className="text-2xl font-bold text-violet-600"></h1>
+                                <p className="text-gray-500"></p>
+                            </div>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-8 mb-12">
                         <div>
-                            <h2 className="text-sm font-semibold uppercase text-gray-500 mb-2">Billed To</h2>
+                            <h2 className="text-sm font-semibold uppercase text-gray-500 tracking-wider mb-3">Billed To</h2>
                             <p className="font-bold text-lg text-gray-900">{formData.name || 'Valued Customer'}</p>
                             <p className="text-gray-500">{formData.email}</p>
                             <p className="text-gray-500">{formData.phone}</p>
                         </div>
                         <div className="text-right">
-                             <h2 className="text-sm font-semibold uppercase text-gray-500 mb-2">Quote Date</h2>
-                             <p className="font-bold text-lg text-gray-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                             <h2 className="text-sm font-semibold uppercase text-gray-500 tracking-wider mb-3">Quote Details</h2>
+                             <p className="font-medium text-gray-800">Quote Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                         </div>
                     </div>
                      
                     <div className="mb-12">
-                        <h2 className="text-2xl font-bold mb-1 text-violet-600">{aiProjectTitle}</h2>
-                        <p className="text-gray-500">{aiSummary}</p>
+                        <h2 className="text-4xl font-bold mb-2 text-violet-600">{aiProjectTitle}</h2>
+                        <p className="text-gray-600 text-lg">{aiSummary}</p>
                     </div>
                     
                     <div className="space-y-2 mb-12">
@@ -165,8 +166,8 @@ export function Step4Quote({
                             <div className="w-48 p-4 text-right">Price</div>
                         </div>
                         {quoteDetails.items.map((item, index) => (
-                            <div key={index} className="flex border-b border-gray-200 last:border-0">
-                                <div className="flex-grow p-4 text-gray-600">{item.name}</div>
+                            <div key={index} className="flex border-b border-gray-200 last:border-0 items-center">
+                                <div className="flex-grow p-4 text-gray-700">{item.name}</div>
                                 <div className="w-48 p-4 text-right font-medium text-gray-800">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</div>
                             </div>
                         ))}
@@ -174,13 +175,9 @@ export function Step4Quote({
 
                     <div className="flex justify-end mb-16">
                         <div className="w-1/2 ml-auto">
-                            <div className="flex justify-between py-4 border-b border-gray-200">
-                                <span className="text-gray-500">Subtotal</span>
-                                <span className="font-medium text-gray-800">{quoteDetails.items.reduce((acc, item) => acc + (typeof item.price === 'number' ? item.price : 0), 0).toLocaleString()} AED</span>
-                            </div>
-                            <div className="flex justify-between text-2xl font-bold py-6 bg-violet-100/50 px-4 rounded-b-lg">
-                                <span className="text-violet-600">Total Estimate</span>
-                                <span className="text-violet-600">{quoteDetails.total.toLocaleString()} AED</span>
+                           <div className="flex justify-between items-center text-2xl font-bold py-6 bg-violet-100 text-violet-600 px-6 rounded-lg">
+                                <span>Total Estimate</span>
+                                <span>{quoteDetails.total.toLocaleString()} AED</span>
                             </div>
                         </div>
                     </div>
@@ -193,7 +190,6 @@ export function Step4Quote({
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }
