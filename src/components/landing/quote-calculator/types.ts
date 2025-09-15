@@ -89,13 +89,11 @@ export type FormData = {
     photoRealEstateProperties: RealEstateProperty[];
     photoHeadshotsPeople: number;
     photoProductPhotos: number;
-    photoProductPrice: number;
     photoProductComplexity: 'simple' | 'complex';
     photoFoodPhotos: number;
-    photoFoodPrice: number;
     photoFoodComplexity: 'simple' | 'complex';
-    photoFashionPrice: number;
-    photoWeddingPrice: number;
+    photoFashionPackage: "essential" | "standard" | "premium";
+    photoWeddingPackage: "essential" | "standard" | "premium";
     
     // Step 1.6: Video Details
     videoEventDuration: "perHour" | "halfDay" | "fullDay";

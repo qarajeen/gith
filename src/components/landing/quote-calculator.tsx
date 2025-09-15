@@ -29,13 +29,11 @@ const initialFormData: FormData = {
     photoRealEstateProperties: [{ id: 1, type: "studio", furnished: false }],
     photoHeadshotsPeople: 1,
     photoProductPhotos: 10,
-    photoProductPrice: 100, // This will be set by complexity now
     photoProductComplexity: 'simple',
     photoFoodPhotos: 10,
-    photoFoodPrice: 150, // This will be set by complexity now
     photoFoodComplexity: 'simple',
-    photoFashionPrice: 1500,
-    photoWeddingPrice: 5000,
+    photoFashionPackage: 'essential',
+    photoWeddingPackage: 'essential',
     
     videoEventDuration: "perHour",
     videoEventHours: 1,
@@ -233,12 +231,14 @@ export function QuoteCalculator() {
                     itemName += ` (${formData.photoFoodPhotos} photos @ ${foodPricePerPhoto} AED/photo, ${formData.photoFoodComplexity})`;
                     break;
                 case 'fashion':
-                    basePrice = formData.photoFashionPrice;
-                    itemName += ' (Half Day)';
+                    const fashionPrices = { essential: 1500, standard: 3000, premium: 5000 };
+                    basePrice = fashionPrices[formData.photoFashionPackage];
+                    itemName += ` (${formData.photoFashionPackage.charAt(0).toUpperCase() + formData.photoFashionPackage.slice(1)} Package)`;
                     break;
                 case 'wedding':
-                    basePrice = formData.photoWeddingPrice;
-                    itemName += ' (Package)';
+                    const weddingPrices = { essential: 5000, standard: 12000, premium: 25000 };
+                    basePrice = weddingPrices[formData.photoWeddingPackage];
+                    itemName += ` (${formData.photoWeddingPackage.charAt(0).toUpperCase() + formData.photoWeddingPackage.slice(1)} Package)`;
                     break;
             }
         } else if (formData.serviceType === 'video' && formData.videoSubType) {

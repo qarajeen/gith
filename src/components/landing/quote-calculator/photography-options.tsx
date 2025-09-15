@@ -30,6 +30,18 @@ export function PhotographyOptions({
   const isFood = formData.photographySubType === 'food';
   const priceConfig = isProduct ? { min: 100, max: 400 } : { min: 150, max: 400 };
 
+  const fashionPackages = {
+    essential: { name: "Essential", price: "1,500 AED", description: "Half-day shoot, 1 location, basic edits." },
+    standard: { name: "Standard", price: "3,000 AED", description: "Full-day shoot, 2 locations, advanced edits." },
+    premium: { name: "Premium", price: "5,000 AED", description: "Full-day shoot, multiple locations, professional styling." },
+  };
+
+  const weddingPackages = {
+    essential: { name: "Essential", price: "5,000 AED", description: "4 hours coverage, 1 photographer, edited photos." },
+    standard: { name: "Standard", price: "12,000 AED", description: "8 hours coverage, 2 photographers, photo album." },
+    premium: { name: "Premium", price: "25,000 AED", description: "Full-day coverage, video highlights, premium album." },
+  };
+
   return (
     <div className="space-y-4 animate-fade-in-up">
       <h3 className="font-semibold mb-4 text-lg">Select Photography Type</h3>
@@ -191,22 +203,27 @@ export function PhotographyOptions({
 
       {(formData.photographySubType === 'fashion' || formData.photographySubType === 'wedding') && (
         <div className="pt-4 space-y-4 animate-fade-in-up">
-          <h4 className="font-semibold">{formData.photographySubType === 'fashion' ? 'Fashion/Lifestyle' : 'Wedding'} Details</h4>
-          <div>
-            <Label>Base Price (AED {formData.photographySubType === 'fashion' ? '1,500 - 5,000' : '5,000 - 25,000'})</Label>
-            <div className="flex items-center gap-4 mt-2">
-              <Slider
-                value={[formData.photographySubType === 'fashion' ? formData.photoFashionPrice : formData.photoWeddingPrice]}
-                onValueChange={(v) => handleInputChange(formData.photographySubType === 'fashion' ? 'photoFashionPrice' : 'photoWeddingPrice', v[0])}
-                min={formData.photographySubType === 'fashion' ? 1500 : 5000}
-                max={formData.photographySubType === 'fashion' ? 5000 : 25000}
-                step={100}
-              />
-              <span className="font-semibold w-24 text-center">
-                {(formData.photographySubType === 'fashion' ? formData.photoFashionPrice : formData.photoWeddingPrice).toLocaleString()} AED
-              </span>
-            </div>
-          </div>
+          <h4 className="font-semibold">{formData.photographySubType === 'fashion' ? 'Fashion/Lifestyle' : 'Wedding'} Package</h4>
+           <RadioGroup
+            value={formData.photographySubType === 'fashion' ? formData.photoFashionPackage : formData.photoWeddingPackage}
+            onValueChange={(v) => handleInputChange(formData.photographySubType === 'fashion' ? 'photoFashionPackage' : 'photoWeddingPackage', v)}
+            className="grid md:grid-cols-3 gap-4"
+          >
+            {Object.entries(formData.photographySubType === 'fashion' ? fashionPackages : weddingPackages).map(([id, { name, price, description }]) => (
+              <div key={id}>
+                <RadioGroupItem value={id} id={`pkg-${id}`} className="sr-only" />
+                <Label htmlFor={`pkg-${id}`} className={cn("flex flex-col justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+                  (formData.photographySubType === 'fashion' ? formData.photoFashionPackage : formData.photoWeddingPackage) === id ? 'border-primary bg-accent' : 'border-border'
+                )}>
+                  <div>
+                    <h5 className="font-semibold text-lg">{name}</h5>
+                    <p className="text-sm text-muted-foreground mt-1">{description}</p>
+                  </div>
+                  <p className="font-bold text-xl mt-4">{price}</p>
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
         </div>
       )}
     </div>
