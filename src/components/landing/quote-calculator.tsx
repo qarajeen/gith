@@ -56,6 +56,15 @@ const timelapseSubServices = {
     extreme: { name: 'Extreme Long Term (Months/Years)' },
 };
 
+// 360 Tours Sub-Services
+const toursSubServices = {
+    studio: { name: "Studio Apartment" },
+    '1-bedroom': { name: "1-Bedroom Apartment" },
+    '2-bedroom': { name: "2-Bedroom Apartment" },
+    '3-bedroom': { name: "3-Bedroom Villa" },
+};
+
+
 const locationTypeOptions = ["Indoor", "Outdoor", "Studio", "Exhibition Center", "Hotel", "Other"];
 
 type FormData = {
@@ -64,6 +73,7 @@ type FormData = {
     photographySubType: keyof typeof photographySubServices | "";
     videoSubType: keyof typeof videoSubServices | "";
     timelapseSubType: keyof typeof timelapseSubServices | "";
+    toursSubType: keyof typeof toursSubServices | "";
 
     // Step 1.5: Photography Details
     photoEventDuration: "perHour" | "halfDay" | "fullDay";
@@ -96,6 +106,8 @@ type FormData = {
 
     // Step 1.7: Time-Lapse Details
     timelapsePrice: number;
+    
+    // Step 1.8: 360 Tours handled by sub-type
 
     // Step 2: Location
     location: string;
@@ -120,6 +132,7 @@ export function QuoteCalculator() {
         photographySubType: "",
         videoSubType: "",
         timelapseSubType: "",
+        toursSubType: "",
         
         photoEventDuration: "perHour",
         photoEventHours: 1,
@@ -186,6 +199,10 @@ export function QuoteCalculator() {
             toast({ title: "Time-Lapse Type Required", description: "Please select a project length to continue.", variant: "destructive" });
             return;
        }
+       if (step === 1 && formData.serviceType === '360tours' && formData.toursSubType === '') {
+            toast({ title: "Property Type Required", description: "Please select a property type to continue.", variant: "destructive" });
+            return;
+        }
         if (step === 4) {
             if (!formData.name || !formData.email || !formData.phone) {
                 toast({ title: "Missing Information", description: "Please fill out your name, email, and phone number.", variant: "destructive" });
@@ -209,6 +226,8 @@ export function QuoteCalculator() {
                   subTypeName = videoSubServices[formData.videoSubType].name;
               } else if (formData.serviceType === 'timelapse' && formData.timelapseSubType) {
                   subTypeName = timelapseSubServices[formData.timelapseSubType].name;
+              } else if (formData.serviceType === '360tours' && formData.toursSubType) {
+                subTypeName = toursSubServices[formData.toursSubType].name;
               }
               
               const selectedAddons: string[] = [];
@@ -335,9 +354,13 @@ export function QuoteCalculator() {
             const subTypeName = timelapseSubServices[formData.timelapseSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
             basePrice = formData.timelapsePrice;
-        } else if (formData.serviceType && !['photography', 'video', 'timelapse'].includes(formData.serviceType)) {
-            const otherServicePrices = { post: 1000, '360tours': 4000 };
-            basePrice = otherServicePrices[formData.serviceType as keyof typeof otherServicePrices] || 0;
+        } else if (formData.serviceType === '360tours' && formData.toursSubType) {
+            const subTypeName = toursSubServices[formData.toursSubType].name;
+            itemName = `${serviceName}: ${subTypeName}`;
+            const prices = { studio: 750, '1-bedroom': 1000, '2-bedroom': 1350, '3-bedroom': 1750 };
+            basePrice = prices[formData.toursSubType];
+        } else if (formData.serviceType === 'post') {
+            basePrice = 1000;
         }
 
         total += basePrice;
@@ -749,6 +772,28 @@ export function QuoteCalculator() {
         );
     };
 
+    const render360ToursOptions = () => (
+        <div className="space-y-4 animate-fade-in-up">
+            <h3 className="font-semibold mb-4 text-lg">Select Property Type</h3>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+                {Object.entries(toursSubServices).map(([id, { name }]) => (
+                    <Button
+                        key={id}
+                        variant="outline"
+                        size="lg"
+                        onClick={() => handleInputChange("toursSubType", id)}
+                        className={cn(
+                            "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                            formData.toursSubType === id ? 'border-primary bg-accent' : 'border-border'
+                        )}
+                    >
+                        {name}
+                    </Button>
+                ))}
+            </div>
+        </div>
+    );
+
     const renderStep = () => {
         switch (step) {
             case 1:
@@ -770,6 +815,7 @@ export function QuoteCalculator() {
                         {formData.serviceType === 'photography' && renderPhotographyOptions()}
                         {formData.serviceType === 'video' && renderVideoOptions()}
                         {formData.serviceType === 'timelapse' && renderTimelapseOptions()}
+                        {formData.serviceType === '360tours' && render360ToursOptions()}
                     </div>
                 );
             case 2:
@@ -952,3 +998,5 @@ export function QuoteCalculator() {
         </Card>
     );
 }
+
+    
