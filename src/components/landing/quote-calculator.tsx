@@ -129,10 +129,12 @@ type FormData = {
     location: string;
     locationType: string;
 
-    // Step 3: Add-ons
+    // Step 3: Add-ons & Modifiers
     secondCamera: boolean;
     additionalHours: number;
     timelapseExtraCamera: boolean;
+    deliveryTimeline: "standard" | "rush";
+
 
     // Step 4: Contact
     name: string;
@@ -194,6 +196,7 @@ export function QuoteCalculator() {
         secondCamera: false,
         additionalHours: 0,
         timelapseExtraCamera: false,
+        deliveryTimeline: "standard",
 
         name: "",
         email: "",
@@ -266,7 +269,8 @@ export function QuoteCalculator() {
               if (formData.secondCamera) selectedAddons.push("Second Camera");
               if (formData.additionalHours > 0) selectedAddons.push(`${formData.additionalHours} Additional Hours`);
               if (formData.timelapseExtraCamera) selectedAddons.push("Extra Camera");
-              
+              if (formData.deliveryTimeline === 'rush') selectedAddons.push("Rush Delivery");
+
               const input = {
                 serviceType: `${serviceName}${subTypeName ? `: ${subTypeName}` : ''}`,
                 packageType: 'Custom', // Simplified for AI
@@ -289,11 +293,11 @@ export function QuoteCalculator() {
 
 
     const quoteDetails = useMemo(() => {
-        let total = 0;
+        let subtotal = 0;
         let basePrice = 0;
         const items: { name: string; price: number | string }[] = [];
         
-        if (!formData.serviceType) return { items, total };
+        if (!formData.serviceType) return { items, total: 0 };
 
         const serviceName = serviceOptions[formData.serviceType].name;
         let itemName = serviceName;
@@ -416,7 +420,7 @@ export function QuoteCalculator() {
             }
         }
 
-        total += basePrice;
+        subtotal += basePrice;
         items.push({ name: itemName, price: basePrice });
         
         // Photography Add-ons (from Step 3)
@@ -425,13 +429,13 @@ export function QuoteCalculator() {
             if (formData.secondCamera) {
                 const price = basePrice; // +100%
                 items.push({ name: 'Second Camera', price });
-                total += price;
+                subtotal += price;
             }
         }
         if (formData.serviceType === 'photography' && p === 'event' && formData.additionalHours > 0) {
             const price = formData.additionalHours * 300;
             items.push({ name: `Additional Hours (x${formData.additionalHours})`, price });
-            total += price;
+            subtotal += price;
         }
 
         // Video Add-ons
@@ -441,32 +445,32 @@ export function QuoteCalculator() {
                  if (formData.secondCamera) {
                     const price = basePrice; // +100%
                     items.push({ name: 'Second Camera', price });
-                    total += price;
+                    subtotal += price;
                 }
             }
             if (v === 'event' && formData.additionalHours > 0) {
                  const price = formData.additionalHours * 400;
                  items.push({ name: `Additional Hours (x${formData.additionalHours})`, price });
-                 total += price;
+                 subtotal += price;
             }
 
             if (v === 'corporate') {
-                if (formData.videoCorporateExtendedFilming === 'halfDay') { total += 1500; items.push({ name: 'Extended Filming (Half-Day)', price: 1500 }); }
-                if (formData.videoCorporateExtendedFilming === 'fullDay') { total += 3500; items.push({ name: 'Extended Filming (Full-Day)', price: 3500 }); }
-                if (formData.videoCorporateTwoCam) { total += 950; items.push({ name: 'Two-Camera Interview Setup', price: 950 }); }
-                if (formData.videoCorporateScripting) { total += 1500; items.push({ name: 'Full Scriptwriting & Storyboarding', price: 1500 }); }
-                if (formData.videoCorporateEditing) { total += 1000; items.push({ name: 'Advanced Editing & Color Grading', price: 1000 }); }
-                if (formData.videoCorporateGraphics) { total += 800; items.push({ name: 'Custom Motion Graphics', price: 800 }); }
-                if (formData.videoCorporateVoiceover) { total += 500; items.push({ name: 'Professional Voice-over', price: 500 }); }
+                if (formData.videoCorporateExtendedFilming === 'halfDay') { subtotal += 1500; items.push({ name: 'Extended Filming (Half-Day)', price: 1500 }); }
+                if (formData.videoCorporateExtendedFilming === 'fullDay') { subtotal += 3500; items.push({ name: 'Extended Filming (Full-Day)', price: 3500 }); }
+                if (formData.videoCorporateTwoCam) { subtotal += 950; items.push({ name: 'Two-Camera Interview Setup', price: 950 }); }
+                if (formData.videoCorporateScripting) { subtotal += 1500; items.push({ name: 'Full Scriptwriting & Storyboarding', price: 1500 }); }
+                if (formData.videoCorporateEditing) { subtotal += 1000; items.push({ name: 'Advanced Editing & Color Grading', price: 1000 }); }
+                if (formData.videoCorporateGraphics) { subtotal += 800; items.push({ name: 'Custom Motion Graphics', price: 800 }); }
+                if (formData.videoCorporateVoiceover) { subtotal += 500; items.push({ name: 'Professional Voice-over', price: 500 }); }
             }
             
             if (v === 'promo') {
-                if (formData.videoPromoFullDay) { total += 5000; items.push({ name: 'Full-Day Production', price: 5000 }); }
-                if (formData.videoPromoMultiLoc > 0) { total += formData.videoPromoMultiLoc * 2000; items.push({ name: `Multi-Location Shoot (x${formData.videoPromoMultiLoc})`, price: formData.videoPromoMultiLoc * 2000 }); }
-                if (formData.videoPromoConcept) { total += 3000; items.push({ name: 'Advanced Storyboarding & Concept', price: 3000 }); }
-                if (formData.videoPromoGraphics) { total += 4000; items.push({ name: 'Advanced 2D/3D Motion Graphics', price: 4000 }); }
-                if (formData.videoPromoSound) { total += 3000; items.push({ name: 'Custom Sound Design & Mixing', price: 3000 }); }
-                if (formData.videoPromoMakeup) { total += 2000; items.push({ name: 'Hair & Makeup Artist', price: 2000 }); }
+                if (formData.videoPromoFullDay) { subtotal += 5000; items.push({ name: 'Full-Day Production', price: 5000 }); }
+                if (formData.videoPromoMultiLoc > 0) { subtotal += formData.videoPromoMultiLoc * 2000; items.push({ name: `Multi-Location Shoot (x${formData.videoPromoMultiLoc})`, price: formData.videoPromoMultiLoc * 2000 }); }
+                if (formData.videoPromoConcept) { subtotal += 3000; items.push({ name: 'Advanced Storyboarding & Concept', price: 3000 }); }
+                if (formData.videoPromoGraphics) { subtotal += 4000; items.push({ name: 'Advanced 2D/3D Motion Graphics', price: 4000 }); }
+                if (formData.videoPromoSound) { subtotal += 3000; items.push({ name: 'Custom Sound Design & Mixing', price: 3000 }); }
+                if (formData.videoPromoMakeup) { subtotal += 2000; items.push({ name: 'Hair & Makeup Artist', price: 2000 }); }
             }
         }
 
@@ -475,8 +479,29 @@ export function QuoteCalculator() {
             if (formData.timelapseExtraCamera) {
                 const price = basePrice; // +100%
                 items.push({ name: 'Extra Camera', price });
-                total += price;
+                subtotal += price;
             }
+        }
+        
+        let total = subtotal;
+
+        // Universal Modifiers
+        const travelFees = {
+            dubai: 0,
+            sharjah: 100,
+            'abu-dhabi': 200,
+            other: 200,
+        };
+        const travelFee = travelFees[formData.location as keyof typeof travelFees] || 0;
+        if (travelFee > 0) {
+            items.push({ name: `Logistics & Travel Fee (${formData.location.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())})`, price: travelFee });
+            total += travelFee;
+        }
+
+        if (formData.deliveryTimeline === 'rush') {
+            const rushFee = subtotal * 0.5;
+            items.push({ name: 'Rush Delivery (24 hours)', price: rushFee });
+            total += rushFee;
         }
 
         return { items, total };
@@ -1020,8 +1045,8 @@ export function QuoteCalculator() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="dubai">Dubai</SelectItem>
-                                    <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
                                     <SelectItem value="sharjah">Sharjah</SelectItem>
+                                    <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
                                     <SelectItem value="other">Other UAE</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -1053,14 +1078,11 @@ export function QuoteCalculator() {
                 const canHaveAdditionalHours = (formData.serviceType === 'photography' && pSubType === 'event')
                                              || (formData.serviceType === 'video' && vSubType === 'event');
                 const isTimelapse = formData.serviceType === 'timelapse';
-
-                if (!canHaveSecondCamera && !canHaveAdditionalHours && !isTimelapse) {
-                    return <p className="text-muted-foreground text-center py-10 animate-fade-in-up">No add-ons available for this service combination.</p>;
-                }
+                const isPostProduction = formData.serviceType === 'post';
 
                 return (
                     <div className="space-y-6 animate-fade-in-up">
-                        <h3 className="font-semibold text-lg">Add-ons</h3>
+                        <h3 className="font-semibold text-lg">Options & Modifiers</h3>
                          <div className="space-y-4">
                             {canHaveAdditionalHours && (
                                 <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalHours > 0 ? 'border-primary bg-accent' : 'border-border')}>
@@ -1080,6 +1102,26 @@ export function QuoteCalculator() {
                                     <Switch id="timelapseExtraCamera" checked={formData.timelapseExtraCamera} onCheckedChange={(v) => handleInputChange('timelapseExtraCamera', v)} />
                                 </div>
                             )}
+                            {!isPostProduction && (
+                                <div>
+                                    <Label className="font-semibold text-base">Delivery Timeline</Label>
+                                    <RadioGroup value={formData.deliveryTimeline} onValueChange={(v) => handleInputChange("deliveryTimeline", v)} className="flex gap-4 mt-2">
+                                        {[
+                                            { value: 'standard', label: 'Standard Delivery' },
+                                            { value: 'rush', label: 'Rush Delivery (24h, +50%)' }
+                                        ].map(({ value, label }) => (
+                                            <div className="flex-1" key={value}>
+                                                <RadioGroupItem value={value} id={`delivery-${value}`} className="sr-only" />
+                                                <Label htmlFor={`delivery-${value}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                                                    formData.deliveryTimeline === value ? 'border-primary bg-accent' : 'border-border'
+                                                )}>
+                                                    {label}
+                                                </Label>
+                                            </div>
+                                        ))}
+                                    </RadioGroup>
+                                </div>
+                             )}
                         </div>
                     </div>
                 );
