@@ -80,7 +80,7 @@ export function Step4Quote({
       }, [formData, aiSummary, setAiSummary, setAiProjectTitle, setIsGeneratingSummary]);
 
     return (
-        <div className="printable-area animate-fade-in-up">
+        <div className="printable-area animate-fade-in-up pb-20 sm:pb-0">
             <div id="quote-preview" className="p-8 bg-card rounded-lg border-2 border-primary/20">
                {isGeneratingSummary ? (
                     <div className="space-y-4 text-center py-20">

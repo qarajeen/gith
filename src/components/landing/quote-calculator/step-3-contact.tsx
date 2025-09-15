@@ -11,7 +11,7 @@ type Step3ContactProps = {
 
 export function Step3Contact({ formData, handleInputChange }: Step3ContactProps) {
   return (
-    <div className="space-y-4 animate-fade-in-up">
+    <div className="space-y-4 animate-fade-in-up pb-20 sm:pb-0">
       <h3 className="font-semibold text-lg">Contact Information</h3>
       <div>
         <Label htmlFor="name">Name</Label>

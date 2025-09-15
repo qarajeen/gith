@@ -94,6 +94,7 @@ export function Step1Service({
           <Button variant="ghost" onClick={handleBackToServices} className="mb-4 text-muted-foreground px-0 hover:bg-transparent -mt-4">
             <ChevronLeft className="mr-2 h-4 w-4" />
             <span className='hidden sm:inline'>Back to Services</span>
+            <span className='sm:hidden'>Back</span>
           </Button>
           {renderSubServiceOptions()}
         </div>
