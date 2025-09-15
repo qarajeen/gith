@@ -562,24 +562,26 @@ export function QuoteCalculator() {
                 <CardContent className="min-h-[350px] sm:pb-6">
                     {renderStep()}
                 </CardContent>
-                <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 fixed bottom-0 left-0 w-full bg-card border-t border-border p-4 sm:static sm:border-t-0 sm:p-6 sm:bg-transparent z-10">
-                    <div className="flex gap-2 w-full sm:w-auto">
-                        {step > 1 && (
-                            <Button variant="outline" onClick={prevStep} size="lg" className="w-full sm:w-auto"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
-                        )}
-                         {step > 1 && step < 4 && (
-                             <Button variant="ghost" onClick={handleReset} size="lg" className="text-muted-foreground"><RotateCcw className="mr-2 h-5 w-5" /> Reset</Button>
-                         )}
-                    </div>
-    
-                    <div className="flex items-center gap-4 w-full sm:w-auto">
-                        {step < 4 ? (
-                            <Button onClick={nextStep} size="lg" className="w-full sm:w-auto">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
-                        ) : (
-                             <Button onClick={handleReset} size="lg" className="w-full sm:w-auto"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
-                        )}
-                    </div>
-                </CardFooter>
+                {step > 1 && (
+                    <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 fixed bottom-0 left-0 w-full bg-card border-t border-border p-4 sm:static sm:border-t-0 sm:p-6 sm:bg-transparent z-10">
+                        <div className="flex gap-2 w-full sm:w-auto">
+                            {step > 1 && (
+                                <Button variant="outline" onClick={prevStep} size="lg" className="w-full sm:w-auto"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
+                            )}
+                            {step > 1 && step < 4 && (
+                                <Button variant="ghost" onClick={handleReset} size="lg" className="text-muted-foreground"><RotateCcw className="mr-2 h-5 w-5" /> Reset</Button>
+                            )}
+                        </div>
+        
+                        <div className="flex items-center gap-4 w-full sm:w-auto">
+                            {step < 4 ? (
+                                <Button onClick={nextStep} size="lg" className="w-full sm:w-auto">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                            ) : (
+                                <Button onClick={handleReset} size="lg" className="w-full sm:w-auto"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
+                            )}
+                        </div>
+                    </CardFooter>
+                )}
             </Card>
         </div>
         <div className="hidden lg:block lg:col-span-1">
