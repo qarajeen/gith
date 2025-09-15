@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
@@ -89,7 +88,17 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
                         <div className="space-y-4">
                             <div>
                                 <Label htmlFor="postVideoEditingMinutes">Finished Minutes</Label>
-                                <Input id="postVideoEditingMinutes" type="number" value={formData.postVideoEditingMinutes} onChange={(e) => handleInputChange("postVideoEditingMinutes", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                                <div className="flex items-center gap-4 mt-2">
+                                    <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingMinutes', Math.max(1, formData.postVideoEditingMinutes - 1))}><Minus /></Button>
+                                    <Slider
+                                        value={[formData.postVideoEditingMinutes]}
+                                        onValueChange={(v) => handleInputChange('postVideoEditingMinutes', v[0])}
+                                        min={1} max={60} step={1}
+                                        className='flex-1'
+                                    />
+                                    <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingMinutes', Math.min(60, formData.postVideoEditingMinutes + 1))}><Plus /></Button>
+                                </div>
+                                <div className="text-center font-semibold w-full mt-2">{formData.postVideoEditingMinutes} minutes</div>
                             </div>
                             <div>
                                 <Label>Price Per Minute (AED 500 - 1,500)</Label>
@@ -129,17 +138,20 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
             {formData.postSubType === 'photo' && (
                 <div className="pt-4 space-y-4 animate-fade-in-up">
                     <h4 className="font-semibold">Photo Editing Details</h4>
-                    <div className="grid md:grid-cols-3 gap-4">
+                     <RadioGroup
+                        value={formData.postPhotoEditingType}
+                        onValueChange={(v) => {
+                            const newType = v as keyof typeof photoEditingPrices;
+                            handleInputChange('postPhotoEditingType', newType);
+                            handleInputChange('postPhotoEditingPrice', photoEditingPrices[newType].min);
+                        }}
+                        className="grid md:grid-cols-3 gap-4"
+                    >
                         {Object.entries(photoEditingPrices).map(([type, { label }]) => (
                             <div key={type}>
                                 <RadioGroupItem value={type} id={`post-photo-${type}`} className="sr-only" />
                                 <Label 
                                     htmlFor={`post-photo-${type}`} 
-                                    onClick={() => {
-                                        const newType = type as keyof typeof photoEditingPrices;
-                                        handleInputChange('postPhotoEditingType', newType);
-                                        handleInputChange('postPhotoEditingPrice', photoEditingPrices[newType].min);
-                                    }}
                                     className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full text-base py-4",
                                     formData.postPhotoEditingType === type ? 'border-primary bg-accent' : 'border-border'
                                 )}>
@@ -148,7 +160,7 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
                                 </Label>
                             </div>
                         ))}
-                    </div>
+                    </RadioGroup>
                      <div>
                         <Label htmlFor="postPhotoEditingQuantity">Number of Photos</Label>
                         <div className="flex items-center gap-4 mt-2">
