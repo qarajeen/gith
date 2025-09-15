@@ -126,65 +126,43 @@ export function Step4Quote({
                 </Button>
             </div>
             <div id="pdf-quote-preview-container" style={{ position: 'absolute', left: '-9999px', top: 'auto', width: '1200px' }}>
-                <div id="pdf-quote-preview" className="p-12 bg-white text-black w-full text-base font-sans">
-                    <div className="flex justify-between items-start mb-12 border-b-2 pb-8 border-gray-200">
-                        <div>
-                            <h1 className="text-2xl font-bold text-violet-600">WRH Enigma</h1>
-                            <p className="text-gray-500">Creative Media Production</p>
-                        </div>
-                        <div className="text-right">
-                             <div className="text-right">
-                                <p className="text-gray-500">hi@wrh.ae</p>
-                                <p className="text-gray-500">+971586583939</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-8 mb-12">
-                        <div>
-                            <h2 className="text-sm font-semibold uppercase text-gray-500 tracking-wider mb-3">Billed To</h2>
-                            <p className="font-bold text-lg text-gray-900">{formData.name || 'Valued Customer'}</p>
-                            <p className="text-gray-500">{formData.email}</p>
-                            <p className="text-gray-500">{formData.phone}</p>
-                        </div>
-                        <div className="text-right">
-                             <h2 className="text-sm font-semibold uppercase text-gray-500 tracking-wider mb-3">Quote Details</h2>
-                             <p className="font-medium text-gray-800">Quote Date: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                        </div>
-                    </div>
+                <div id="pdf-quote-preview" className="p-12 bg-white text-black w-full text-lg font-sans">
                      
                     <div className="mb-12">
-                        <h2 className="text-4xl font-bold mb-2 text-violet-600">{aiProjectTitle}</h2>
-                        <p className="text-gray-600 text-lg">{aiSummary}</p>
+                        <h2 className="text-5xl font-bold mb-4 text-violet-600">{aiProjectTitle}</h2>
+                        <p className="text-gray-600 text-xl">{aiSummary}</p>
                     </div>
                     
-                    <div className="space-y-2 mb-12">
-                        <div className="flex bg-gray-100 font-semibold rounded-t-lg text-gray-800">
-                            <div className="flex-grow p-4">Description</div>
-                            <div className="w-48 p-4 text-right">Price</div>
+                    <div className="space-y-3 mb-12">
+                        <div className="flex bg-gray-100 font-semibold rounded-t-lg text-gray-800 text-xl">
+                            <div className="flex-grow p-5">Description</div>
+                            <div className="w-56 p-5 text-right">Price</div>
                         </div>
                         {quoteDetails.items.map((item, index) => (
                             <div key={index} className="flex border-b border-gray-200 last:border-0 items-center">
-                                <div className="flex-grow p-4 text-gray-700">{item.name}</div>
-                                <div className="w-48 p-4 text-right font-medium text-gray-800">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</div>
+                                <div className="flex-grow p-5 text-gray-700">{item.name}</div>
+                                <div className="w-56 p-5 text-right font-medium text-gray-800">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</div>
                             </div>
                         ))}
                     </div>
 
                     <div className="flex justify-end mb-16">
-                        <div className="w-1/2 ml-auto">
-                           <div className="flex justify-between items-center text-2xl font-bold py-6 bg-violet-100 text-violet-600 px-6 rounded-lg">
+                        <div className="w-2/3 ml-auto">
+                           <div className="flex justify-between items-center text-3xl font-bold py-8 bg-violet-100 text-violet-600 px-8 rounded-lg">
                                 <span>Total Estimate</span>
                                 <span>{quoteDetails.total.toLocaleString()} AED</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="text-center text-gray-500 text-sm mt-12 pt-8 border-t border-gray-200">
-                        <h3 className="font-semibold mb-2 text-gray-800">Terms &amp; Conditions</h3>
+                    <div className="text-center text-gray-500 text-base mt-12 pt-8 border-t border-gray-200">
+                        <h3 className="font-semibold mb-3 text-gray-800 text-lg">Terms &amp; Conditions</h3>
                         <p>50% advance payment required to confirm the booking. Balance due upon project completion.</p>
                         <p>This quote is valid for 30 days.</p>
-                        <p className="mt-8 font-bold text-lg text-gray-800">Thank you for your business!</p>
+                        <p className="mt-8 font-bold text-xl text-gray-800">Thank you for your business!</p>
+                        <div className="mt-8 text-gray-600">
+                            <p>hi@wrh.ae | +971586583939</p>
+                        </div>
                     </div>
                 </div>
             </div>
