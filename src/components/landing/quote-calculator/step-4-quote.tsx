@@ -129,10 +129,14 @@ export function Step4Quote({
             <div id="pdf-quote-preview-container" className="hidden">
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base font-sans">
                     <div className="flex justify-between items-start mb-12 border-b-2 pb-8 border-gray-200">
+                        <div>
+                            <h1 className="text-2xl font-bold text-violet-600">WRH Enigma</h1>
+                            <p className="text-gray-500">Creative Media Production</p>
+                        </div>
                         <div className="text-right">
                              <div className="text-right">
-                                <h1 className="text-2xl font-bold text-violet-600"></h1>
-                                <p className="text-gray-500"></p>
+                                <p className="text-gray-500">hi@wrh.ae</p>
+                                <p className="text-gray-500">+971586583939</p>
                             </div>
                         </div>
                     </div>
