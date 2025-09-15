@@ -64,6 +64,11 @@ const toursSubServices = {
     '3-bedroom': { name: "3-Bedroom Villa" },
 };
 
+// Post-Production Sub-Services
+const postProductionSubServices = {
+    video: { name: 'Video Editing' },
+    photo: { name: 'Photo Editing (Retouching)' },
+};
 
 const locationTypeOptions = ["Indoor", "Outdoor", "Studio", "Exhibition Center", "Hotel", "Other"];
 
@@ -74,6 +79,7 @@ type FormData = {
     videoSubType: keyof typeof videoSubServices | "";
     timelapseSubType: keyof typeof timelapseSubServices | "";
     toursSubType: keyof typeof toursSubServices | "";
+    postSubType: keyof typeof postProductionSubServices | '';
 
     // Step 1.5: Photography Details
     photoEventDuration: "perHour" | "halfDay" | "fullDay";
@@ -108,6 +114,16 @@ type FormData = {
     timelapsePrice: number;
     
     // Step 1.8: 360 Tours handled by sub-type
+    
+    // Step 1.9 Post-Production Details
+    postVideoEditingType: 'perHour' | 'perMinute' | 'social';
+    postVideoEditingHours: number;
+    postVideoEditingMinutes: number;
+    postVideoEditingPerMinutePrice: number;
+    postVideoEditingSocialPrice: number;
+    postPhotoEditingType: 'basic' | 'advanced' | 'restoration';
+    postPhotoEditingQuantity: number;
+    postPhotoEditingPrice: number;
 
     // Step 2: Location
     location: string;
@@ -133,7 +149,8 @@ export function QuoteCalculator() {
         videoSubType: "",
         timelapseSubType: "",
         toursSubType: "",
-        
+        postSubType: '',
+
         photoEventDuration: "perHour",
         photoEventHours: 1,
         photoRealEstatePropertyType: "studio",
@@ -162,6 +179,15 @@ export function QuoteCalculator() {
         videoWeddingPrice: 3000,
 
         timelapsePrice: 2000,
+
+        postVideoEditingType: 'perHour',
+        postVideoEditingHours: 1,
+        postVideoEditingMinutes: 1,
+        postVideoEditingPerMinutePrice: 500,
+        postVideoEditingSocialPrice: 500,
+        postPhotoEditingType: 'basic',
+        postPhotoEditingQuantity: 1,
+        postPhotoEditingPrice: 20,
 
         location: "dubai",
         locationType: "Indoor",
@@ -203,6 +229,10 @@ export function QuoteCalculator() {
             toast({ title: "Property Type Required", description: "Please select a property type to continue.", variant: "destructive" });
             return;
         }
+        if (step === 1 && formData.serviceType === 'post' && formData.postSubType === '') {
+            toast({ title: "Post-Production Type Required", description: "Please select a post-production sub-type to continue.", variant: "destructive" });
+            return;
+        }
         if (step === 4) {
             if (!formData.name || !formData.email || !formData.phone) {
                 toast({ title: "Missing Information", description: "Please fill out your name, email, and phone number.", variant: "destructive" });
@@ -228,6 +258,8 @@ export function QuoteCalculator() {
                   subTypeName = timelapseSubServices[formData.timelapseSubType].name;
               } else if (formData.serviceType === '360tours' && formData.toursSubType) {
                 subTypeName = toursSubServices[formData.toursSubType].name;
+              } else if (formData.serviceType === 'post' && formData.postSubType) {
+                subTypeName = postProductionSubServices[formData.postSubType].name;
               }
               
               const selectedAddons: string[] = [];
@@ -359,8 +391,29 @@ export function QuoteCalculator() {
             itemName = `${serviceName}: ${subTypeName}`;
             const prices = { studio: 750, '1-bedroom': 1000, '2-bedroom': 1350, '3-bedroom': 1750 };
             basePrice = prices[formData.toursSubType];
-        } else if (formData.serviceType === 'post') {
-            basePrice = 1000;
+        } else if (formData.serviceType === 'post' && formData.postSubType) {
+            const subTypeName = postProductionSubServices[formData.postSubType].name;
+            itemName = `${serviceName}: ${subTypeName}`;
+
+            if (formData.postSubType === 'video') {
+                switch(formData.postVideoEditingType) {
+                    case 'perHour':
+                        basePrice = formData.postVideoEditingHours * 250;
+                        itemName += ` (${formData.postVideoEditingHours} hrs)`;
+                        break;
+                    case 'perMinute':
+                        basePrice = formData.postVideoEditingMinutes * formData.postVideoEditingPerMinutePrice;
+                        itemName += ` (${formData.postVideoEditingMinutes} min @ ${formData.postVideoEditingPerMinutePrice} AED/min)`;
+                        break;
+                    case 'social':
+                        basePrice = formData.postVideoEditingSocialPrice;
+                        itemName += ` (Social Media Edit)`;
+                        break;
+                }
+            } else { // photo
+                basePrice = formData.postPhotoEditingQuantity * formData.postPhotoEditingPrice;
+                itemName += ` (${formData.postPhotoEditingQuantity} photos @ ${formData.postPhotoEditingPrice} AED/photo)`;
+            }
         }
 
         total += basePrice;
@@ -793,6 +846,139 @@ export function QuoteCalculator() {
             </div>
         </div>
     );
+    
+    const renderPostProductionOptions = () => {
+        const photoEditingPrices = {
+            basic: { min: 20, max: 50, label: "AED 20 - 50" },
+            advanced: { min: 50, max: 250, label: "AED 50 - 250" },
+            restoration: { min: 100, max: 300, label: "AED 100 - 300" },
+        };
+        const selectedPhotoType = formData.postPhotoEditingType;
+        const photoPriceConfig = photoEditingPrices[selectedPhotoType];
+
+        return (
+            <div className="space-y-4 animate-fade-in-up">
+                <h3 className="font-semibold mb-4 text-lg">Select Post-Production Type</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(postProductionSubServices).map(([id, { name }]) => (
+                        <Button
+                            key={id}
+                            variant="outline"
+                            size="lg"
+                            onClick={() => {
+                                handleInputChange("postSubType", id)
+                                // Reset prices on change
+                                if (id === 'photo') {
+                                    handleInputChange('postPhotoEditingPrice', photoEditingPrices.basic.min);
+                                }
+                            }}
+                            className={cn("h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                                formData.postSubType === id ? 'border-primary bg-accent' : 'border-border'
+                            )}
+                        >
+                            {name}
+                        </Button>
+                    ))}
+                </div>
+
+                {formData.postSubType === 'video' && (
+                    <div className="pt-4 space-y-4 animate-fade-in-up">
+                        <h4 className="font-semibold">Video Editing Details</h4>
+                        <RadioGroup value={formData.postVideoEditingType} onValueChange={(v) => handleInputChange('postVideoEditingType', v)} className="grid md:grid-cols-3 gap-4">
+                             {['perHour', 'perMinute', 'social'].map(type => (
+                                 <div key={type}>
+                                    <RadioGroupItem value={type} id={`post-video-${type}`} className="sr-only" />
+                                    <Label htmlFor={`post-video-${type}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+                                        formData.postVideoEditingType === type ? 'border-primary bg-accent' : 'border-border'
+                                    )}>
+                                        {type === 'perHour' ? 'Per Hour' : type === 'perMinute' ? 'Per Finished Minute' : 'Social Media Edit'}
+                                    </Label>
+                                </div>
+                            ))}
+                        </RadioGroup>
+
+                        {formData.postVideoEditingType === 'perHour' && (
+                            <div>
+                                <Label htmlFor="postVideoEditingHours">Hours (AED 250/hr)</Label>
+                                <Input id="postVideoEditingHours" type="number" value={formData.postVideoEditingHours} onChange={(e) => handleInputChange("postVideoEditingHours", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                            </div>
+                        )}
+                        {formData.postVideoEditingType === 'perMinute' && (
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="postVideoEditingMinutes">Finished Minutes</Label>
+                                    <Input id="postVideoEditingMinutes" type="number" value={formData.postVideoEditingMinutes} onChange={(e) => handleInputChange("postVideoEditingMinutes", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                                </div>
+                                <div>
+                                    <Label>Price Per Minute (AED 500 - 1,500)</Label>
+                                    <div className="flex items-center gap-4 mt-2">
+                                        <Slider
+                                            value={[formData.postVideoEditingPerMinutePrice]}
+                                            onValueChange={(v) => handleInputChange('postVideoEditingPerMinutePrice', v[0])}
+                                            min={500} max={1500} step={50}
+                                        />
+                                        <span className="font-semibold w-24 text-center">{formData.postVideoEditingPerMinutePrice.toLocaleString()} AED</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                         {formData.postVideoEditingType === 'social' && (
+                             <div>
+                                <Label>Price for 15-60s Edit (AED 500 - 1,500)</Label>
+                                <div className="flex items-center gap-4 mt-2">
+                                    <Slider
+                                        value={[formData.postVideoEditingSocialPrice]}
+                                        onValueChange={(v) => handleInputChange('postVideoEditingSocialPrice', v[0])}
+                                        min={500} max={1500} step={50}
+                                    />
+                                    <span className="font-semibold w-24 text-center">{formData.postVideoEditingSocialPrice.toLocaleString()} AED</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {formData.postSubType === 'photo' && (
+                    <div className="pt-4 space-y-4 animate-fade-in-up">
+                        <h4 className="font-semibold">Photo Editing Details</h4>
+                        <RadioGroup value={formData.postPhotoEditingType} onValueChange={(v) => {
+                            const newType = v as keyof typeof photoEditingPrices;
+                            handleInputChange('postPhotoEditingType', newType);
+                            handleInputChange('postPhotoEditingPrice', photoEditingPrices[newType].min);
+                        }} className="grid md:grid-cols-3 gap-4">
+                             {Object.entries(photoEditingPrices).map(([type, { label }]) => (
+                                 <div key={type}>
+                                    <RadioGroupItem value={type} id={`post-photo-${type}`} className="sr-only" />
+                                    <Label htmlFor={`post-photo-${type}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+                                        formData.postPhotoEditingType === type ? 'border-primary bg-accent' : 'border-border'
+                                    )}>
+                                        {type.charAt(0).toUpperCase() + type.slice(1)} Retouching
+                                        <span className="text-xs text-muted-foreground">{label}</span>
+                                    </Label>
+                                </div>
+                            ))}
+                        </RadioGroup>
+                         <div>
+                            <Label htmlFor="postPhotoEditingQuantity">Number of Photos</Label>
+                            <Input id="postPhotoEditingQuantity" type="number" value={formData.postPhotoEditingQuantity} onChange={(e) => handleInputChange("postPhotoEditingQuantity", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                        </div>
+                        <div>
+                            <Label>Price per Photo ({photoPriceConfig.label})</Label>
+                            <div className="flex items-center gap-4 mt-2">
+                                <Slider
+                                    value={[formData.postPhotoEditingPrice]}
+                                    onValueChange={(v) => handleInputChange('postPhotoEditingPrice', v[0])}
+                                    min={photoPriceConfig.min} max={photoPriceConfig.max} step={5}
+                                />
+                                <span className="font-semibold w-24 text-center">{formData.postPhotoEditingPrice.toLocaleString()} AED</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        )
+    };
+
 
     const renderStep = () => {
         switch (step) {
@@ -816,9 +1002,14 @@ export function QuoteCalculator() {
                         {formData.serviceType === 'video' && renderVideoOptions()}
                         {formData.serviceType === 'timelapse' && renderTimelapseOptions()}
                         {formData.serviceType === '360tours' && render360ToursOptions()}
+                        {formData.serviceType === 'post' && renderPostProductionOptions()}
                     </div>
                 );
             case 2:
+                const needsLocation = formData.serviceType !== 'post';
+                if (!needsLocation) {
+                    return <p className="text-muted-foreground text-center py-10 animate-fade-in-up">No location details required for this service.</p>;
+                }
                 return (
                     <div className="space-y-8 animate-fade-in-up">
                         <div>
@@ -864,7 +1055,7 @@ export function QuoteCalculator() {
                 const isTimelapse = formData.serviceType === 'timelapse';
 
                 if (!canHaveSecondCamera && !canHaveAdditionalHours && !isTimelapse) {
-                    return <p className="text-muted-foreground text-center py-10 animate-fade-in-up">No add-ons available for this service.</p>;
+                    return <p className="text-muted-foreground text-center py-10 animate-fade-in-up">No add-ons available for this service combination.</p>;
                 }
 
                 return (
@@ -998,5 +1189,3 @@ export function QuoteCalculator() {
         </Card>
     );
 }
-
-    
