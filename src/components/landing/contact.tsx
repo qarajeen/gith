@@ -103,7 +103,7 @@ export function Contact() {
                         </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90">Send Message</Button>
+                    <Button type="submit" className="w-full">Send Message</Button>
                     </form>
                 </Form>
             </CardContent>

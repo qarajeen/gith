@@ -183,7 +183,7 @@ export function QuoteCalculator() {
     const handlePrint = () => {
         const input = document.getElementById('quote-preview');
         if (input) {
-            html2canvas(input, { scale: 2 }).then((canvas) => {
+            html2canvas(input, { scale: 2, backgroundColor: null }).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -191,9 +191,16 @@ export function QuoteCalculator() {
                 const canvasWidth = canvas.width;
                 const canvasHeight = canvas.height;
                 const ratio = canvasWidth / canvasHeight;
-                const width = pdfWidth - 20;
-                const height = width / ratio;
-                pdf.addImage(imgData, 'PNG', 10, 10, width, height);
+                let width = pdfWidth - 20;
+                let height = width / ratio;
+                 if (height > pdfHeight - 20) {
+                    height = pdfHeight - 20;
+                    width = height * ratio;
+                }
+                const x = (pdfWidth - width) / 2;
+                const y = (pdfHeight - height) / 2;
+
+                pdf.addImage(imgData, 'PNG', x, y, width, height);
                 pdf.save("quote.pdf");
             });
         }
@@ -210,7 +217,7 @@ export function QuoteCalculator() {
                                 {Object.entries(serviceOptions).map(([id, { name, icon }]) => (
                                     <div key={id} onClick={() => handleInputChange("serviceType", id)}
                                          className={cn("p-4 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center",
-                                         formData.serviceType === id ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50')}>
+                                         formData.serviceType === id ? 'border-primary bg-primary/10 text-primary' : 'border-border/60 bg-card hover:border-primary/50')}>
                                         {icon}
                                         <span className="font-medium text-center">{name}</span>
                                     </div>
@@ -223,7 +230,7 @@ export function QuoteCalculator() {
                                 <div className="flex-1">
                                     <RadioGroupItem value="perHour" id="perHour" className="sr-only" />
                                     <Label htmlFor="perHour" className={cn("flex flex-col items-center justify-between rounded-md border-2 p-4 cursor-pointer w-full transition-colors",
-                                        formData.packageType === 'perHour' ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50'
+                                        formData.packageType === 'perHour' ? 'border-primary bg-primary/10 text-primary' : 'border-border/60 bg-card hover:border-primary/50'
                                     )}>
                                         Per Hour
                                     </Label>
@@ -231,7 +238,7 @@ export function QuoteCalculator() {
                                 <div className="flex-1">
                                     <RadioGroupItem value="perProject" id="perProject" className="sr-only" />
                                     <Label htmlFor="perProject" className={cn("flex flex-col items-center justify-between rounded-md border-2 p-4 cursor-pointer w-full transition-colors",
-                                        formData.packageType === 'perProject' ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50'
+                                        formData.packageType === 'perProject' ? 'border-primary bg-primary/10 text-primary' : 'border-border/60 bg-card hover:border-primary/50'
                                     )}>
                                         Per Project
                                     </Label>
@@ -271,8 +278,8 @@ export function QuoteCalculator() {
                                         key={type}
                                         variant="outline"
                                         onClick={() => handleInputChange("locationType", type)}
-                                        className={cn("h-auto py-4",
-                                            formData.locationType === type ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50'
+                                        className={cn("h-auto py-4 border-2",
+                                            formData.locationType === type ? 'border-primary bg-primary/10 text-primary' : 'border-border/60 bg-card hover:border-primary/50'
                                         )}
                                     >
                                         {type}
@@ -288,35 +295,35 @@ export function QuoteCalculator() {
                     <div className="space-y-6">
                         <h3 className="font-semibold text-lg">Add-ons</h3>
                         <div className="space-y-4">
-                            <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalHours > 0 ? 'border-primary bg-accent/50' : 'border-muted')}>
+                            <div className={cn("flex items-center justify-between p-4 border-2 rounded-lg transition-colors", formData.additionalHours > 0 ? 'border-primary bg-primary/10' : 'border-border/60')}>
                                 <Label htmlFor="additionalHours">Additional Hours</Label>
                                 <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                             </div>
                             
                             {(service === 'photography' || service === 'video') && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalCamera > 0 ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                <div className={cn("flex items-center justify-between p-4 border-2 rounded-lg transition-colors", formData.additionalCamera > 0 ? 'border-primary bg-primary/10' : 'border-border/60')}>
                                     <Label htmlFor="additionalCamera">Additional Cameras</Label>
                                     <Input id="additionalCamera" type="number" value={formData.additionalCamera} onChange={(e) => handleInputChange("additionalCamera", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                                 </div>
                             )}
 
                             {(service === 'photography' || service === 'video') && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.drone ? 'border-primary bg-accent/50' : 'border-muted')}>
-                                    <Label htmlFor="drone" className="cursor-pointer">Drone Footage</Label>
+                                <div className={cn("flex items-center justify-between p-4 border-2 rounded-lg transition-colors", formData.drone ? 'border-primary bg-primary/10' : 'border-border/60')}>
+                                    <Label htmlFor="drone" className="cursor-pointer flex-grow">Drone Footage</Label>
                                     <Switch id="drone" checked={formData.drone} onCheckedChange={(v) => handleInputChange('drone', v)} />
                                 </div>
                             )}
 
                             {service === 'video' && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.script ? 'border-primary bg-accent/50' : 'border-muted')}>
-                                    <Label htmlFor="script" className="cursor-pointer">Scriptwriting</Label>
+                                <div className={cn("flex items-center justify-between p-4 border-2 rounded-lg transition-colors", formData.script ? 'border-primary bg-primary/10' : 'border-border/60')}>
+                                    <Label htmlFor="script" className="cursor-pointer flex-grow">Scriptwriting</Label>
                                     <Switch id="script" checked={formData.script} onCheckedChange={(v) => handleInputChange('script', v)} />
                                 </div>
                             )}
 
                             {(service === 'photography' || service === 'video') && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.studio ? 'border-primary bg-accent/50' : 'border-muted')}>
-                                    <Label htmlFor="studio" className="cursor-pointer">Studio Rental</Label>
+                                <div className={cn("flex items-center justify-between p-4 border-2 rounded-lg transition-colors", formData.studio ? 'border-primary bg-primary/10' : 'border-border/60')}>
+                                    <Label htmlFor="studio" className="cursor-pointer flex-grow">Studio Rental</Label>
                                     <Switch id="studio" checked={formData.studio} onCheckedChange={(v) => handleInputChange('studio', v)} />
                                 </div>
                             )}
@@ -348,9 +355,9 @@ export function QuoteCalculator() {
             case 5:
                 return (
                      <div className="printable-area">
-                         <div id="quote-preview" className="p-6 bg-background rounded-lg">
+                         <div id="quote-preview" className="p-6 bg-card rounded-lg border-2 border-border/60">
                             <CardTitle className="font-headline text-2xl text-center pb-4">Your Quote</CardTitle>
-                             <CardDescription className="text-center pb-4">
+                             <CardDescription className="text-center pb-4 min-h-[40px]">
                                 {isGeneratingSummary ? (
                                     <div className="space-y-2">
                                         <Skeleton className="h-4 w-3/4 mx-auto" />
@@ -367,7 +374,7 @@ export function QuoteCalculator() {
                                         <span>{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</span>
                                     </div>
                                 ))}
-                                <Separator className="my-4" />
+                                <Separator className="my-4 bg-border/60" />
                                 <div className="flex justify-between font-bold text-lg">
                                     <span>Total Estimate</span>
                                     <span>{quoteDetails.total.toLocaleString()} AED</span>
@@ -390,36 +397,38 @@ export function QuoteCalculator() {
     const stepTitles = ["Service", "Details", "Add-ons", "Contact", "Quote"];
 
     return (
-        <Card className="max-w-4xl mx-auto w-full bg-card border-border/60">
-            <CardHeader>
-                <div className="flex justify-center items-center mb-4">
-                    {stepTitles.map((title, index) => (
-                        <React.Fragment key={index}>
-                            <div className="flex flex-col items-center">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${index + 1 <= step ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-                                    {index + 1}
+        <section className="container py-20 md:py-32">
+            <Card className="max-w-4xl mx-auto w-full bg-card border-border/60">
+                <CardHeader>
+                    <div className="flex justify-center items-center mb-4">
+                        {stepTitles.map((title, index) => (
+                            <React.Fragment key={index}>
+                                <div className="flex flex-col items-center">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${index + 1 <= step ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                                        {index + 1}
+                                    </div>
+                                    <p className={`mt-2 text-sm font-medium transition-colors ${index + 1 <= step ? 'text-primary' : 'text-muted-foreground'}`}>{title}</p>
                                 </div>
-                                <p className={`mt-2 text-sm font-medium ${index + 1 <= step ? 'text-primary' : 'text-muted-foreground'}`}>{title}</p>
-                            </div>
-                            {index < stepTitles.length - 1 && (
-                                <div className={`flex-1 h-1 mx-2 ${index + 1 < step ? 'bg-primary' : 'bg-muted'}`} />
-                            )}
-                        </React.Fragment>
-                    ))}
-                </div>
-                 <CardTitle className="font-headline text-2xl text-center pt-4">{stepTitles[step-1]}</CardTitle>
-            </CardHeader>
-            <CardContent className="min-h-[300px]">
-                {renderStep()}
-            </CardContent>
-            <CardFooter className="flex justify-between">
-                {step > 1 ? (
-                    <Button variant="outline" onClick={prevStep}><ArrowLeft className="mr-2 h-4 w-4"/> Previous</Button>
-                ) : <div />}
-                {step < 5 && (
-                    <Button onClick={nextStep}>{step === 4 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-4 w-4"/></Button>
-                )}
-            </CardFooter>
-        </Card>
+                                {index < stepTitles.length - 1 && (
+                                    <div className={`flex-1 h-1 mx-2 transition-colors ${index + 1 < step ? 'bg-primary' : 'bg-muted'}`} />
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                    <CardTitle className="font-headline text-2xl md:text-3xl text-center pt-8">{stepTitles[step-1]}</CardTitle>
+                </CardHeader>
+                <CardContent className="min-h-[300px]">
+                    {renderStep()}
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                    {step > 1 ? (
+                        <Button variant="outline" onClick={prevStep}><ArrowLeft className="mr-2 h-4 w-4"/> Previous</Button>
+                    ) : <div />}
+                    {step < 5 && (
+                        <Button onClick={nextStep}>{step === 4 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-4 w-4"/></Button>
+                    )}
+                </CardFooter>
+            </Card>
+        </section>
     );
 }
