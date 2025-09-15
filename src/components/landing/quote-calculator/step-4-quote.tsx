@@ -129,11 +129,7 @@ export function Step4Quote({
              {/* Hidden printable version */}
             <div id="pdf-quote-preview-container" className="hidden">
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
-                    <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
-                        <div>
-                            <h1 className="text-4xl font-bold text-violet-600 mb-0">WRH Enigma</h1>
-                            <p className="text-gray-500">Creative Media Production</p>
-                        </div>
+                    <div className="flex justify-end items-start mb-12 border-b pb-8 border-gray-300">
                         <div className="text-right text-gray-500">
                             <p>+971586583939</p>
                             <p>hi@wrh.ae</p>
