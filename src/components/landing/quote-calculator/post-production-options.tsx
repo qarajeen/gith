@@ -69,8 +69,20 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
 
                     {formData.postVideoEditingType === 'perHour' && (
                         <div>
-                            <Label htmlFor="postVideoEditingHours">Hours (AED 250/hr)</Label>
-                            <Input id="postVideoEditingHours" type="number" value={formData.postVideoEditingHours} onChange={(e) => handleInputChange("postVideoEditingHours", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                            <Label>Hours (AED 250/hr)</Label>
+                             <div className="flex items-center gap-4 mt-2">
+                                <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingHours', Math.max(1, formData.postVideoEditingHours - 1))}><Minus /></Button>
+                                <Slider
+                                    value={[formData.postVideoEditingHours]}
+                                    onValueChange={(v) => handleInputChange('postVideoEditingHours', v[0])}
+                                    min={1}
+                                    max={50}
+                                    step={1}
+                                    className="flex-1"
+                                />
+                                <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingHours', Math.min(50, formData.postVideoEditingHours + 1))}><Plus /></Button>
+                            </div>
+                            <div className="text-center font-semibold w-full mt-2">{formData.postVideoEditingHours} hours</div>
                         </div>
                     )}
                     {formData.postVideoEditingType === 'perMinute' && (
