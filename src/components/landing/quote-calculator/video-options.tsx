@@ -117,7 +117,19 @@ export function VideoOptions({ formData, handleInputChange, validationError }: V
             </div>
             <div>
               <Label htmlFor="videoPromoMultiLoc">Additional Locations (+ AED 2,000 each)</Label>
-              <Input id="videoPromoMultiLoc" type="number" value={formData.videoPromoMultiLoc} onChange={(e) => handleInputChange("videoPromoMultiLoc", Math.max(0, parseInt(e.target.value, 10) || 0))} min="0" className="mt-2" />
+              <div className="flex items-center gap-4 mt-2">
+                <Button variant="outline" size="icon" onClick={() => handleInputChange('videoPromoMultiLoc', Math.max(0, formData.videoPromoMultiLoc - 1))}><Minus /></Button>
+                <Slider
+                  value={[formData.videoPromoMultiLoc]}
+                  onValueChange={(v) => handleInputChange('videoPromoMultiLoc', v[0])}
+                  min={0}
+                  max={10}
+                  step={1}
+                  className="flex-1"
+                />
+                <Button variant="outline" size="icon" onClick={() => handleInputChange('videoPromoMultiLoc', Math.min(10, formData.videoPromoMultiLoc + 1))}><Plus /></Button>
+              </div>
+              <div className="text-center font-semibold w-full mt-2">{formData.videoPromoMultiLoc} locations</div>
             </div>
             <div className={cn("flex items-center justify-between p-4 border rounded-lg", formData.videoPromoConcept ? 'border-primary bg-accent' : 'border-border' )}>
               <Label htmlFor="videoPromoConcept" className="cursor-pointer flex-grow text-base">Advanced Storyboarding & Concept (+ AED 3,000)</Label>
