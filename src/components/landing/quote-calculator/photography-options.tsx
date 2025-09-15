@@ -67,6 +67,10 @@ export function PhotographyOptions({ formData, handleInputChange }: PhotographyO
       {formData.photographySubType === 'real_estate' && (
         <div className="pt-4 space-y-4 animate-fade-in-up">
           <h4 className="font-semibold">Real Estate Details</h4>
+           <div>
+                <Label htmlFor="photoRealEstateProperties">Number of Properties</Label>
+                <Input id="photoRealEstateProperties" type="number" value={formData.photoRealEstateProperties} onChange={(e) => handleInputChange("photoRealEstateProperties", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+            </div>
           <div>
             <Label htmlFor="photoRealEstatePropertyType">Property Type</Label>
             <Select value={formData.photoRealEstatePropertyType} onValueChange={(v) => handleInputChange("photoRealEstatePropertyType", v)}>
@@ -125,18 +129,33 @@ export function PhotographyOptions({ formData, handleInputChange }: PhotographyO
                 </div>
             </div>
              <div>
-                <Label>Price per Photo (AED {priceConfig.min} - {priceConfig.max})</Label>
-                 <div className="flex items-center gap-4 mt-2">
-                     <Slider
-                        value={[isProduct ? formData.photoProductPrice : formData.photoFoodPrice]}
-                        onValueChange={(v) => handleInputChange(isProduct ? "photoProductPrice" : "photoFoodPrice", v[0])}
-                        min={priceConfig.min}
-                        max={priceConfig.max}
-                        step={10}
-                    />
-                    <span className="font-semibold w-24 text-center">{(isProduct ? formData.photoProductPrice : formData.photoFoodPrice).toLocaleString()} AED</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-2">Adjust the price based on complexity, styling, and lighting requirements.</p>
+                <Label>Complexity</Label>
+                 <RadioGroup
+                    value={isProduct ? formData.photoProductComplexity : formData.photoFoodComplexity}
+                    onValueChange={(v) => handleInputChange(isProduct ? 'photoProductComplexity' : 'photoFoodComplexity', v)}
+                    className="flex gap-4 mt-2"
+                >
+                    <div className="flex-1">
+                        <RadioGroupItem value="simple" id={`${isProduct ? 'prod' : 'food'}-simple`} className="sr-only" />
+                        <Label htmlFor={`${isProduct ? 'prod' : 'food'}-simple`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                            (isProduct ? formData.photoProductComplexity : formData.photoFoodComplexity) === 'simple' ? 'border-primary bg-accent' : 'border-border'
+                        )}>
+                            Simple
+                            <span className="text-xs text-muted-foreground">(Basic Lighting)</span>
+                            <span className="font-bold text-sm mt-1">AED {priceConfig.min}/photo</span>
+                        </Label>
+                    </div>
+                     <div className="flex-1">
+                        <RadioGroupItem value="complex" id={`${isProduct ? 'prod' : 'food'}-complex`} className="sr-only" />
+                        <Label htmlFor={`${isProduct ? 'prod' : 'food'}-complex`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                             (isProduct ? formData.photoProductComplexity : formData.photoFoodComplexity) === 'complex' ? 'border-primary bg-accent' : 'border-border'
+                        )}>
+                            Complex
+                            <span className="text-xs text-muted-foreground">(Advanced Styling/Lighting)</span>
+                            <span className="font-bold text-sm mt-1">AED {priceConfig.max}/photo</span>
+                        </Label>
+                    </div>
+                </RadioGroup>
             </div>
           </div>
         </div>

@@ -82,11 +82,14 @@ export type FormData = {
     photoEventHours: number;
     photoRealEstatePropertyType: "studio" | "1-bedroom" | "2-bedroom" | "3-bedroom" | "villa";
     photoRealEstateFurnished: boolean;
+    photoRealEstateProperties: number;
     photoHeadshotsPeople: number;
     photoProductPhotos: number;
     photoProductPrice: number;
+    photoProductComplexity: 'simple' | 'complex';
     photoFoodPhotos: number;
     photoFoodPrice: number;
+    photoFoodComplexity: 'simple' | 'complex';
     photoFashionPrice: number;
     photoWeddingPrice: number;
     

@@ -28,11 +28,14 @@ const initialFormData: FormData = {
     photoEventHours: 1,
     photoRealEstatePropertyType: "studio",
     photoRealEstateFurnished: false,
+    photoRealEstateProperties: 1,
     photoHeadshotsPeople: 1,
     photoProductPhotos: 10,
-    photoProductPrice: 100,
+    photoProductPrice: 100, // This will be set by complexity now
+    photoProductComplexity: 'simple',
     photoFoodPhotos: 10,
-    photoFoodPrice: 150,
+    photoFoodPrice: 150, // This will be set by complexity now
+    photoFoodComplexity: 'simple',
     photoFashionPrice: 1500,
     photoWeddingPrice: 5000,
     
@@ -164,27 +167,30 @@ export function QuoteCalculator() {
                     }
                     break;
                 case 'real_estate':
-                    const prices = {
+                    const propPrices = {
                         studio: [500, 8000],
                         '1-bedroom': [700, 1100],
                         '2-bedroom': [900, 1400],
                         '3-bedroom': [1100, 1600],
                         villa: [1500, 3000],
                     };
-                    basePrice = prices[formData.photoRealEstatePropertyType][formData.photoRealEstateFurnished ? 1 : 0];
-                    itemName += ` (${formData.photoRealEstatePropertyType}, ${formData.photoRealEstateFurnished ? 'Furnished' : 'Unfurnished'})`;
+                    const singlePropPrice = propPrices[formData.photoRealEstatePropertyType][formData.photoRealEstateFurnished ? 1 : 0];
+                    basePrice = singlePropPrice * formData.photoRealEstateProperties;
+                    itemName += ` (${formData.photoRealEstateProperties} x ${formData.photoRealEstatePropertyType}, ${formData.photoRealEstateFurnished ? 'Furnished' : 'Unfurnished'})`;
                     break;
                 case 'headshots':
                     basePrice = formData.photoHeadshotsPeople * 350;
                     itemName += ` (${formData.photoHeadshotsPeople} people)`;
                     break;
                 case 'product':
-                    basePrice = formData.photoProductPhotos * formData.photoProductPrice;
-                    itemName += ` (${formData.photoProductPhotos} photos @ ${formData.photoProductPrice} AED/photo)`;
+                    const productPricePerPhoto = formData.photoProductComplexity === 'simple' ? 100 : 400;
+                    basePrice = formData.photoProductPhotos * productPricePerPhoto;
+                    itemName += ` (${formData.photoProductPhotos} photos @ ${productPricePerPhoto} AED/photo, ${formData.photoProductComplexity})`;
                     break;
                 case 'food':
-                    basePrice = formData.photoFoodPhotos * formData.photoFoodPrice;
-                    itemName += ` (${formData.photoFoodPhotos} photos @ ${formData.photoFoodPrice} AED/photo)`;
+                    const foodPricePerPhoto = formData.photoFoodComplexity === 'simple' ? 150 : 400;
+                    basePrice = formData.photoFoodPhotos * foodPricePerPhoto;
+                    itemName += ` (${formData.photoFoodPhotos} photos @ ${foodPricePerPhoto} AED/photo, ${formData.photoFoodComplexity})`;
                     break;
                 case 'fashion':
                     basePrice = formData.photoFashionPrice;
