@@ -470,13 +470,11 @@ export function QuoteCalculator() {
         const textX = margin;
         
         doc.setFont('helvetica', 'bold');
-        doc.setCharacterSpace(1.5);
         doc.text("WRH", textX, 18);
         
         const wrhWidth = doc.getTextWidth("WRH");
-        doc.setCharacterSpace(0);
         doc.setFont('helvetica', 'normal');
-        doc.text("Production", textX + wrhWidth, 18);
+        doc.text("Production", textX + wrhWidth + 2, 18);
     
         doc.setFontSize(22);
         doc.setFont('helvetica', 'bold');
