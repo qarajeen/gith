@@ -43,7 +43,7 @@ export function Step2Details({ formData, handleInputChange }: Step2DetailsProps)
           </div>
           <div>
             <h3 className="font-semibold mb-4 text-lg">Location Type</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {locationTypeOptions.map((type) => (
                 <Button
                   key={type}
@@ -81,7 +81,7 @@ export function Step2Details({ formData, handleInputChange }: Step2DetailsProps)
           {!isPostProduction && (
             <div>
               <Label className="font-semibold text-base">Delivery Timeline</Label>
-              <RadioGroup value={formData.deliveryTimeline} onValueChange={(v) => handleInputChange("deliveryTimeline", v)} className="flex gap-4 mt-2">
+              <RadioGroup value={formData.deliveryTimeline} onValueChange={(v) => handleInputChange("deliveryTimeline", v)} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                 {[
                   { value: 'standard', label: 'Standard Delivery' },
                   { value: 'rush', label: 'Rush Delivery (24h, +50%)' }

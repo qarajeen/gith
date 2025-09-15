@@ -43,7 +43,7 @@ export function VideoOptions({ formData, handleInputChange, validationError }: V
       {formData.videoSubType === 'event' && (
         <div className="pt-4 space-y-4 animate-fade-in-up">
           <h4 className="font-semibold">Event Details</h4>
-          <RadioGroup value={formData.videoEventDuration} onValueChange={(v) => handleInputChange("videoEventDuration", v)} className="flex gap-4">
+          <RadioGroup value={formData.videoEventDuration} onValueChange={(v) => handleInputChange("videoEventDuration", v)} className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {['perHour', 'halfDay', 'fullDay'].map(dur => (
               <div className="flex-1" key={dur}>
                 <RadioGroupItem value={dur} id={`video-event-${dur}`} className="sr-only" />
@@ -70,11 +70,11 @@ export function VideoOptions({ formData, handleInputChange, validationError }: V
           <div className="space-y-3">
             <div>
               <Label>Extended Filming</Label>
-              <RadioGroup value={formData.videoCorporateExtendedFilming} onValueChange={(v) => handleInputChange("videoCorporateExtendedFilming", v)} className="flex gap-4 mt-2">
+              <RadioGroup value={formData.videoCorporateExtendedFilming} onValueChange={(v) => handleInputChange("videoCorporateExtendedFilming", v)} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
                 {[['none', 'None'], ['halfDay', 'Half-Day (+1,500)'], ['fullDay', 'Full-Day (+3,500)']].map(([val, label]) => (
                   <div className="flex-1" key={val}>
                     <RadioGroupItem value={val} id={`corp-film-${val}`} className="sr-only" />
-                    <Label htmlFor={`corp-film-${val}`} className={cn("flex items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 text-base py-4",
+                    <Label htmlFor={`corp-film-${val}`} className={cn("flex items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 text-base py-4 text-center",
                       formData.videoCorporateExtendedFilming === val ? 'border-primary bg-accent' : 'border-border'
                     )}>
                       {label as string}

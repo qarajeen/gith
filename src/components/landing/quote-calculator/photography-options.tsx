@@ -75,7 +75,7 @@ export function PhotographyOptions({
       {formData.photographySubType === 'event' && (
         <div className="pt-4 space-y-4 animate-fade-in-up">
           <h4 className="font-semibold">Event Details</h4>
-          <RadioGroup value={formData.photoEventDuration} onValueChange={(v) => handleInputChange("photoEventDuration", v)} className="flex gap-4">
+          <RadioGroup value={formData.photoEventDuration} onValueChange={(v) => handleInputChange("photoEventDuration", v)} className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {['perHour', 'halfDay', 'fullDay'].map(dur => (
               <div className="flex-1" key={dur}>
                 <RadioGroupItem value={dur} id={`photo-event-${dur}`} className="sr-only" />
@@ -189,7 +189,7 @@ export function PhotographyOptions({
                  <RadioGroup
                     value={isProduct ? formData.photoProductComplexity : formData.photoFoodComplexity}
                     onValueChange={(v) => handleInputChange(isProduct ? 'photoProductComplexity' : 'photoFoodComplexity', v)}
-                    className="flex gap-4 mt-2"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2"
                 >
                     <div className="flex-1">
                         <RadioGroupItem value="simple" id={`${isProduct ? 'prod' : 'food'}-simple`} className="sr-only" />
