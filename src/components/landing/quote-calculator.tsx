@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useState, useMemo, useCallback } from "react";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, RotateCcw } from "lucide-react";
@@ -445,31 +444,75 @@ export function QuoteCalculator() {
     }, [formData]);
 
     const handlePrint = () => {
-        const input = document.getElementById('pdf-quote-preview');
-        if (input) {
-            html2canvas(input, { scale: 2, backgroundColor: '#ffffff', windowWidth: input.scrollWidth, windowHeight: input.scrollHeight }).then((canvas) => {
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                const canvasWidth = canvas.width;
-                const canvasHeight = canvas.height;
-                const ratio = canvasWidth / canvasHeight;
-                let width = pdfWidth;
-                let height = width / ratio;
+        const doc = new jsPDF();
+        const margin = 15;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const contentWidth = pageWidth - margin * 2;
+        let currentY = 20;
+    
+        // Title
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text(aiProjectTitle, pageWidth / 2, currentY, { align: 'center' });
+        currentY += 10;
+    
+        // Summary
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const summaryLines = doc.splitTextToSize(aiSummary, contentWidth);
+        doc.text(summaryLines, margin, currentY);
+        currentY += summaryLines.length * 5 + 10;
+    
+        // Table Header
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setFillColor(240, 240, 240);
+        doc.rect(margin, currentY, contentWidth, 8, 'F');
+        doc.text('Description', margin + 2, currentY + 6);
+        doc.text('Price', pageWidth - margin - 2, currentY + 6, { align: 'right' });
+        currentY += 12;
+    
+        // Table Items
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        quoteDetails.items.forEach(item => {
+            const price = typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price;
+            const itemLines = doc.splitTextToSize(item.name, contentWidth - 40); // Leave space for price
+            doc.text(itemLines, margin + 2, currentY);
+            doc.text(price, pageWidth - margin - 2, currentY, { align: 'right' });
+            currentY += itemLines.length * 5 + 4; // Add padding
+        });
+    
+        // Separator
+        doc.setDrawColor(200, 200, 200);
+        doc.line(margin, currentY, pageWidth - margin, currentY);
+        currentY += 10;
+    
+        // Total
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Total Estimate', margin, currentY);
+        doc.text(`${quoteDetails.total.toLocaleString()} AED`, pageWidth - margin, currentY, { align: 'right' });
+        currentY += 20;
 
-                if (height > pdfHeight) {
-                    height = pdfHeight;
-                    width = height * ratio;
-                }
+        // Terms
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Terms & Conditions', margin, currentY);
+        currentY += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.text('50% advance payment required to confirm the booking. Balance due upon project completion.', margin, currentY);
+        currentY += 5;
+        doc.text('This quote is valid for 30 days.', margin, currentY);
 
-                const x = (pdfWidth - width) / 2;
-                const y = 0;
+        // Footer
+        const pageHeight = doc.internal.pageSize.getHeight();
+        doc.setFontSize(9);
+        doc.text('Thank you for your business!', pageWidth / 2, pageHeight - 20, { align: 'center' });
+        doc.text('hi@wrh.ae | +971586583939', pageWidth / 2, pageHeight - 15, { align: 'center' });
 
-                pdf.addImage(imgData, 'JPEG', x, y, width, height, undefined, 'FAST');
-                pdf.save("wrh-enigma-quote.pdf");
-            });
-        }
+
+        doc.save("wrh-enigma-quote.pdf");
     };
     
     const renderStep = () => {
