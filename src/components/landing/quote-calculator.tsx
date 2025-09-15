@@ -563,7 +563,7 @@ export function QuoteCalculator() {
                     {renderStep()}
                 </CardContent>
                 {(step > 1 || (step === 1 && formData.serviceType)) && (
-                    <CardFooter className="flex items-center justify-between gap-4 p-6 sm:bg-transparent">
+                    <CardFooter className="flex items-center justify-between gap-4 p-6 bg-transparent">
                         <div className="hidden sm:flex gap-2 w-full sm:w-auto">
                             {step > 1 && (
                                 <Button variant="outline" onClick={prevStep} size="lg" className="w-full sm:w-auto"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
@@ -573,12 +573,12 @@ export function QuoteCalculator() {
                             )}
                         </div>
         
-                        <div className="fixed bottom-0 left-0 right-0 p-4 sm:static sm:p-0 flex items-center justify-center sm:justify-end gap-2 w-full sm:w-auto z-20">
+                        <div className="fixed bottom-0 left-0 right-0 p-4 sm:static sm:p-0 flex items-center justify-center gap-2 w-full sm:w-auto z-20">
                              {step > 1 && (
-                                <Button variant="outline" onClick={prevStep} size="lg" className="sm:hidden shadow-lg flex-1"><ArrowLeft className="mr-2 h-5 w-5"/> Back</Button>
+                                <Button variant="outline" onClick={prevStep} size="lg" className="flex-1 sm:hidden shadow-lg"><ArrowLeft className="mr-2 h-5 w-5"/> Back</Button>
                             )}
                             {step < 4 ? (
-                                <Button onClick={nextStep} size="lg" className="sm:w-auto shadow-lg sm:shadow-none flex-1">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                                <Button onClick={nextStep} size="lg" className={cn("btn-glow-primary sm:w-auto shadow-lg sm:shadow-none flex-1", step === 1 && 'sm:ml-auto')}>{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
                             ) : (
                                 <Button onClick={handleReset} size="lg" className="w-full sm:w-auto shadow-lg sm:shadow-none"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
                             )}

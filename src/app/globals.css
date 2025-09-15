@@ -66,3 +66,23 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .card {
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  .card:hover,
+  .card-glowing {
+     box-shadow: 0 0 25px 0px hsla(var(--primary), 0.2);
+  }
+}
+
+@layer utilities {
+  .btn-glow-primary {
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  .btn-glow-primary:hover,
+  .btn-glow-primary:focus-visible {
+    box-shadow: 0 0 15px 2px hsla(var(--primary), 0.4);
+  }
+}
