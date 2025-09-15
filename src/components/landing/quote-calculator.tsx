@@ -485,6 +485,29 @@ export function QuoteCalculator() {
         doc.text(`${quoteDetails.total.toLocaleString()} AED`, pageWidth - margin, currentY, { align: 'right' });
         currentY += 20;
 
+        // Contact Info
+        if (formData.name || formData.email || formData.phone) {
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Quote prepared for:', margin, currentY);
+            currentY += 7;
+
+            doc.setFont('helvetica', 'normal');
+            if (formData.name) {
+                doc.text(formData.name, margin, currentY);
+                currentY += 7;
+            }
+            if (formData.email) {
+                doc.text(formData.email, margin, currentY);
+                currentY += 7;
+            }
+            if (formData.phone) {
+                doc.text(formData.phone, margin, currentY);
+                currentY += 7;
+            }
+            currentY += 5; // Extra space after contact info
+        }
+
         // Terms
         doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
