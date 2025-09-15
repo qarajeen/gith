@@ -518,11 +518,11 @@ export function QuoteCalculator() {
     const stepTitles = ["Service", "Details", "Contact", "Quote"];
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-        <div className="md:col-span-1 md:sticky top-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-1 lg:sticky top-8">
             <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
         </div>
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2">
             <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10">
                 <CardHeader>
                     <div className="flex justify-center items-center mb-4">
