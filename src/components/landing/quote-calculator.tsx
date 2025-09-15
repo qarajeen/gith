@@ -568,7 +568,7 @@ export function QuoteCalculator() {
                 </CardFooter>
             </Card>
         </div>
-        <div className="lg:col-span-1 order-1 lg:order-2 lg:sticky top-8">
+        <div className="lg:col-span-1 order-1 lg:order-2">
             <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
         </div>
       </div>
