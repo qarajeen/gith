@@ -22,6 +22,8 @@ const serviceOptions = {
     timelapse: { name: "Time Lapse", basePrice: 250, perHour: 250, perProject: 2500, icon: <Hourglass className="w-8 h-8 mb-2" /> },
 };
 
+const locationTypeOptions = ["Indoor", "Outdoor", "Studio", "Exhibition Center", "Hotel", "Other"];
+
 const addonOptions = {
     additionalHours: { name: "Additional Hours", price: 100, type: 'perUnit' },
     additionalCamera: { name: "Additional Camera", price: 500, type: 'perUnit' },
@@ -181,8 +183,21 @@ export function QuoteCalculator() {
                             </Select>
                         </div>
                         <div>
-                            <Label htmlFor="locationType" className="font-semibold text-lg">Location Type</Label>
-                            <Input id="locationType" placeholder="e.g., Indoor, Outdoor, Studio" value={formData.locationType} onChange={(e) => handleInputChange("locationType", e.target.value)} className="mt-2"/>
+                            <h3 className="font-semibold mb-4 text-lg">Location Type</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {locationTypeOptions.map((type) => (
+                                    <Button
+                                        key={type}
+                                        variant="outline"
+                                        onClick={() => handleInputChange("locationType", type)}
+                                        className={cn("h-auto py-4",
+                                            formData.locationType === type ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50'
+                                        )}
+                                    >
+                                        {type}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 );
