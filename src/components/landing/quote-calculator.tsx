@@ -83,6 +83,10 @@ export function QuoteCalculator() {
     const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
     const { toast } = useToast();
 
+    React.useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [step]);
+
     const handleInputChange = useCallback((field: keyof FormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
         // Reset AI summary if selections change
