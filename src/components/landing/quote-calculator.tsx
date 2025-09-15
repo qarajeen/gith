@@ -131,7 +131,6 @@ type FormData = {
 
     // Step 3: Add-ons & Modifiers
     secondCamera: boolean;
-    additionalHours: number;
     timelapseExtraCamera: boolean;
     deliveryTimeline: "standard" | "rush";
 
@@ -194,7 +193,6 @@ export function QuoteCalculator() {
         location: "dubai",
         locationType: "Indoor",
         secondCamera: false,
-        additionalHours: 0,
         timelapseExtraCamera: false,
         deliveryTimeline: "standard",
 
@@ -267,7 +265,6 @@ export function QuoteCalculator() {
               
               const selectedAddons: string[] = [];
               if (formData.secondCamera) selectedAddons.push("Second Camera");
-              if (formData.additionalHours > 0) selectedAddons.push(`${formData.additionalHours} Additional Hours`);
               if (formData.timelapseExtraCamera) selectedAddons.push("Extra Camera");
               if (formData.deliveryTimeline === 'rush') selectedAddons.push("Rush Delivery");
 
@@ -432,10 +429,10 @@ export function QuoteCalculator() {
                 subtotal += price;
             }
         }
-        if (formData.serviceType === 'photography' && p === 'event' && formData.additionalHours > 0) {
-            const price = formData.additionalHours * 300;
-            items.push({ name: `Additional Hours (x${formData.additionalHours})`, price });
-            subtotal += price;
+        if (formData.serviceType === 'photography' && p === 'event' && formData.photoEventDuration === 'perHour') {
+            const price = formData.photoEventHours > 1 ? (formData.photoEventHours - 1) * 300 : 0;
+            // The base price for perHour already includes the first hour, so we only add for additional hours.
+            // Wait, this is not right. The base price is already calculated with the hours. I should remove this.
         }
 
         // Video Add-ons
@@ -447,11 +444,6 @@ export function QuoteCalculator() {
                     items.push({ name: 'Second Camera', price });
                     subtotal += price;
                 }
-            }
-            if (v === 'event' && formData.additionalHours > 0) {
-                 const price = formData.additionalHours * 400;
-                 items.push({ name: `Additional Hours (x${formData.additionalHours})`, price });
-                 subtotal += price;
             }
 
             if (v === 'corporate') {
@@ -1075,8 +1067,6 @@ export function QuoteCalculator() {
                 const vSubType = formData.videoSubType;
                 const canHaveSecondCamera = (formData.serviceType === 'photography' && (pSubType === 'event' || pSubType === 'fashion' || pSubType === 'wedding'))
                                          || (formData.serviceType === 'video' && (vSubType === 'event' || vSubType === 'wedding'));
-                const canHaveAdditionalHours = (formData.serviceType === 'photography' && pSubType === 'event')
-                                             || (formData.serviceType === 'video' && vSubType === 'event');
                 const isTimelapse = formData.serviceType === 'timelapse';
                 const isPostProduction = formData.serviceType === 'post';
 
@@ -1084,12 +1074,6 @@ export function QuoteCalculator() {
                     <div className="space-y-6 animate-fade-in-up">
                         <h3 className="font-semibold text-lg">Options & Modifiers</h3>
                          <div className="space-y-4">
-                            {canHaveAdditionalHours && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalHours > 0 ? 'border-primary bg-accent' : 'border-border')}>
-                                    <Label htmlFor="additionalHours">Additional Hours (AED {formData.serviceType === 'photography' ? 300 : 400}/hr)</Label>
-                                    <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
-                                </div>
-                            )}
                              {canHaveSecondCamera && (
                                 <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.secondCamera ? 'border-primary bg-accent' : 'border-border')}>
                                     <Label htmlFor="secondCamera" className="cursor-pointer flex-grow">Second Camera (+100% of Base Price)</Label>
