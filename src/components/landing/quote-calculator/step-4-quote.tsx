@@ -127,10 +127,14 @@ export function Step4Quote({
             </div>
             <div id="pdf-quote-preview-container" style={{ position: 'absolute', left: '-9999px', top: 'auto', width: '1200px' }}>
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-full text-lg font-sans">
-                     
-                    <div className="text-center mt-8 mb-12">
-                        <h2 className="text-5xl font-bold mb-4 text-violet-600">{aiProjectTitle}</h2>
-                        <p className="text-gray-600 text-xl">{aiSummary}</p>
+                    <div className="flex justify-between items-start mb-12">
+                        <div className="w-1/2">
+                            <h2 className="text-5xl font-bold mb-4 text-violet-600">{aiProjectTitle}</h2>
+                            <p className="text-gray-600 text-xl">{aiSummary}</p>
+                        </div>
+                        <div className="w-1/2 text-right">
+                             <h3 className="text-4xl font-bold text-black">Estimated Quote</h3>
+                        </div>
                     </div>
                     
                     <div className="space-y-3 mb-12">
