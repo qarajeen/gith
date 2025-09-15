@@ -574,6 +574,9 @@ export function QuoteCalculator() {
                         </div>
         
                         <div className="fixed bottom-4 right-4 sm:static flex items-center gap-4 w-auto z-20">
+                             {step > 1 && (
+                                <Button variant="outline" onClick={prevStep} size="lg" className="w-full sm:w-auto shadow-lg sm:shadow-none sm:hidden"><ArrowLeft className="mr-2 h-5 w-5"/> Back</Button>
+                            )}
                             {step < 4 ? (
                                 <Button onClick={nextStep} size="lg" className="w-full sm:w-auto shadow-lg sm:shadow-none">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
                             ) : (
