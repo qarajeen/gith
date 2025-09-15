@@ -130,12 +130,9 @@ export function Step4Quote({
             <div id="pdf-quote-preview-container" className="hidden">
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
                     <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
-                        <div className="flex items-center gap-4">
-                           <Image src="/logo.svg" alt="logo" width="48" height="48" />
-                            <div>
-                                <h1 className="text-4xl font-bold text-violet-600 mb-0">WRH Enigma</h1>
-                                <p className="text-gray-500">Creative Media Production</p>
-                            </div>
+                        <div>
+                            <h1 className="text-4xl font-bold text-violet-600 mb-0">WRH Enigma</h1>
+                            <p className="text-gray-500">Creative Media Production</p>
                         </div>
                         <div className="text-right text-gray-500">
                             <p>+971586583939</p>
@@ -158,7 +155,7 @@ export function Step4Quote({
                     </div>
                      
                     <div className="mb-12">
-                        <h2 className="text-2xl font-bold mb-1 text-gray-900">{aiProjectTitle}</h2>
+                        <h2 className="text-2xl font-bold mb-1 text-violet-600">{aiProjectTitle}</h2>
                         <p className="text-gray-500">{aiSummary}</p>
                     </div>
                     
@@ -176,7 +173,7 @@ export function Step4Quote({
                     </div>
 
                     <div className="flex justify-end mb-16">
-                        <div className="w-1/2">
+                        <div className="w-1/2 ml-auto">
                             <div className="flex justify-between py-4 border-b border-gray-200">
                                 <span className="text-gray-500">Subtotal</span>
                                 <span className="font-medium text-gray-800">{quoteDetails.items.reduce((acc, item) => acc + (typeof item.price === 'number' ? item.price : 0), 0).toLocaleString()} AED</span>
@@ -188,7 +185,7 @@ export function Step4Quote({
                         </div>
                     </div>
 
-                    <div className="text-center text-gray-500 text-sm">
+                    <div className="text-center text-gray-500 text-sm mt-12 pt-8 border-t border-gray-200">
                         <h3 className="font-semibold mb-2 text-gray-800">Terms & Conditions</h3>
                         <p>50% advance payment required to confirm the booking. Balance due upon project completion.</p>
                         <p>This quote is valid for 30 days.</p>
