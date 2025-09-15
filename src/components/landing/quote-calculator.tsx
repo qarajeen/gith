@@ -562,7 +562,7 @@ export function QuoteCalculator() {
                 <CardContent className="min-h-[350px] sm:pb-6">
                     {renderStep()}
                 </CardContent>
-                {step > 1 && (
+                {(step > 1 || (step === 1 && formData.serviceType)) && (
                     <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 fixed bottom-0 left-0 w-full bg-card border-t border-border p-4 sm:static sm:border-t-0 sm:p-6 sm:bg-transparent z-10">
                         <div className="flex gap-2 w-full sm:w-auto">
                             {step > 1 && (
