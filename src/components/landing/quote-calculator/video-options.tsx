@@ -108,7 +108,7 @@ export function VideoOptions({ formData, handleInputChange }: VideoOptionsProps)
           <h4 className="font-semibold">Promotional Video Details (Foundation Package: AED 8,000)</h4>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-4 border rounded-lg">
-              <Label htmlFor="videoPromoFullDay">Full-Day Production (+ AED 5,000)</Label>
+              <Label htmlFor="videoPromoFullDay">Additional Full-Day Production (+ AED 5,000)</Label>
               <Switch id="videoPromoFullDay" checked={formData.videoPromoFullDay} onCheckedChange={(v) => handleInputChange("videoPromoFullDay", v)} />
             </div>
             <div>
