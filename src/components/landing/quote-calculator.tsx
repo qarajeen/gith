@@ -1041,8 +1041,8 @@ export function QuoteCalculator() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="relative">
-                                 <Button variant="ghost" onClick={handleBackToServices} className="absolute -top-4 -left-2 text-muted-foreground">
+                            <div>
+                                 <Button variant="ghost" onClick={handleBackToServices} className="mb-4 text-muted-foreground px-0 hover:bg-transparent">
                                     <ChevronLeft className="mr-2 h-4 w-4" />
                                     Back to Services
                                 </Button>
