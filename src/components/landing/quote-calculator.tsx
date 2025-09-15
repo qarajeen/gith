@@ -578,7 +578,7 @@ export function QuoteCalculator() {
                                 <Button variant="outline" onClick={prevStep} size="lg" className="shadow-lg sm:shadow-none sm:hidden w-[calc(50%-8px)]"><ArrowLeft className="mr-2 h-5 w-5"/> Back</Button>
                             )}
                             {step < 4 ? (
-                                <Button onClick={nextStep} size="lg" className="w-full sm:w-auto shadow-lg sm:shadow-none">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                                <Button onClick={nextStep} size="lg" className="w-[calc(50%-8px)] sm:w-auto shadow-lg sm:shadow-none">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
                             ) : (
                                 <Button onClick={handleReset} size="lg" className="w-full sm:w-auto shadow-lg sm:shadow-none"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
                             )}
