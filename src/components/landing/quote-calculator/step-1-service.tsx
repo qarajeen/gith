@@ -19,11 +19,11 @@ type Step1ServiceProps = {
 };
 
 const serviceOptions: ServiceOptions = {
-    photography: { name: "Photography", icon: <Camera className="w-8 h-8 mb-2" /> },
-    video: { name: "Video Production", icon: <Video className="w-8 h-8 mb-2" /> },
-    post: { name: "Post Production", icon: <Wand2 className="w-8 h-8 mb-2" /> },
-    '360tours': { name: "360 Tours", icon: <Orbit className="w-8 h-8 mb-2" /> },
-    timelapse: { name: "Time Lapse", icon: <Hourglass className="w-8 h-8 mb-2" /> },
+    photography: { name: "Photography", icon: <Camera className="w-10 h-10 mb-3" /> },
+    video: { name: "Video Production", icon: <Video className="w-10 h-10 mb-3" /> },
+    post: { name: "Post Production", icon: <Wand2 className="w-10 h-10 mb-3" /> },
+    '360tours': { name: "360 Tours", icon: <Orbit className="w-10 h-10 mb-3" /> },
+    timelapse: { name: "Time Lapse", icon: <Hourglass className="w-10 h-10 mb-3" /> },
 };
 
 export function Step1Service({ 
@@ -79,12 +79,12 @@ export function Step1Service({
                 key={id}
                 onClick={() => handleInputChange("serviceType", id as keyof ServiceOptions)}
                 className={cn(
-                  "p-4 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center hover:bg-accent/50",
+                  "p-6 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center hover:bg-accent/50",
                   formData.serviceType === id ? 'border-primary bg-accent text-primary-foreground' : 'border-border'
                 )}
               >
                 {icon}
-                <span className="font-medium text-center">{name}</span>
+                <span className="font-semibold text-center text-base">{name}</span>
               </div>
             ))}
           </div>
