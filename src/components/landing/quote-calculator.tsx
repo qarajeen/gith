@@ -533,7 +533,7 @@ export function QuoteCalculator() {
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-2 order-last lg:order-first">
+        <div className="lg:col-span-2 w-full">
             <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10 relative">
                 <CardHeader>
                     <div className="flex justify-center items-center mb-4">
@@ -582,7 +582,7 @@ export function QuoteCalculator() {
                 </CardFooter>
             </Card>
         </div>
-        <div className="lg:col-span-1 order-first lg:order-last">
+        <div className="hidden lg:block lg:col-span-1">
             <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
         </div>
       </div>
