@@ -443,96 +443,101 @@ export function QuoteCalculator() {
 
     const handlePrint = () => {
         const doc = new jsPDF();
-        const margin = 15;
+        const pageHeight = doc.internal.pageSize.getHeight();
         const pageWidth = doc.internal.pageSize.getWidth();
-        const contentWidth = pageWidth - margin * 2;
-        let currentY = 20;
-
-        // Title
+        const margin = 15;
+        let currentY = 0;
+    
+        // Colors
+        const primaryColor = [124, 40, 251]; // approx hsl(262, 84%, 59%)
+        const lightGray = [248, 248, 250];
+        const darkGray = [100, 100, 100];
+        const black = [0, 0, 0];
+    
+        // -- Header --
+        doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.rect(0, 0, pageWidth, 30, 'F');
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text("WRH Production", margin, 18);
+    
         doc.setFontSize(22);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Your Project Quote", pageWidth / 2, currentY, { align: 'center' });
-        currentY += 10;
+        doc.text("QUOTE", pageWidth - margin, 18, { align: 'right' });
+        currentY = 45;
     
-        // Summary
+        // -- Client & Quote Info --
         doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
-        const summaryLines = doc.splitTextToSize("Here is a summary of your quote selections.", contentWidth);
-        doc.text(summaryLines, margin, currentY);
-        currentY += summaryLines.length * 5 + 10;
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(black[0], black[1], black[2]);
+        doc.text("BILLED TO", margin, currentY);
     
-        // Table Header
+        const quoteDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const quoteInfoX = pageWidth / 2 + 10;
+        doc.text("QUOTE #", quoteInfoX, currentY);
+        doc.text("DATE", quoteInfoX, currentY + 7);
+    
+        doc.setFont('helvetica', 'normal');
+        if (formData.name) doc.text(formData.name, margin, currentY + 7);
+        if (formData.email) doc.text(formData.email, margin, currentY + 14);
+        if (formData.phone) doc.text(formData.phone, margin, currentY + 21);
+    
+        doc.text("001", quoteInfoX + 30, currentY);
+        doc.text(quoteDate, quoteInfoX + 30, currentY + 7);
+    
+        currentY += 35;
+    
+        // -- Table Header --
+        doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
+        doc.rect(margin, currentY, pageWidth - (margin * 2), 10, 'F');
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.setFillColor(240, 240, 240);
-        doc.rect(margin, currentY, contentWidth, 8, 'F');
-        doc.text('Description', margin + 2, currentY + 6);
-        doc.text('Price', pageWidth - margin - 2, currentY + 6, { align: 'right' });
-        currentY += 12;
+        doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+        doc.text('DESCRIPTION', margin + 5, currentY + 7);
+        doc.text('AMOUNT', pageWidth - margin - 5, currentY + 7, { align: 'right' });
+        currentY += 15;
     
-        // Table Items
+        // -- Table Items --
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
+        doc.setTextColor(black[0], black[1], black[2]);
         quoteDetails.items.forEach(item => {
+            if (currentY > pageHeight - 50) { // Add new page if content overflows
+                doc.addPage();
+                currentY = margin;
+            }
             const price = typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price;
-            const itemLines = doc.splitTextToSize(item.name, contentWidth - 40); // Leave space for price
-            doc.text(itemLines, margin + 2, currentY);
-            doc.text(price, pageWidth - margin - 2, currentY, { align: 'right' });
-            currentY += itemLines.length * 5 + 4; // Add padding
+            const itemLines = doc.splitTextToSize(item.name, (pageWidth / 2));
+            doc.text(itemLines, margin + 5, currentY);
+            doc.text(price, pageWidth - margin - 5, currentY, { align: 'right' });
+            currentY += (itemLines.length * 5) + 5;
         });
     
-        // Separator
-        doc.setDrawColor(200, 200, 200);
-        doc.line(margin, currentY, pageWidth - margin, currentY);
-        currentY += 10;
-    
-        // Total
+        // -- Total Section --
+        const totalSectionY = Math.max(currentY + 10, pageHeight - 80);
+        doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
+        doc.rect(pageWidth / 2, totalSectionY, pageWidth / 2, 20, 'F');
+        
         doc.setFontSize(14);
         doc.setFont('helvetica', 'bold');
-        doc.text('Total Estimate', margin, currentY);
-        doc.text(`${quoteDetails.total.toLocaleString()} AED`, pageWidth - margin, currentY, { align: 'right' });
-        currentY += 20;
-
-        // Contact Info
-        if (formData.name || formData.email || formData.phone) {
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Quote prepared for:', margin, currentY);
-            currentY += 7;
-
-            doc.setFont('helvetica', 'normal');
-            if (formData.name) {
-                doc.text(formData.name, margin, currentY);
-                currentY += 7;
-            }
-            if (formData.email) {
-                doc.text(formData.email, margin, currentY);
-                currentY += 7;
-            }
-            if (formData.phone) {
-                doc.text(formData.phone, margin, currentY);
-                currentY += 7;
-            }
-            currentY += 5; // Extra space after contact info
-        }
-
-        // Terms
+        doc.setTextColor(black[0], black[1], black[2]);
+        doc.text('Total Estimate', pageWidth / 2 + 10, totalSectionY + 13);
+        doc.text(`${quoteDetails.total.toLocaleString()} AED`, pageWidth - margin, totalSectionY + 13, { align: 'right' });
+    
+        // -- Footer --
+        const footerY = pageHeight - 25;
+        doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.rect(0, footerY, pageWidth, 25, 'F');
         doc.setFontSize(9);
+        doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
-        doc.text('Terms & Conditions', margin, currentY);
-        currentY += 5;
+        doc.text('Terms & Conditions', margin, footerY + 8);
+        doc.text('Contact', pageWidth - margin, footerY + 8, { align: 'right' });
+    
         doc.setFont('helvetica', 'normal');
-        doc.text('50% advance payment required to confirm the booking. Balance due upon project completion.', margin, currentY);
-        currentY += 5;
-        doc.text('This quote is valid for 30 days.', margin, currentY);
-
-        // Footer
-        const pageHeight = doc.internal.pageSize.getHeight();
-        doc.setFontSize(9);
-        doc.text('Thank you for your business!', pageWidth / 2, pageHeight - 20, { align: 'center' });
-        doc.text('hi@wrh.ae | +971586583939', pageWidth / 2, pageHeight - 15, { align: 'center' });
-
-
+        doc.text('50% advance payment required to confirm the booking. Quote valid for 30 days.', margin, footerY + 15);
+        doc.text('hi@wrh.ae | +971586583939', pageWidth - margin, footerY + 15, { align: 'right' });
+    
         doc.save("wrh quote.pdf");
     };
     
