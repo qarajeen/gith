@@ -49,6 +49,13 @@ const videoSubServices = {
     wedding: { name: "Wedding Videography" },
 };
 
+// Time-Lapse Sub-Services
+const timelapseSubServices = {
+    short: { name: 'Short Term (1-10 hours)' },
+    long: { name: 'Long Term (Days/Weeks)' },
+    extreme: { name: 'Extreme Long Term (Months/Years)' },
+};
+
 const locationTypeOptions = ["Indoor", "Outdoor", "Studio", "Exhibition Center", "Hotel", "Other"];
 
 type FormData = {
@@ -56,6 +63,7 @@ type FormData = {
     serviceType: keyof typeof serviceOptions | "";
     photographySubType: keyof typeof photographySubServices | "";
     videoSubType: keyof typeof videoSubServices | "";
+    timelapseSubType: keyof typeof timelapseSubServices | "";
 
     // Step 1.5: Photography Details
     photoEventDuration: "perHour" | "halfDay" | "fullDay";
@@ -86,6 +94,9 @@ type FormData = {
     videoRealEstatePropertyType: "studio" | "1-bedroom" | "2-bedroom" | "3-bedroom" | "villa";
     videoWeddingPrice: number;
 
+    // Step 1.7: Time-Lapse Details
+    timelapsePrice: number;
+
     // Step 2: Location
     location: string;
     locationType: string;
@@ -93,6 +104,7 @@ type FormData = {
     // Step 3: Add-ons
     secondCamera: boolean;
     additionalHours: number;
+    timelapseExtraCamera: boolean;
 
     // Step 4: Contact
     name: string;
@@ -107,6 +119,7 @@ export function QuoteCalculator() {
         serviceType: "",
         photographySubType: "",
         videoSubType: "",
+        timelapseSubType: "",
         
         photoEventDuration: "perHour",
         photoEventHours: 1,
@@ -135,10 +148,14 @@ export function QuoteCalculator() {
         videoRealEstatePropertyType: "studio",
         videoWeddingPrice: 3000,
 
+        timelapsePrice: 2000,
+
         location: "dubai",
         locationType: "Indoor",
         secondCamera: false,
         additionalHours: 0,
+        timelapseExtraCamera: false,
+
         name: "",
         email: "",
         phone: "",
@@ -165,6 +182,10 @@ export function QuoteCalculator() {
              toast({ title: "Video Type Required", description: "Please select a video sub-type to continue.", variant: "destructive" });
              return;
         }
+        if (step === 1 && formData.serviceType === 'timelapse' && formData.timelapseSubType === '') {
+            toast({ title: "Time-Lapse Type Required", description: "Please select a project length to continue.", variant: "destructive" });
+            return;
+       }
         if (step === 4) {
             if (!formData.name || !formData.email || !formData.phone) {
                 toast({ title: "Missing Information", description: "Please fill out your name, email, and phone number.", variant: "destructive" });
@@ -186,11 +207,14 @@ export function QuoteCalculator() {
                   subTypeName = photographySubServices[formData.photographySubType].name;
               } else if (formData.serviceType === 'video' && formData.videoSubType) {
                   subTypeName = videoSubServices[formData.videoSubType].name;
+              } else if (formData.serviceType === 'timelapse' && formData.timelapseSubType) {
+                  subTypeName = timelapseSubServices[formData.timelapseSubType].name;
               }
               
               const selectedAddons: string[] = [];
               if (formData.secondCamera) selectedAddons.push("Second Camera");
               if (formData.additionalHours > 0) selectedAddons.push(`${formData.additionalHours} Additional Hours`);
+              if (formData.timelapseExtraCamera) selectedAddons.push("Extra Camera");
               
               const input = {
                 serviceType: `${serviceName}${subTypeName ? `: ${subTypeName}` : ''}`,
@@ -307,8 +331,12 @@ export function QuoteCalculator() {
                     itemName += ' (Package)';
                     break;
             }
-        } else if (formData.serviceType && !['photography', 'video'].includes(formData.serviceType)) {
-            const otherServicePrices = { post: 1000, '360tours': 4000, timelapse: 2500 };
+        } else if (formData.serviceType === 'timelapse' && formData.timelapseSubType) {
+            const subTypeName = timelapseSubServices[formData.timelapseSubType].name;
+            itemName = `${serviceName}: ${subTypeName}`;
+            basePrice = formData.timelapsePrice;
+        } else if (formData.serviceType && !['photography', 'video', 'timelapse'].includes(formData.serviceType)) {
+            const otherServicePrices = { post: 1000, '360tours': 4000 };
             basePrice = otherServicePrices[formData.serviceType as keyof typeof otherServicePrices] || 0;
         }
 
@@ -363,6 +391,15 @@ export function QuoteCalculator() {
                 if (formData.videoPromoGraphics) { total += 4000; items.push({ name: 'Advanced 2D/3D Motion Graphics', price: 4000 }); }
                 if (formData.videoPromoSound) { total += 3000; items.push({ name: 'Custom Sound Design & Mixing', price: 3000 }); }
                 if (formData.videoPromoMakeup) { total += 2000; items.push({ name: 'Hair & Makeup Artist', price: 2000 }); }
+            }
+        }
+
+        // Time-Lapse Add-ons
+        if (formData.serviceType === 'timelapse') {
+            if (formData.timelapseExtraCamera) {
+                const price = basePrice; // +100%
+                items.push({ name: 'Extra Camera', price });
+                total += price;
             }
         }
 
@@ -661,6 +698,57 @@ export function QuoteCalculator() {
         </div>
     );
 
+    const renderTimelapseOptions = () => {
+        const timelapsePrices = {
+            short: { min: 2000, max: 4000, label: "AED 2,000 - 4,000" },
+            long: { min: 4000, max: 8000, label: "AED 4,000 - 8,000" },
+            extreme: { min: 8000, max: 20000, label: "AED 8,000 - 20,000+" },
+        };
+        const selected = formData.timelapseSubType as keyof typeof timelapsePrices;
+        const priceConfig = selected ? timelapsePrices[selected] : null;
+
+        return (
+            <div className="space-y-4 animate-fade-in-up">
+                <h3 className="font-semibold mb-4 text-lg">Select Project Length</h3>
+                <RadioGroup value={formData.timelapseSubType} onValueChange={(v) => {
+                    const newSubType = v as keyof typeof timelapsePrices;
+                    handleInputChange("timelapseSubType", newSubType);
+                    handleInputChange("timelapsePrice", timelapsePrices[newSubType].min);
+                }} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {Object.entries(timelapseSubServices).map(([id, { name }]) => (
+                        <div key={id}>
+                            <RadioGroupItem value={id} id={`tl-${id}`} className="sr-only" />
+                            <Label htmlFor={`tl-${id}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+                                formData.timelapseSubType === id ? 'border-primary bg-accent' : 'border-border'
+                            )}>
+                                {name}
+                            </Label>
+                        </div>
+                    ))}
+                </RadioGroup>
+
+                {formData.timelapseSubType && priceConfig && (
+                    <div className="pt-4 space-y-4 animate-fade-in-up">
+                        <h4 className="font-semibold">Project Base Price</h4>
+                        <div>
+                            <Label>({priceConfig.label})</Label>
+                            <div className="flex items-center gap-4 mt-2">
+                                <Slider
+                                    value={[formData.timelapsePrice]}
+                                    onValueChange={(v) => handleInputChange('timelapsePrice', v[0])}
+                                    min={priceConfig.min}
+                                    max={priceConfig.max}
+                                    step={100}
+                                />
+                                <span className="font-semibold w-24 text-center">{formData.timelapsePrice.toLocaleString()} AED</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     const renderStep = () => {
         switch (step) {
             case 1:
@@ -681,6 +769,7 @@ export function QuoteCalculator() {
                         </div>
                         {formData.serviceType === 'photography' && renderPhotographyOptions()}
                         {formData.serviceType === 'video' && renderVideoOptions()}
+                        {formData.serviceType === 'timelapse' && renderTimelapseOptions()}
                     </div>
                 );
             case 2:
@@ -726,8 +815,9 @@ export function QuoteCalculator() {
                                          || (formData.serviceType === 'video' && (vSubType === 'event' || vSubType === 'wedding'));
                 const canHaveAdditionalHours = (formData.serviceType === 'photography' && pSubType === 'event')
                                              || (formData.serviceType === 'video' && vSubType === 'event');
+                const isTimelapse = formData.serviceType === 'timelapse';
 
-                if (!canHaveSecondCamera && !canHaveAdditionalHours) {
+                if (!canHaveSecondCamera && !canHaveAdditionalHours && !isTimelapse) {
                     return <p className="text-muted-foreground text-center py-10 animate-fade-in-up">No add-ons available for this service.</p>;
                 }
 
@@ -745,6 +835,12 @@ export function QuoteCalculator() {
                                 <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.secondCamera ? 'border-primary bg-accent' : 'border-border')}>
                                     <Label htmlFor="secondCamera" className="cursor-pointer flex-grow">Second Camera (+100% of Base Price)</Label>
                                     <Switch id="secondCamera" checked={formData.secondCamera} onCheckedChange={(v) => handleInputChange('secondCamera', v)} />
+                                </div>
+                            )}
+                            {isTimelapse && (
+                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.timelapseExtraCamera ? 'border-primary bg-accent' : 'border-border')}>
+                                    <Label htmlFor="timelapseExtraCamera" className="cursor-pointer flex-grow">Extra Camera (+100% of Base Price)</Label>
+                                    <Switch id="timelapseExtraCamera" checked={formData.timelapseExtraCamera} onCheckedChange={(v) => handleInputChange('timelapseExtraCamera', v)} />
                                 </div>
                             )}
                         </div>
