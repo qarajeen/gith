@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,72 +16,82 @@ import { Step2Details } from "./quote-calculator/step-2-details";
 import { Step3Contact } from "./quote-calculator/step-3-contact";
 import { Step4Quote } from "./quote-calculator/step-4-quote";
 
+const initialFormData: FormData = {
+    serviceType: "",
+    photographySubType: "",
+    videoSubType: "",
+    timelapseSubType: "",
+    toursSubType: "",
+    postSubType: '',
+
+    photoEventDuration: "perHour",
+    photoEventHours: 1,
+    photoRealEstatePropertyType: "studio",
+    photoRealEstateFurnished: false,
+    photoHeadshotsPeople: 1,
+    photoProductPhotos: 1,
+    photoFoodPhotos: 1,
+    photoFashionPrice: 1500,
+    photoWeddingPrice: 5000,
+    
+    videoEventDuration: "perHour",
+    videoEventHours: 1,
+    videoCorporateExtendedFilming: "none",
+    videoCorporateTwoCam: false,
+    videoCorporateScripting: false,
+    videoCorporateEditing: false,
+    videoCorporateGraphics: false,
+    videoCorporateVoiceover: false,
+    videoPromoFullDay: false,
+    videoPromoMultiLoc: 0,
+    videoPromoConcept: false,
+    videoPromoGraphics: false,
+    videoPromoSound: false,
+    videoPromoMakeup: false,
+    videoRealEstatePropertyType: "studio",
+    videoWeddingPrice: 3000,
+
+    timelapsePrice: 2000,
+
+    postVideoEditingType: 'perHour',
+    postVideoEditingHours: 1,
+    postVideoEditingMinutes: 1,
+    postVideoEditingPerMinutePrice: 500,
+    postVideoEditingSocialPrice: 500,
+    postPhotoEditingType: 'basic',
+    postPhotoEditingQuantity: 1,
+    postPhotoEditingPrice: 20,
+
+    location: "dubai",
+    locationType: "Indoor",
+    secondCamera: false,
+    timelapseExtraCamera: false,
+    deliveryTimeline: "standard",
+
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+};
+
+
 export function QuoteCalculator() {
     const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState<FormData>({
-        serviceType: "",
-        photographySubType: "",
-        videoSubType: "",
-        timelapseSubType: "",
-        toursSubType: "",
-        postSubType: '',
-
-        photoEventDuration: "perHour",
-        photoEventHours: 1,
-        photoRealEstatePropertyType: "studio",
-        photoRealEstateFurnished: false,
-        photoHeadshotsPeople: 1,
-        photoProductPhotos: 1,
-        photoFoodPhotos: 1,
-        photoFashionPrice: 1500,
-        photoWeddingPrice: 5000,
-        
-        videoEventDuration: "perHour",
-        videoEventHours: 1,
-        videoCorporateExtendedFilming: "none",
-        videoCorporateTwoCam: false,
-        videoCorporateScripting: false,
-        videoCorporateEditing: false,
-        videoCorporateGraphics: false,
-        videoCorporateVoiceover: false,
-        videoPromoFullDay: false,
-        videoPromoMultiLoc: 0,
-        videoPromoConcept: false,
-        videoPromoGraphics: false,
-        videoPromoSound: false,
-        videoPromoMakeup: false,
-        videoRealEstatePropertyType: "studio",
-        videoWeddingPrice: 3000,
-
-        timelapsePrice: 2000,
-
-        postVideoEditingType: 'perHour',
-        postVideoEditingHours: 1,
-        postVideoEditingMinutes: 1,
-        postVideoEditingPerMinutePrice: 500,
-        postVideoEditingSocialPrice: 500,
-        postPhotoEditingType: 'basic',
-        postPhotoEditingQuantity: 1,
-        postPhotoEditingPrice: 20,
-
-        location: "dubai",
-        locationType: "Indoor",
-        secondCamera: false,
-        timelapseExtraCamera: false,
-        deliveryTimeline: "standard",
-
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
-    });
+    const [formData, setFormData] = useState<FormData>(initialFormData);
     const [aiSummary, setAiSummary] = useState("");
     const [aiProjectTitle, setAiProjectTitle] = useState("");
     const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
     const { toast } = useToast();
 
-    const handleInputChange = (field: keyof FormData, value: any) => {
+    const handleInputChange = useCallback((field: keyof FormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
+    }, []);
+
+    const handleReset = () => {
+        setFormData(initialFormData);
+        setAiSummary("");
+        setAiProjectTitle("");
+        setStep(1);
     };
 
     const nextStep = () => {
@@ -115,7 +125,12 @@ export function QuoteCalculator() {
                 return;
             }
         }
-        setStep((prev) => (prev < 4 ? prev + 1 : prev));
+        if (step === 4) {
+            // This would be the submission logic
+            console.log("Form Submitted", formData);
+        } else {
+            setStep((prev) => prev + 1);
+        }
     }
     const prevStep = () => setStep((prev) => (prev > 1 ? prev - 1 : prev));
 
@@ -248,7 +263,9 @@ export function QuoteCalculator() {
         }
 
         subtotal += basePrice;
-        items.push({ name: itemName, price: basePrice });
+        if (basePrice > 0) {
+            items.push({ name: itemName, price: basePrice });
+        }
         
         // Photography Add-ons
         const p = formData.photographySubType;
@@ -317,8 +334,10 @@ export function QuoteCalculator() {
 
         if (formData.deliveryTimeline === 'rush' && formData.serviceType !== 'post') {
             const rushFee = subtotal * 0.5;
-            items.push({ name: 'Rush Delivery (24 hours)', price: rushFee });
-            total += rushFee;
+            if (rushFee > 0) {
+              items.push({ name: 'Rush Delivery (24 hours)', price: rushFee });
+              total += rushFee;
+            }
         }
 
         return { items, total };
@@ -327,7 +346,6 @@ export function QuoteCalculator() {
     const handlePrint = () => {
         const input = document.getElementById('quote-preview');
         if (input) {
-            // Temporarily add a class to the hidden div to make it visible for capture
             const pdfQuote = document.getElementById('pdf-quote-preview-container');
             if (pdfQuote) {
                 pdfQuote.classList.remove('hidden');
@@ -335,7 +353,6 @@ export function QuoteCalculator() {
             }
 
             html2canvas(document.getElementById('pdf-quote-preview')!, { scale: 2, backgroundColor: '#ffffff', windowWidth: 1200 }).then((canvas) => {
-                // Hide the div again after capture
                 if (pdfQuote) {
                     pdfQuote.classList.remove('block');
                     pdfQuote.classList.add('hidden');
@@ -357,7 +374,7 @@ export function QuoteCalculator() {
                 }
 
                 const x = (pdfWidth - width) / 2;
-                const y = 0; // Start from top
+                const y = 0;
 
                 pdf.addImage(imgData, 'PNG', x, y, width, height);
                 pdf.save("wrh-enigma-quote.pdf");
@@ -433,18 +450,34 @@ export function QuoteCalculator() {
                         </React.Fragment>
                     ))}
                 </div>
-                <CardTitle className="text-3xl md:text-4xl font-bold text-center pt-8">{stepTitles[step-1]}</CardTitle>
+                <CardTitle className="text-3xl md:text-4xl font-bold text-center pt-8">{step === 4 ? 'Your Quote is Ready' : `Step ${step}: ${stepTitles[step-1]}`}</CardTitle>
             </CardHeader>
             <CardContent className="min-h-[350px]">
                 {renderStep()}
             </CardContent>
-            <CardFooter className="flex justify-between">
-                {step > 1 ? (
-                    <Button variant="outline" onClick={prevStep} size="lg"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
-                ) : <div />}
-                {step < 4 && (
-                    <Button onClick={nextStep} size="lg">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
-                )}
+            <CardFooter className="flex items-center justify-between mt-4">
+                <div className="flex gap-2">
+                    {step > 1 && (
+                        <Button variant="outline" onClick={prevStep} size="lg"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
+                    )}
+                     {step < 4 && (
+                         <Button variant="ghost" onClick={handleReset} size="lg" className="text-muted-foreground"><RotateCcw className="mr-2 h-5 w-5" /> Reset</Button>
+                     )}
+                </div>
+
+                <div className="flex items-center gap-4">
+                     {step < 4 && (
+                        <div className="text-right">
+                            <p className="text-sm text-muted-foreground">Total Estimate</p>
+                            <p className="text-2xl font-bold">{quoteDetails.total.toLocaleString()} AED</p>
+                        </div>
+                    )}
+                    {step < 4 ? (
+                        <Button onClick={nextStep} size="lg">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                    ) : (
+                         <Button onClick={handleReset} size="lg"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
+                    )}
+                </div>
             </CardFooter>
         </Card>
     );
