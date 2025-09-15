@@ -20,8 +20,6 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
         advanced: { min: 50, max: 250, label: "AED 50 - 250" },
         restoration: { min: 100, max: 300, label: "AED 100 - 300" },
     };
-    const selectedPhotoType = formData.postPhotoEditingType;
-    const photoPriceConfig = photoEditingPrices[selectedPhotoType];
 
     return (
         <div className="space-y-4 animate-fade-in-up">
@@ -176,20 +174,6 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
                             <Button variant="outline" size="icon" onClick={() => handleInputChange('postPhotoEditingQuantity', Math.min(200, formData.postPhotoEditingQuantity + 1))}><Plus /></Button>
                         </div>
                         <div className="text-center font-semibold w-full mt-2">{formData.postPhotoEditingQuantity} photos</div>
-                    </div>
-                    <div>
-                        <Label>Price per Photo ({photoPriceConfig.label})</Label>
-                        <div className="flex items-center gap-4 mt-2">
-                             <Button variant="outline" size="icon" onClick={() => handleInputChange('postPhotoEditingPrice', Math.max(photoPriceConfig.min, formData.postPhotoEditingPrice - 5))}><Minus /></Button>
-                            <Slider
-                                value={[formData.postPhotoEditingPrice]}
-                                onValueChange={(v) => handleInputChange('postPhotoEditingPrice', v[0])}
-                                min={photoPriceConfig.min} max={photoPriceConfig.max} step={5}
-                                className='flex-1'
-                            />
-                            <Button variant="outline" size="icon" onClick={() => handleInputChange('postPhotoEditingPrice', Math.min(photoPriceConfig.max, formData.postPhotoEditingPrice + 5))}><Plus /></Button>
-                        </div>
-                        <div className="text-center font-semibold w-full mt-2">{formData.postPhotoEditingPrice.toLocaleString()} AED</div>
                     </div>
                 </div>
             )}
