@@ -519,7 +519,7 @@ export function QuoteCalculator() {
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-2 order-1 lg:order-1">
+        <div className="lg:col-span-2 order-2 lg:order-1">
             <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10">
                 <CardHeader>
                     <div className="flex justify-center items-center mb-4">
@@ -548,27 +548,27 @@ export function QuoteCalculator() {
                 <CardContent className="min-h-[350px]">
                     {renderStep()}
                 </CardContent>
-                <CardFooter className="flex items-center justify-between mt-4">
-                    <div className="flex gap-2">
+                <CardFooter className="flex flex-col-reverse sm:flex-row items-center justify-between mt-4 gap-4">
+                    <div className="flex gap-2 w-full sm:w-auto">
                         {step > 1 && (
-                            <Button variant="outline" onClick={prevStep} size="lg"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
+                            <Button variant="outline" onClick={prevStep} size="lg" className="w-full sm:w-auto"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
                         )}
                          {step < 4 && (
                              <Button variant="ghost" onClick={handleReset} size="lg" className="text-muted-foreground"><RotateCcw className="mr-2 h-5 w-5" /> Reset</Button>
                          )}
                     </div>
     
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
                         {step < 4 ? (
-                            <Button onClick={nextStep} size="lg">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                            <Button onClick={nextStep} size="lg" className="w-full sm:w-auto">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
                         ) : (
-                             <Button onClick={handleReset} size="lg"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
+                             <Button onClick={handleReset} size="lg" className="w-full sm:w-auto"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
                         )}
                     </div>
                 </CardFooter>
             </Card>
         </div>
-        <div className="lg:col-span-1 order-2 lg:order-2">
+        <div className="lg:col-span-1 order-1 lg:order-2">
             <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
         </div>
       </div>
