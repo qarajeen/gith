@@ -273,6 +273,7 @@ export function QuoteCalculator() {
                 location: formData.location,
                 locationType: formData.locationType,
                 addons: selectedAddons,
+                name: formData.name,
               };
               const result = await summarizeQuote(input);
               setAiSummary(result.summary);
@@ -1139,13 +1140,14 @@ export function QuoteCalculator() {
                                         <Skeleton className="h-4 w-3/4 mx-auto" />
                                         <Skeleton className="h-4 w-1/2 mx-auto" />
                                     </div>
-                                    <div className="space-y-4">
+                                    <Separator />
+                                    <div className="space-y-4 mt-6">
                                         <Skeleton className="h-6 w-full" />
                                         <Skeleton className="h-6 w-full" />
                                         <Skeleton className="h-6 w-2/3" />
                                     </div>
                                     <Separator />
-                                    <Skeleton className="h-8 w-1/2 ml-auto" />
+                                    <Skeleton className="h-8 w-1/2 ml-auto mt-4" />
                                 </div>
                             ) : (
                                 <>
