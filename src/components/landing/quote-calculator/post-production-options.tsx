@@ -129,15 +129,18 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
             {formData.postSubType === 'photo' && (
                 <div className="pt-4 space-y-4 animate-fade-in-up">
                     <h4 className="font-semibold">Photo Editing Details</h4>
-                    <RadioGroup value={formData.postPhotoEditingType} onValueChange={(v) => {
-                        const newType = v as keyof typeof photoEditingPrices;
-                        handleInputChange('postPhotoEditingType', newType);
-                        handleInputChange('postPhotoEditingPrice', photoEditingPrices[newType].min);
-                    }} className="grid md:grid-cols-3 gap-4">
-                         {Object.entries(photoEditingPrices).map(([type, { label }]) => (
-                             <div key={type}>
+                    <div className="grid md:grid-cols-3 gap-4">
+                        {Object.entries(photoEditingPrices).map(([type, { label }]) => (
+                            <div key={type}>
                                 <RadioGroupItem value={type} id={`post-photo-${type}`} className="sr-only" />
-                                <Label htmlFor={`post-photo-${type}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full text-base py-4",
+                                <Label 
+                                    htmlFor={`post-photo-${type}`} 
+                                    onClick={() => {
+                                        const newType = type as keyof typeof photoEditingPrices;
+                                        handleInputChange('postPhotoEditingType', newType);
+                                        handleInputChange('postPhotoEditingPrice', photoEditingPrices[newType].min);
+                                    }}
+                                    className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full text-base py-4",
                                     formData.postPhotoEditingType === type ? 'border-primary bg-accent' : 'border-border'
                                 )}>
                                     {type.charAt(0).toUpperCase() + type.slice(1)} Retouching
@@ -145,7 +148,7 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
                                 </Label>
                             </div>
                         ))}
-                    </RadioGroup>
+                    </div>
                      <div>
                         <Label htmlFor="postPhotoEditingQuantity">Number of Photos</Label>
                         <div className="flex items-center gap-4 mt-2">
