@@ -136,7 +136,19 @@ export function PostProductionOptions({ formData, handleInputChange, validationE
                     </RadioGroup>
                      <div>
                         <Label htmlFor="postPhotoEditingQuantity">Number of Photos</Label>
-                        <Input id="postPhotoEditingQuantity" type="number" value={formData.postPhotoEditingQuantity} onChange={(e) => handleInputChange("postPhotoEditingQuantity", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                        <div className="flex items-center gap-4 mt-2">
+                            <Button variant="outline" size="icon" onClick={() => handleInputChange('postPhotoEditingQuantity', Math.max(1, formData.postPhotoEditingQuantity - 1))}><Minus /></Button>
+                            <Slider
+                                value={[formData.postPhotoEditingQuantity]}
+                                onValueChange={(v) => handleInputChange('postPhotoEditingQuantity', v[0])}
+                                min={1}
+                                max={200}
+                                step={1}
+                                className='flex-1'
+                            />
+                            <Button variant="outline" size="icon" onClick={() => handleInputChange('postPhotoEditingQuantity', Math.min(200, formData.postPhotoEditingQuantity + 1))}><Plus /></Button>
+                        </div>
+                        <div className="text-center font-semibold w-full mt-2">{formData.postPhotoEditingQuantity} photos</div>
                     </div>
                     <div>
                         <Label>Price per Photo ({photoPriceConfig.label})</Label>
