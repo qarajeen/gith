@@ -15,6 +15,7 @@ import { Step1Service } from "./quote-calculator/step-1-service";
 import { Step2Details } from "./quote-calculator/step-2-details";
 import { Step3Contact } from "./quote-calculator/step-3-contact";
 import { Step4Quote } from "./quote-calculator/step-4-quote";
+import { QuoteSummary } from "./quote-calculator/quote-summary";
 
 const initialFormData: FormData = {
     serviceType: "",
@@ -517,59 +518,60 @@ export function QuoteCalculator() {
     const stepTitles = ["Service", "Details", "Contact", "Quote"];
 
     return (
-        <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10">
-            <CardHeader>
-                <div className="flex justify-center items-center mb-4">
-                    {stepTitles.map((title, index) => (
-                        <React.Fragment key={index}>
-                            <div className="flex flex-col items-center text-center">
-                                <div className={cn(
-                                    `w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2`,
-                                    index + 1 <= step ? 'bg-primary border-primary text-primary-foreground' : 'bg-secondary border-border'
-                                )}>
-                                    {index + 1}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="md:col-span-1 md:sticky top-8">
+            <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
+        </div>
+        <div className="md:col-span-2">
+            <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10">
+                <CardHeader>
+                    <div className="flex justify-center items-center mb-4">
+                        {stepTitles.map((title, index) => (
+                            <React.Fragment key={index}>
+                                <div className="flex flex-col items-center text-center">
+                                    <div className={cn(
+                                        `w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2`,
+                                        index + 1 <= step ? 'bg-primary border-primary text-primary-foreground' : 'bg-secondary border-border'
+                                    )}>
+                                        {index + 1}
+                                    </div>
+                                    <p className={cn(
+                                        `mt-2 text-xs md:text-sm font-medium transition-colors`,
+                                        index + 1 <= step ? 'text-primary-foreground' : 'text-muted-foreground'
+                                    )}>{title}</p>
                                 </div>
-                                <p className={cn(
-                                    `mt-2 text-xs md:text-sm font-medium transition-colors`,
-                                    index + 1 <= step ? 'text-primary-foreground' : 'text-muted-foreground'
-                                )}>{title}</p>
-                            </div>
-                            {index < stepTitles.length - 1 && (
-                                <div className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${index + 1 < step ? 'bg-primary' : 'bg-border'}`} />
-                            )}
-                        </React.Fragment>
-                    ))}
-                </div>
-                <CardTitle className="text-3xl md:text-4xl font-bold text-center pt-8">{step === 4 ? 'Your Quote is Ready' : `Step ${step}: ${stepTitles[step-1]}`}</CardTitle>
-            </CardHeader>
-            <CardContent className="min-h-[350px]">
-                {renderStep()}
-            </CardContent>
-            <CardFooter className="flex items-center justify-between mt-4">
-                <div className="flex gap-2">
-                    {step > 1 && (
-                        <Button variant="outline" onClick={prevStep} size="lg"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
-                    )}
-                     {step < 4 && (
-                         <Button variant="ghost" onClick={handleReset} size="lg" className="text-muted-foreground"><RotateCcw className="mr-2 h-5 w-5" /> Reset</Button>
-                     )}
-                </div>
-
-                <div className="flex items-center gap-4">
-                     {step < 4 && (
-                        <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Total Estimate</p>
-                            <p className="text-2xl font-bold">{quoteDetails.total.toLocaleString()} AED</p>
-                        </div>
-                    )}
-                    {step < 4 ? (
-                        <Button onClick={nextStep} size="lg">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
-                    ) : (
-                         <Button onClick={handleReset} size="lg"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
-                    )}
-                </div>
-            </CardFooter>
-        </Card>
+                                {index < stepTitles.length - 1 && (
+                                    <div className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${index + 1 < step ? 'bg-primary' : 'bg-border'}`} />
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                    <CardTitle className="text-3xl md:text-4xl font-bold text-center pt-8">{step === 4 ? 'Your Quote is Ready' : `Step ${step}: ${stepTitles[step-1]}`}</CardTitle>
+                </CardHeader>
+                <CardContent className="min-h-[350px]">
+                    {renderStep()}
+                </CardContent>
+                <CardFooter className="flex items-center justify-between mt-4">
+                    <div className="flex gap-2">
+                        {step > 1 && (
+                            <Button variant="outline" onClick={prevStep} size="lg"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
+                        )}
+                         {step < 4 && (
+                             <Button variant="ghost" onClick={handleReset} size="lg" className="text-muted-foreground"><RotateCcw className="mr-2 h-5 w-5" /> Reset</Button>
+                         )}
+                    </div>
+    
+                    <div className="flex items-center gap-4">
+                        {step < 4 ? (
+                            <Button onClick={nextStep} size="lg">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                        ) : (
+                             <Button onClick={handleReset} size="lg"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
+                        )}
+                    </div>
+                </CardFooter>
+            </Card>
+        </div>
+      </div>
     );
 }
 
