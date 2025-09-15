@@ -523,8 +523,8 @@ export function QuoteCalculator() {
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-2 order-1 lg:order-1">
-            <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10">
+        <div className="lg:col-span-2 order-last lg:order-first">
+            <Card className="w-full bg-card/80 backdrop-blur-sm border-white/10 relative">
                 <CardHeader>
                     <div className="flex justify-center items-center mb-4">
                         {stepTitles.map((title, index) => (
@@ -549,10 +549,10 @@ export function QuoteCalculator() {
                     </div>
                     <CardTitle className="text-3xl md:text-4xl font-bold text-center pt-8">{step === 4 ? 'Your Quote is Ready' : `Step ${step}: ${stepTitles[step-1]}`}</CardTitle>
                 </CardHeader>
-                <CardContent className="min-h-[350px]">
+                <CardContent className="min-h-[350px] pb-28 sm:pb-6">
                     {renderStep()}
                 </CardContent>
-                <CardFooter className="flex flex-col-reverse sm:flex-row items-center justify-between mt-4 gap-4">
+                <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 fixed bottom-0 left-0 w-full bg-card border-t border-border p-4 sm:static sm:border-t-0 sm:p-6 sm:bg-transparent z-10">
                     <div className="flex gap-2 w-full sm:w-auto">
                         {step > 1 && (
                             <Button variant="outline" onClick={prevStep} size="lg" className="w-full sm:w-auto"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
@@ -572,7 +572,7 @@ export function QuoteCalculator() {
                 </CardFooter>
             </Card>
         </div>
-        <div className="lg:col-span-1 order-2 lg:order-2">
+        <div className="lg:col-span-1 order-first lg:order-last">
             <QuoteSummary quoteDetails={quoteDetails} formData={formData} />
         </div>
       </div>
