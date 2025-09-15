@@ -70,8 +70,15 @@ export function QuoteCalculator() {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const nextStep = () => setStep((prev) => (prev < 4 ? prev + 1 : prev));
+    const nextStep = () => setStep((prev) => (prev < 5 ? prev + 1 : prev));
     const prevStep = () => setStep((prev) => (prev > 1 ? prev - 1 : prev));
+    
+    const handleQuoteSubmission = () => {
+        // Here you would typically send the data to a server
+        console.log("Final Quote Data:", formData, quoteDetails);
+        alert("Quote submitted! We'll be in touch shortly.");
+        // Optionally move to a "thank you" step or reset
+    };
 
     const quoteDetails = useMemo(() => {
         let total = 0;
@@ -247,12 +254,40 @@ export function QuoteCalculator() {
                         </div>
                     </div>
                 );
+            case 5:
+                return (
+                     <div id="quote-preview">
+                         <CardDescription>Your estimated project cost.</CardDescription>
+                         <div className="mt-4 space-y-4">
+                            {quoteDetails.items.map((item, index) => (
+                                <div key={index} className="flex justify-between">
+                                    <span>{item.name}</span>
+                                    <span>{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</span>
+                                </div>
+                            ))}
+                            <Separator className="my-4" />
+                            <div className="flex justify-between font-bold text-lg">
+                                <span>Total Estimate</span>
+                                <span>{quoteDetails.total.toLocaleString()} AED</span>
+                            </div>
+                        </div>
+                         <div className="flex justify-end mt-6 gap-2">
+                            <Button onClick={handlePrint} variant="outline">
+                                <Download className="mr-2 h-4 w-4" />
+                                Download as PDF
+                            </Button>
+                            <Button onClick={handleQuoteSubmission} className="bg-primary hover:bg-primary/90">
+                                Submit Quote
+                            </Button>
+                        </div>
+                    </div>
+                )
             default:
                 return null;
         }
     };
     
-    const stepTitles = ["Service", "Details", "Add-ons", "Contact & Quote"];
+    const stepTitles = ["Service", "Details", "Add-ons", "Contact", "Quote"];
 
     return (
         <Card className="max-w-4xl mx-auto w-full bg-card border-border/60">
@@ -281,39 +316,11 @@ export function QuoteCalculator() {
                 {step > 1 ? (
                     <Button variant="outline" onClick={prevStep}><ArrowLeft className="mr-2 h-4 w-4"/> Previous</Button>
                 ) : <div />}
-                {step < 4 ? (
-                    <Button onClick={nextStep}>Next <ArrowRight className="ml-2 h-4 w-4"/></Button>
-                ) : (
-                    <Button onClick={() => alert("Quote submitted! We'll be in touch.")}>Submit Quote</Button>
+                {step < 5 && (
+                    <Button onClick={nextStep}>{step === 4 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-4 w-4"/></Button>
                 )}
             </CardFooter>
             
-            {step === 4 && (
-                <div className="p-6 pt-0" id="quote-preview">
-                    <Separator className="my-6" />
-                     <CardTitle className="font-headline text-2xl">Quote Preview</CardTitle>
-                     <CardDescription>Your estimated project cost.</CardDescription>
-                     <div className="mt-4 space-y-4">
-                        {quoteDetails.items.map((item, index) => (
-                            <div key={index} className="flex justify-between">
-                                <span>{item.name}</span>
-                                <span>{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</span>
-                            </div>
-                        ))}
-                        <Separator className="my-4" />
-                        <div className="flex justify-between font-bold text-lg">
-                            <span>Total Estimate</span>
-                            <span>{quoteDetails.total.toLocaleString()} AED</span>
-                        </div>
-                    </div>
-                     <div className="flex justify-end mt-6">
-                        <Button onClick={handlePrint} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                            <Download className="mr-2 h-4 w-4" />
-                            Download as PDF
-                        </Button>
-                    </div>
-                </div>
-            )}
             <style>{`
                 @media print {
                   body * {
