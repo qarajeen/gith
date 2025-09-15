@@ -63,7 +63,7 @@ export function Step2Details({ formData, handleInputChange }: Step2DetailsProps)
         <p className="text-muted-foreground text-center py-10">No location or add-ons required for this service.</p>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-6 mb-20 sm:mb-0">
         <h3 className="font-semibold text-lg">Options & Modifiers</h3>
         <div className="space-y-4">
           {canHaveSecondCamera && (
