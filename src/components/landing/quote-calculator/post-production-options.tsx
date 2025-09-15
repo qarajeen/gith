@@ -54,7 +54,7 @@ export function PostProductionOptions({ formData, handleInputChange }: PostProdu
                          {['perHour', 'perMinute', 'social'].map(type => (
                              <div key={type}>
                                 <RadioGroupItem value={type} id={`post-video-${type}`} className="sr-only" />
-                                <Label htmlFor={`post-video-${type}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+                                <Label htmlFor={`post-video-${type}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full text-base py-4",
                                     formData.postVideoEditingType === type ? 'border-primary bg-accent' : 'border-border'
                                 )}>
                                     {type === 'perHour' ? 'Per Hour' : type === 'perMinute' ? 'Per Finished Minute' : 'Social Media Edit'}
@@ -115,7 +115,7 @@ export function PostProductionOptions({ formData, handleInputChange }: PostProdu
                          {Object.entries(photoEditingPrices).map(([type, { label }]) => (
                              <div key={type}>
                                 <RadioGroupItem value={type} id={`post-photo-${type}`} className="sr-only" />
-                                <Label htmlFor={`post-photo-${type}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+                                <Label htmlFor={`post-photo-${type}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full text-base py-4",
                                     formData.postPhotoEditingType === type ? 'border-primary bg-accent' : 'border-border'
                                 )}>
                                     {type.charAt(0).toUpperCase() + type.slice(1)} Retouching

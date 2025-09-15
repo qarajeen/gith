@@ -19,7 +19,7 @@ export function TimelapseOptions({ formData, handleInputChange }: TimelapseOptio
         {Object.entries(timelapseSubServices).map(([id, { name }]) => (
           <div key={id}>
             <RadioGroupItem value={id} id={`tl-${id}`} className="sr-only" />
-            <Label htmlFor={`tl-${id}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+            <Label htmlFor={`tl-${id}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full text-base py-4",
               formData.timelapseSubType === id ? 'border-primary bg-accent' : 'border-border'
             )}>
               {name}

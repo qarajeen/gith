@@ -69,7 +69,7 @@ export function PhotographyOptions({
             {['perHour', 'halfDay', 'fullDay'].map(dur => (
               <div className="flex-1" key={dur}>
                 <RadioGroupItem value={dur} id={`photo-event-${dur}`} className="sr-only" />
-                <Label htmlFor={`photo-event-${dur}`} className={cn("flex flex-col items-center justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                <Label htmlFor={`photo-event-${dur}`} className={cn("flex flex-col items-center justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 text-base py-4",
                   formData.photoEventDuration === dur ? 'border-primary bg-accent' : 'border-border'
                 )}>
                   {dur === 'perHour' ? 'Per Hour' : dur === 'halfDay' ? 'Half Day (4hrs)' : 'Full Day (8hrs)'}
@@ -177,7 +177,7 @@ export function PhotographyOptions({
                 >
                     <div className="flex-1">
                         <RadioGroupItem value="simple" id={`${isProduct ? 'prod' : 'food'}-simple`} className="sr-only" />
-                        <Label htmlFor={`${isProduct ? 'prod' : 'food'}-simple`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                        <Label htmlFor={`${isProduct ? 'prod' : 'food'}-simple`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 text-base py-4",
                             (isProduct ? formData.photoProductComplexity : formData.photoFoodComplexity) === 'simple' ? 'border-primary bg-accent' : 'border-border'
                         )}>
                             Simple
@@ -187,7 +187,7 @@ export function PhotographyOptions({
                     </div>
                      <div className="flex-1">
                         <RadioGroupItem value="complex" id={`${isProduct ? 'prod' : 'food'}-complex`} className="sr-only" />
-                        <Label htmlFor={`${isProduct ? 'prod' : 'food'}-complex`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                        <Label htmlFor={`${isProduct ? 'prod' : 'food'}-complex`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 text-base py-4",
                              (isProduct ? formData.photoProductComplexity : formData.photoFoodComplexity) === 'complex' ? 'border-primary bg-accent' : 'border-border'
                         )}>
                             Complex
@@ -212,7 +212,7 @@ export function PhotographyOptions({
             {Object.entries(formData.photographySubType === 'fashion' ? fashionPackages : weddingPackages).map(([id, { name, price, description }]) => (
               <div key={id}>
                 <RadioGroupItem value={id} id={`pkg-${id}`} className="sr-only" />
-                <Label htmlFor={`pkg-${id}`} className={cn("flex flex-col justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full",
+                <Label htmlFor={`pkg-${id}`} className={cn("flex flex-col justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 h-full text-base",
                   (formData.photographySubType === 'fashion' ? formData.photoFashionPackage : formData.photoWeddingPackage) === id ? 'border-primary bg-accent' : 'border-border'
                 )}>
                   <div>

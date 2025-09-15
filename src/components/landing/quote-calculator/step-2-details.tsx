@@ -68,13 +68,13 @@ export function Step2Details({ formData, handleInputChange }: Step2DetailsProps)
         <div className="space-y-4">
           {canHaveSecondCamera && (
             <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.secondCamera ? 'border-primary bg-accent' : 'border-border')}>
-              <Label htmlFor="secondCamera" className="cursor-pointer flex-grow">Second Camera (+100% of Base Price)</Label>
+              <Label htmlFor="secondCamera" className="cursor-pointer flex-grow text-base">Second Camera (+100% of Base Price)</Label>
               <Switch id="secondCamera" checked={formData.secondCamera} onCheckedChange={(v) => handleInputChange('secondCamera', v)} />
             </div>
           )}
           {isTimelapse && (
             <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.timelapseExtraCamera ? 'border-primary bg-accent' : 'border-border')}>
-              <Label htmlFor="timelapseExtraCamera" className="cursor-pointer flex-grow">Extra Camera (+100% of Base Price)</Label>
+              <Label htmlFor="timelapseExtraCamera" className="cursor-pointer flex-grow text-base">Extra Camera (+100% of Base Price)</Label>
               <Switch id="timelapseExtraCamera" checked={formData.timelapseExtraCamera} onCheckedChange={(v) => handleInputChange('timelapseExtraCamera', v)} />
             </div>
           )}
@@ -88,7 +88,7 @@ export function Step2Details({ formData, handleInputChange }: Step2DetailsProps)
                 ].map(({ value, label }) => (
                   <div className="flex-1" key={value}>
                     <RadioGroupItem value={value} id={`delivery-${value}`} className="sr-only" />
-                    <Label htmlFor={`delivery-${value}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                    <Label htmlFor={`delivery-${value}`} className={cn("flex flex-col items-center justify-center rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50 text-base py-4",
                       formData.deliveryTimeline === value ? 'border-primary bg-accent' : 'border-border'
                     )}>
                       {label}
