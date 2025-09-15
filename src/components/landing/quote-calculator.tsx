@@ -557,7 +557,7 @@ export function QuoteCalculator() {
                         {step > 1 && (
                             <Button variant="outline" onClick={prevStep} size="lg" className="w-full sm:w-auto"><ArrowLeft className="mr-2 h-5 w-5"/> Previous</Button>
                         )}
-                         {step < 4 && (
+                         {step > 1 && step < 4 && (
                              <Button variant="ghost" onClick={handleReset} size="lg" className="text-muted-foreground"><RotateCcw className="mr-2 h-5 w-5" /> Reset</Button>
                          )}
                     </div>
