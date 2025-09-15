@@ -147,7 +147,7 @@ export function Step4Quote({
                     <div className="grid grid-cols-2 gap-8 mb-12">
                         <div>
                             <h2 className="text-sm font-semibold uppercase text-gray-500 mb-2">Billed To</h2>
-                            <p className="font-bold text-lg text-gray-900">{formData.name}</p>
+                            <p className="font-bold text-lg text-gray-900">{formData.name || 'Valued Customer'}</p>
                             <p className="text-gray-500">{formData.email}</p>
                             <p className="text-gray-500">{formData.phone}</p>
                         </div>
