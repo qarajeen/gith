@@ -114,8 +114,7 @@ export type FormData = {
     videoRealEstatePropertyType: "studio" | "1-bedroom" | "2-bedroom" | "3-bedroom" | "villa";
     videoWeddingPrice: number;
 
-    // Step 1.7: Time-Lapse Details
-    timelapsePrice: number;
+    // Step 1.7: Time-Lapse Details is handled by sub-type
     
     // Step 1.8: 360 Tours handled by sub-type
     

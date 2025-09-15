@@ -52,8 +52,6 @@ const initialFormData: FormData = {
     videoRealEstatePropertyType: "studio",
     videoWeddingPrice: 3000,
 
-    timelapsePrice: 2000,
-
     postVideoEditingType: 'perHour',
     postVideoEditingHours: 1,
     postVideoEditingMinutes: 1,
@@ -86,7 +84,12 @@ export function QuoteCalculator() {
 
     const handleInputChange = useCallback((field: keyof FormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
-    }, []);
+        // Reset AI summary if selections change
+        if (step === 4) {
+            setAiSummary("");
+            setAiProjectTitle("");
+        }
+    }, [step]);
 
     const handleRealEstateChange = useCallback((index: number, field: keyof RealEstateProperty, value: any) => {
         setFormData(prev => {
@@ -279,7 +282,8 @@ export function QuoteCalculator() {
         } else if (formData.serviceType === 'timelapse' && formData.timelapseSubType) {
             const subTypeName = timelapseSubServices[formData.timelapseSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
-            basePrice = formData.timelapsePrice;
+            const prices = { short: 3000, long: 6000, extreme: 15000 };
+            basePrice = prices[formData.timelapseSubType];
         } else if (formData.serviceType === '360tours' && formData.toursSubType) {
             const subTypeName = toursSubServices[formData.toursSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
