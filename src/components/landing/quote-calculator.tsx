@@ -77,9 +77,6 @@ const initialFormData: FormData = {
 export function QuoteCalculator() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState<FormData>(initialFormData);
-    const [aiSummary, setAiSummary] = useState("");
-    const [aiProjectTitle, setAiProjectTitle] = useState("");
-    const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
     const [validationError, setValidationError] = useState(false);
     const { toast } = useToast();
 
@@ -97,12 +94,7 @@ export function QuoteCalculator() {
 
     const handleInputChange = useCallback((field: keyof FormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
-        // Reset AI summary if selections change
-        if (step === 4) {
-            setAiSummary("");
-            setAiProjectTitle("");
-        }
-    }, [step]);
+    }, []);
 
     const handleRealEstateChange = useCallback((index: number, field: keyof RealEstateProperty, value: any) => {
         setFormData(prev => {
@@ -131,8 +123,6 @@ export function QuoteCalculator() {
 
     const handleReset = () => {
         setFormData(initialFormData);
-        setAiSummary("");
-        setAiProjectTitle("");
         setStep(1);
     };
 
@@ -449,17 +439,17 @@ export function QuoteCalculator() {
         const pageWidth = doc.internal.pageSize.getWidth();
         const contentWidth = pageWidth - margin * 2;
         let currentY = 20;
-    
+
         // Title
         doc.setFontSize(22);
         doc.setFont('helvetica', 'bold');
-        doc.text(aiProjectTitle, pageWidth / 2, currentY, { align: 'center' });
+        doc.text("Your Project Quote", pageWidth / 2, currentY, { align: 'center' });
         currentY += 10;
     
         // Summary
         doc.setFontSize(11);
         doc.setFont('helvetica', 'normal');
-        const summaryLines = doc.splitTextToSize(aiSummary, contentWidth);
+        const summaryLines = doc.splitTextToSize("Here is a summary of your quote selections.", contentWidth);
         doc.text(summaryLines, margin, currentY);
         currentY += summaryLines.length * 5 + 10;
     
@@ -548,12 +538,6 @@ export function QuoteCalculator() {
                         formData={formData}
                         quoteDetails={quoteDetails}
                         handlePrint={handlePrint}
-                        aiProjectTitle={aiProjectTitle}
-                        setAiProjectTitle={setAiProjectTitle}
-                        aiSummary={aiSummary}
-                        setAiSummary={setAiSummary}
-                        isGeneratingSummary={isGeneratingSummary}
-                        setIsGeneratingSummary={setIsGeneratingSummary}
                     />
                 )
             default:
