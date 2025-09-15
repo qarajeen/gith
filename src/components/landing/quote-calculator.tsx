@@ -127,7 +127,7 @@ export function QuoteCalculator() {
                                 {Object.entries(serviceOptions).map(([id, { name, icon }]) => (
                                     <div key={id} onClick={() => handleInputChange("serviceType", id)}
                                          className={cn("p-4 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center",
-                                         formData.serviceType === id ? 'border-primary bg-primary/5' : 'border-muted bg-popover hover:bg-accent hover:text-accent-foreground')}>
+                                         formData.serviceType === id ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:bg-accent hover:text-accent-foreground')}>
                                         {icon}
                                         <span className="font-medium text-center">{name}</span>
                                     </div>
