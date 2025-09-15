@@ -183,7 +183,11 @@ export function QuoteCalculator() {
             switch (formData.photographySubType) {
                 case 'event':
                     if (formData.photoEventDuration === 'perHour') {
-                        basePrice = formData.photoEventHours * 300;
+                        if (formData.photoEventHours > 0) {
+                            basePrice = 600 + (formData.photoEventHours - 1) * 300;
+                        } else {
+                            basePrice = 0;
+                        }
                         itemName += ` (${formData.photoEventHours} hrs)`;
                     } else if (formData.photoEventDuration === 'halfDay') {
                         basePrice = 1200;
@@ -254,7 +258,11 @@ export function QuoteCalculator() {
             switch(formData.videoSubType) {
                 case 'event':
                      if (formData.videoEventDuration === 'perHour') {
-                        basePrice = formData.videoEventHours * 400;
+                        if (formData.videoEventHours > 0) {
+                            basePrice = 800 + (formData.videoEventHours - 1) * 400;
+                        } else {
+                            basePrice = 0;
+                        }
                         itemName += ` (${formData.videoEventHours} hrs)`;
                     } else if (formData.videoEventDuration === 'halfDay') {
                         basePrice = 1200;
