@@ -465,7 +465,36 @@ export function QuoteCalculator() {
         doc.setFontSize(22);
         doc.text("QUOTE", pageWidth - margin, 18, { align: 'right' });
         currentY = 45;
-    
+
+        // --- Heading Title & Project Brief ---
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(black[0], black[1], black[2]);
+        const serviceName = formData.serviceType ? serviceOptions[formData.serviceType].name : 'Project';
+        const subTypeKey = formData.photographySubType || formData.videoSubType || formData.timelapseSubType || formData.toursSubType || formData.postSubType;
+        
+        let subTypeName = '';
+        if(formData.serviceType === 'photography' && formData.photographySubType) subTypeName = photographySubServices[formData.photographySubType].name;
+        else if (formData.serviceType === 'video' && formData.videoSubType) subTypeName = videoSubServices[formData.videoSubType].name;
+        else if (formData.serviceType === 'timelapse' && formData.timelapseSubType) subTypeName = timelapseSubServices[formData.timelapseSubType].name;
+        else if (formData.serviceType === '360tours' && formData.toursSubType) subTypeName = toursSubServices[formData.toursSubType].name;
+        else if (formData.serviceType === 'post' && formData.postSubType) subTypeName = postProductionSubServices[formData.postSubType].name;
+
+        const headingTitle = subTypeName ? `${serviceName}: ${subTypeName}` : serviceName;
+        doc.text(headingTitle, margin, currentY);
+        currentY += 10;
+        
+        if (formData.message) {
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
+            const briefLines = doc.splitTextToSize(formData.message, pageWidth - (margin * 2));
+            doc.text("Project Brief:", margin, currentY);
+            currentY += 6;
+            doc.text(briefLines, margin, currentY);
+            currentY += (briefLines.length * 5) + 5;
+        }
+
         // -- Client & Quote Info --
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
