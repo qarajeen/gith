@@ -127,7 +127,7 @@ export function QuoteCalculator() {
                                 {Object.entries(serviceOptions).map(([id, { name, icon }]) => (
                                     <div key={id} onClick={() => handleInputChange("serviceType", id)}
                                          className={cn("p-4 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center",
-                                         formData.serviceType === id ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:bg-accent hover:text-accent-foreground')}>
+                                         formData.serviceType === id ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50')}>
                                         {icon}
                                         <span className="font-medium text-center">{name}</span>
                                     </div>
@@ -139,13 +139,17 @@ export function QuoteCalculator() {
                             <RadioGroup value={formData.packageType} onValueChange={(v) => handleInputChange("packageType", v as "perHour" | "perProject")} className="flex gap-4">
                                 <div className="flex-1">
                                     <RadioGroupItem value="perHour" id="perHour" className="sr-only" />
-                                    <Label htmlFor="perHour" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer w-full">
+                                    <Label htmlFor="perHour" className={cn("flex flex-col items-center justify-between rounded-md border-2 p-4 cursor-pointer w-full transition-colors",
+                                        formData.packageType === 'perHour' ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50'
+                                    )}>
                                         Per Hour
                                     </Label>
                                 </div>
                                 <div className="flex-1">
                                     <RadioGroupItem value="perProject" id="perProject" className="sr-only" />
-                                    <Label htmlFor="perProject" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer w-full">
+                                    <Label htmlFor="perProject" className={cn("flex flex-col items-center justify-between rounded-md border-2 p-4 cursor-pointer w-full transition-colors",
+                                        formData.packageType === 'perProject' ? 'border-primary bg-accent text-accent-foreground' : 'border-muted bg-popover hover:border-primary/50'
+                                    )}>
                                         Per Project
                                     </Label>
                                 </div>
@@ -187,24 +191,24 @@ export function QuoteCalculator() {
                     <div className="space-y-6">
                         <h3 className="font-semibold text-lg">Add-ons</h3>
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalHours > 0 ? 'border-primary bg-accent/50' : 'border-muted')}>
                                 <Label htmlFor="additionalHours">Additional Hours</Label>
                                 <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                             </div>
-                            <div className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalCamera > 0 ? 'border-primary bg-accent/50' : 'border-muted')}>
                                 <Label htmlFor="additionalCamera">Additional Cameras</Label>
                                 <Input id="additionalCamera" type="number" value={formData.additionalCamera} onChange={(e) => handleInputChange("additionalCamera", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                             </div>
-                            <div className="flex items-center justify-between p-4 border rounded-lg">
-                                <Label htmlFor="drone">Drone Footage</Label>
+                            <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.drone ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                <Label htmlFor="drone" className="cursor-pointer">Drone Footage</Label>
                                 <Switch id="drone" checked={formData.drone} onCheckedChange={(v) => handleInputChange('drone', v)} />
                             </div>
-                            <div className="flex items-center justify-between p-4 border rounded-lg">
-                                <Label htmlFor="script">Scriptwriting</Label>
+                             <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.script ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                <Label htmlFor="script" className="cursor-pointer">Scriptwriting</Label>
                                 <Switch id="script" checked={formData.script} onCheckedChange={(v) => handleInputChange('script', v)} />
                             </div>
-                            <div className="flex items-center justify-between p-4 border rounded-lg">
-                                 <Label htmlFor="studio">Studio Rental</Label>
+                             <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.studio ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                 <Label htmlFor="studio" className="cursor-pointer">Studio Rental</Label>
                                 <Switch id="studio" checked={formData.studio} onCheckedChange={(v) => handleInputChange('studio', v)} />
                             </div>
                         </div>
