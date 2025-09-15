@@ -7,7 +7,7 @@ import html2canvas from "html2canvas";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, ArrowRight, ArrowLeft, Camera, Video, Wand2, Orbit, Hourglass } from "lucide-react";
+import { Download, ArrowRight, ArrowLeft, Camera, Video, Wand2, Orbit, Hourglass, ChevronLeft } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -242,6 +242,18 @@ export function QuoteCalculator() {
         setStep((prev) => (prev < 4 ? prev + 1 : prev));
     }
     const prevStep = () => setStep((prev) => (prev > 1 ? prev - 1 : prev));
+
+    const handleBackToServices = () => {
+        setFormData((prev) => ({
+          ...prev,
+          serviceType: '',
+          photographySubType: '',
+          videoSubType: '',
+          timelapseSubType: '',
+          toursSubType: '',
+          postSubType: '',
+        }));
+      };
     
     useEffect(() => {
         if (step === 4 && !aiSummary) {
@@ -1029,13 +1041,17 @@ export function QuoteCalculator() {
                                 </div>
                             </div>
                         ) : (
-                            <>
+                            <div className="relative">
+                                 <Button variant="ghost" onClick={handleBackToServices} className="absolute -top-4 -left-2 text-muted-foreground">
+                                    <ChevronLeft className="mr-2 h-4 w-4" />
+                                    Back to Services
+                                </Button>
                                 {formData.serviceType === 'photography' && renderPhotographyOptions()}
                                 {formData.serviceType === 'video' && renderVideoOptions()}
                                 {formData.serviceType === 'timelapse' && renderTimelapseOptions()}
                                 {formData.serviceType === '360tours' && render360ToursOptions()}
                                 {formData.serviceType === 'post' && renderPostProductionOptions()}
-                            </>
+                            </div>
                         )}
                     </div>
                 );
@@ -1157,8 +1173,14 @@ export function QuoteCalculator() {
                                 <div className="space-y-4 text-center py-20">
                                     <Wand2 className="mx-auto h-12 w-12 animate-pulse text-primary" />
                                     <p className="text-lg text-muted-foreground">Generating your personalized quote...</p>
-                                    <Skeleton className="h-4 w-48 mx-auto mt-2" />
-                                    <Skeleton className="h-4 w-64 mx-auto" />
+                                    <Skeleton className="h-8 w-3/4 mx-auto mt-4" />
+                                    <Skeleton className="h-4 w-full mx-auto" />
+                                    <Skeleton className="h-4 w-5/6 mx-auto" />
+                                    <div className="mt-8 space-y-4">
+                                        <Skeleton className="h-6 w-full" />
+                                        <Skeleton className="h-6 w-full" />
+                                        <Skeleton className="h-6 w-full" />
+                                    </div>
                                 </div>
                             ) : (
                                 <>
@@ -1194,9 +1216,16 @@ export function QuoteCalculator() {
                         <div id="pdf-quote-preview-container" className="hidden">
                             <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
                                 <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
-                                    <div>
-                                        <h1 className="text-4xl font-bold text-violet-600 mb-2">WRH Enigma</h1>
-                                        <p className="text-gray-500">Creative Media Production</p>
+                                    <div className="flex items-center gap-4">
+                                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M24.0002 4.68652L43.3137 14.3433L37.3137 17.3433L24.0002 11.3433L10.6867 17.3433L4.68672 14.3433L24.0002 4.68652Z" fill="#A78BFA"/>
+                                            <path d="M4.68672 24.0002L10.6867 27.0002L24.0002 21.0002L37.3137 27.0002L43.3137 24.0002L24.0002 14.3434L4.68672 24.0002Z" fill="#8B5CF6"/>
+                                            <path d="M10.6867 36.6569L24.0002 30.6569L37.3137 36.6569L24.0002 43.3136L10.6867 36.6569Z" fill="#7C3AED"/>
+                                        </svg>
+                                        <div>
+                                            <h1 className="text-4xl font-bold text-violet-600 mb-0">WRH Enigma</h1>
+                                            <p className="text-gray-500">Creative Media Production</p>
+                                        </div>
                                     </div>
                                     <div className="text-right text-gray-500">
                                         <p>+971 50 123 4567</p>
