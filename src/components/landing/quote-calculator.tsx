@@ -573,12 +573,12 @@ export function QuoteCalculator() {
                             )}
                         </div>
         
-                        <div className="fixed bottom-4 left-4 right-4 sm:static flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto z-20">
+                        <div className="fixed bottom-4 left-4 right-4 sm:static flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto z-20">
                              {step > 1 && (
-                                <Button variant="outline" onClick={prevStep} size="lg" className="shadow-lg sm:shadow-none sm:hidden w-[calc(50%-8px)]"><ArrowLeft className="mr-2 h-5 w-5"/> Back</Button>
+                                <Button variant="outline" onClick={prevStep} size="lg" className="shadow-lg sm:shadow-none sm:hidden w-[calc(50%-4px)]"><ArrowLeft className="mr-2 h-5 w-5"/> Back</Button>
                             )}
                             {step < 4 ? (
-                                <Button onClick={nextStep} size="lg" className="w-[calc(50%-8px)] sm:w-auto shadow-lg sm:shadow-none">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
+                                <Button onClick={nextStep} size="lg" className="w-full sm:w-auto shadow-lg sm:shadow-none flex-1">{step === 3 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-5 w-5"/></Button>
                             ) : (
                                 <Button onClick={handleReset} size="lg" className="w-full sm:w-auto shadow-lg sm:shadow-none"><RotateCcw className="mr-2 h-5 w-5" /> Start New Quote</Button>
                             )}
