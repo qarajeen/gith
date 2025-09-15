@@ -89,8 +89,20 @@ export function PhotographyOptions({
           </RadioGroup>
           {formData.photoEventDuration === 'perHour' && (
             <div>
-              <Label htmlFor="photoEventHours">Hours</Label>
-              <Input id="photoEventHours" type="number" value={formData.photoEventHours} onChange={(e) => handleInputChange("photoEventHours", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+              <Label>Hours</Label>
+              <div className="flex items-center gap-4 mt-2">
+                <Button variant="outline" size="icon" onClick={() => handleInputChange('photoEventHours', Math.max(1, formData.photoEventHours - 1))}><Minus /></Button>
+                <Slider
+                  value={[formData.photoEventHours]}
+                  onValueChange={(v) => handleInputChange('photoEventHours', v[0])}
+                  min={1}
+                  max={24}
+                  step={1}
+                  className='flex-1'
+                />
+                <Button variant="outline" size="icon" onClick={() => handleInputChange('photoEventHours', Math.min(24, formData.photoEventHours + 1))}><Plus /></Button>
+              </div>
+              <div className="text-center font-semibold w-full mt-2">{formData.photoEventHours} hours</div>
             </div>
           )}
         </div>
