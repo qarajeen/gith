@@ -5,19 +5,21 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, ArrowRight, ArrowLeft } from "lucide-react";
+import { Download, ArrowRight, ArrowLeft, Camera, Video, Wand2, Orbit, Hourglass } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 const serviceOptions = {
-    photography: { name: "Photography", basePrice: 150, perHour: 150, perProject: 1500 },
-    video: { name: "Video Production", basePrice: 300, perHour: 300, perProject: 3000 },
-    post: { name: "Post Production", basePrice: 100, perHour: 100, perProject: 1000 },
-    '360tours': { name: "360 Tours", basePrice: 400, perHour: 400, perProject: 4000 },
-    timelapse: { name: "Time Lapse", basePrice: 250, perHour: 250, perProject: 2500 },
+    photography: { name: "Photography", basePrice: 150, perHour: 150, perProject: 1500, icon: <Camera className="w-8 h-8 mb-2" /> },
+    video: { name: "Video Production", basePrice: 300, perHour: 300, perProject: 3000, icon: <Video className="w-8 h-8 mb-2" /> },
+    post: { name: "Post Production", basePrice: 100, perHour: 100, perProject: 1000, icon: <Wand2 className="w-8 h-8 mb-2" /> },
+    '360tours': { name: "360 Tours", basePrice: 400, perHour: 400, perProject: 4000, icon: <Orbit className="w-8 h-8 mb-2" /> },
+    timelapse: { name: "Time Lapse", basePrice: 250, perHour: 250, perProject: 2500, icon: <Hourglass className="w-8 h-8 mb-2" /> },
 };
 
 const addonOptions = {
@@ -121,29 +123,29 @@ export function QuoteCalculator() {
                     <div className="space-y-8">
                         <div>
                             <h3 className="font-semibold mb-4 text-lg">Select Service Type</h3>
-                            <RadioGroup value={formData.serviceType} onValueChange={(v) => handleInputChange("serviceType", v)} className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.entries(serviceOptions).map(([id, { name }]) => (
-                                    <div key={id}>
-                                        <RadioGroupItem value={id} id={id} className="sr-only" />
-                                        <Label htmlFor={id} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer">
-                                            {name}
-                                        </Label>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {Object.entries(serviceOptions).map(([id, { name, icon }]) => (
+                                    <div key={id} onClick={() => handleInputChange("serviceType", id)}
+                                         className={cn("p-4 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center",
+                                         formData.serviceType === id ? 'border-primary bg-primary/5' : 'border-muted bg-popover hover:bg-accent hover:text-accent-foreground')}>
+                                        {icon}
+                                        <span className="font-medium text-center">{name}</span>
                                     </div>
                                 ))}
-                            </RadioGroup>
+                            </div>
                         </div>
                         <div>
                             <h3 className="font-semibold mb-4 text-lg">Select Package</h3>
                             <RadioGroup value={formData.packageType} onValueChange={(v) => handleInputChange("packageType", v as "perHour" | "perProject")} className="flex gap-4">
                                 <div className="flex-1">
                                     <RadioGroupItem value="perHour" id="perHour" className="sr-only" />
-                                    <Label htmlFor="perHour" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer">
+                                    <Label htmlFor="perHour" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer w-full">
                                         Per Hour
                                     </Label>
                                 </div>
                                 <div className="flex-1">
                                     <RadioGroupItem value="perProject" id="perProject" className="sr-only" />
-                                    <Label htmlFor="perProject" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer">
+                                    <Label htmlFor="perProject" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer w-full">
                                         Per Project
                                     </Label>
                                 </div>
@@ -185,22 +187,25 @@ export function QuoteCalculator() {
                     <div className="space-y-6">
                         <h3 className="font-semibold text-lg">Add-ons</h3>
                         <div className="space-y-4">
-                            <div>
+                            <div className="flex items-center justify-between p-4 border rounded-lg">
                                 <Label htmlFor="additionalHours">Additional Hours</Label>
-                                <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="mt-2" />
+                                <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                             </div>
-                            <div>
+                            <div className="flex items-center justify-between p-4 border rounded-lg">
                                 <Label htmlFor="additionalCamera">Additional Cameras</Label>
-                                <Input id="additionalCamera" type="number" value={formData.additionalCamera} onChange={(e) => handleInputChange("additionalCamera", parseInt(e.target.value, 10) || 0)} min="0" className="mt-2" />
+                                <Input id="additionalCamera" type="number" value={formData.additionalCamera} onChange={(e) => handleInputChange("additionalCamera", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                             </div>
-                            <div className="flex items-center space-x-2">
-                                 <Button variant={formData.drone ? 'default' : 'outline'} onClick={() => handleInputChange('drone', !formData.drone)} className="w-full">Drone Footage</Button>
+                            <div className="flex items-center justify-between p-4 border rounded-lg">
+                                <Label htmlFor="drone">Drone Footage</Label>
+                                <Switch id="drone" checked={formData.drone} onCheckedChange={(v) => handleInputChange('drone', v)} />
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <Button variant={formData.script ? 'default' : 'outline'} onClick={() => handleInputChange('script', !formData.script)} className="w-full">Scriptwriting</Button>
+                            <div className="flex items-center justify-between p-4 border rounded-lg">
+                                <Label htmlFor="script">Scriptwriting</Label>
+                                <Switch id="script" checked={formData.script} onCheckedChange={(v) => handleInputChange('script', v)} />
                             </div>
-                            <div className="flex items-center space-x-2">
-                                 <Button variant={formData.studio ? 'default' : 'outline'} onClick={() => handleInputChange('studio', !formData.studio)} className="w-full">Studio Rental</Button>
+                            <div className="flex items-center justify-between p-4 border rounded-lg">
+                                 <Label htmlFor="studio">Studio Rental</Label>
+                                <Switch id="studio" checked={formData.studio} onCheckedChange={(v) => handleInputChange('studio', v)} />
                             </div>
                         </div>
                     </div>
