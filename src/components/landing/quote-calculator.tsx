@@ -81,11 +81,20 @@ export function QuoteCalculator() {
     const [aiSummary, setAiSummary] = useState("");
     const [aiProjectTitle, setAiProjectTitle] = useState("");
     const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+    const [validationError, setValidationError] = useState(false);
     const { toast } = useToast();
 
     React.useEffect(() => {
         window.scrollTo(0, 0);
     }, [step]);
+    
+    React.useEffect(() => {
+        if (validationError) {
+            const timer = setTimeout(() => setValidationError(false), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [validationError]);
+
 
     const handleInputChange = useCallback((field: keyof FormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -129,29 +138,29 @@ export function QuoteCalculator() {
     };
 
     const nextStep = () => {
-        if (step === 1 && formData.serviceType === '') {
-             toast({ title: "Service Required", description: "Please select a service type to continue.", variant: "destructive" });
-             return;
-        }
-        if (step === 1 && formData.serviceType === 'photography' && formData.photographySubType === '') {
-             toast({ title: "Photography Type Required", description: "Please select a photography sub-type to continue.", variant: "destructive" });
-             return;
-        }
-        if (step === 1 && formData.serviceType === 'video' && formData.videoSubType === '') {
-             toast({ title: "Video Type Required", description: "Please select a video sub-type to continue.", variant: "destructive" });
-             return;
-        }
-        if (step === 1 && formData.serviceType === 'timelapse' && formData.timelapseSubType === '') {
-            toast({ title: "Time-Lapse Type Required", description: "Please select a project length to continue.", variant: "destructive" });
-            return;
-       }
-       if (step === 1 && formData.serviceType === '360tours' && formData.toursSubType === '') {
-            toast({ title: "Property Type Required", description: "Please select a property type to continue.", variant: "destructive" });
-            return;
-        }
-        if (step === 1 && formData.serviceType === 'post' && formData.postSubType === '') {
-            toast({ title: "Post-Production Type Required", description: "Please select a post-production sub-type to continue.", variant: "destructive" });
-            return;
+        const triggerValidationError = (message: string, title: string) => {
+            toast({ title: title, description: message, variant: "destructive" });
+            setValidationError(true);
+        };
+    
+        if (step === 1) {
+            if (formData.serviceType === '') {
+                triggerValidationError("Please select a service type to continue.", "Service Required");
+                return;
+            }
+            const subTypeFields = {
+                photography: 'photographySubType',
+                video: 'videoSubType',
+                timelapse: 'timelapseSubType',
+                '360tours': 'toursSubType',
+                post: 'postSubType'
+            };
+            const subTypeKey = subTypeFields[formData.serviceType as keyof typeof subTypeFields];
+            if (subTypeKey && !formData[subTypeKey as keyof FormData]) {
+                const serviceName = serviceOptions[formData.serviceType]?.name || "Service";
+                triggerValidationError(`Please select a ${serviceName.toLowerCase()} sub-type to continue.`, `${serviceName} Type Required`);
+                return;
+            }
         }
         if (step === 3) {
             if (!formData.name || !formData.email || !formData.phone) {
@@ -484,6 +493,7 @@ export function QuoteCalculator() {
                         handleRealEstateChange={handleRealEstateChange}
                         addRealEstateProperty={addRealEstateProperty}
                         removeRealEstateProperty={removeRealEstateProperty}
+                        validationError={validationError}
                     />
                 );
             case 2:

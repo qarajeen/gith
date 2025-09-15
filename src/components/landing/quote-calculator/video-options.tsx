@@ -9,31 +9,35 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import type { FormData } from './types';
 import { videoSubServices } from './types';
+import { Plus, Minus } from 'lucide-react';
 
 type VideoOptionsProps = {
   formData: FormData;
   handleInputChange: (field: keyof FormData, value: any) => void;
+  validationError: boolean;
 };
 
-export function VideoOptions({ formData, handleInputChange }: VideoOptionsProps) {
+export function VideoOptions({ formData, handleInputChange, validationError }: VideoOptionsProps) {
   return (
     <div className="space-y-4 animate-fade-in-up">
-      <h3 className="font-semibold mb-4 text-lg">Select Video Production Type</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {Object.entries(videoSubServices).map(([id, { name }]) => (
-          <Button
-            key={id}
-            variant="outline"
-            size="lg"
-            onClick={() => handleInputChange("videoSubType", id)}
-            className={cn(
-              "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
-              formData.videoSubType === id ? 'border-primary bg-accent' : 'border-border'
-            )}
-          >
-            {name}
-          </Button>
-        ))}
+      <div className={cn("p-4 border-2 rounded-lg transition-all", validationError ? 'border-destructive' : 'border-transparent')}>
+        <h3 className="font-semibold mb-4 text-lg">Select Video Production Type</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {Object.entries(videoSubServices).map(([id, { name }]) => (
+            <Button
+              key={id}
+              variant="outline"
+              size="lg"
+              onClick={() => handleInputChange("videoSubType", id)}
+              className={cn(
+                "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                formData.videoSubType === id ? 'border-primary bg-accent' : 'border-border'
+              )}
+            >
+              {name}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {formData.videoSubType === 'event' && (
@@ -162,15 +166,18 @@ export function VideoOptions({ formData, handleInputChange }: VideoOptionsProps)
           <div>
             <Label>Base Price (AED 3,000 - 10,000)</Label>
             <div className="flex items-center gap-4 mt-2">
+              <Button variant="outline" size="icon" onClick={() => handleInputChange('videoWeddingPrice', Math.max(3000, formData.videoWeddingPrice - 100))}><Minus /></Button>
               <Slider
                 value={[formData.videoWeddingPrice]}
                 onValueChange={(v) => handleInputChange('videoWeddingPrice', v[0])}
                 min={3000}
                 max={10000}
                 step={100}
+                className="flex-1"
               />
-              <span className="font-semibold w-24 text-center">{formData.videoWeddingPrice.toLocaleString()} AED</span>
+              <Button variant="outline" size="icon" onClick={() => handleInputChange('videoWeddingPrice', Math.min(10000, formData.videoWeddingPrice + 100))}><Plus /></Button>
             </div>
+             <div className="text-center font-semibold w-full mt-2">{formData.videoWeddingPrice.toLocaleString()} AED</div>
           </div>
         </div>
       )}

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Camera, Video, Wand2, Orbit, Hourglass } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { FormData, RealEstateProperty, ServiceOption, ServiceOptions } from './types';
+import type { FormData, RealEstateProperty, ServiceOptions } from './types';
 import { PhotographyOptions } from './photography-options';
 import { VideoOptions } from './video-options';
 import { TimelapseOptions } from './timelapse-options';
@@ -15,6 +15,7 @@ type Step1ServiceProps = {
   handleRealEstateChange: (index: number, field: keyof RealEstateProperty, value: any) => void;
   addRealEstateProperty: () => void;
   removeRealEstateProperty: (index: number) => void;
+  validationError: boolean;
 };
 
 const serviceOptions: ServiceOptions = {
@@ -31,6 +32,7 @@ export function Step1Service({
   handleRealEstateChange,
   addRealEstateProperty,
   removeRealEstateProperty,
+  validationError,
 }: Step1ServiceProps) {
 
   const handleBackToServices = () => {
@@ -51,15 +53,16 @@ export function Step1Service({
                   handleRealEstateChange={handleRealEstateChange}
                   addRealEstateProperty={addRealEstateProperty}
                   removeRealEstateProperty={removeRealEstateProperty}
+                  validationError={validationError}
                 />;
       case 'video':
-        return <VideoOptions formData={formData} handleInputChange={handleInputChange} />;
+        return <VideoOptions formData={formData} handleInputChange={handleInputChange} validationError={validationError} />;
       case 'timelapse':
-        return <TimelapseOptions formData={formData} handleInputChange={handleInputChange} />;
+        return <TimelapseOptions formData={formData} handleInputChange={handleInputChange} validationError={validationError} />;
       case '360tours':
-        return <ToursOptions formData={formData} handleInputChange={handleInputChange} />;
+        return <ToursOptions formData={formData} handleInputChange={handleInputChange} validationError={validationError} />;
       case 'post':
-        return <PostProductionOptions formData={formData} handleInputChange={handleInputChange} />;
+        return <PostProductionOptions formData={formData} handleInputChange={handleInputChange} validationError={validationError} />;
       default:
         return null;
     }
@@ -90,7 +93,7 @@ export function Step1Service({
         <div>
           <Button variant="ghost" onClick={handleBackToServices} className="mb-4 text-muted-foreground px-0 hover:bg-transparent -mt-4">
             <ChevronLeft className="mr-2 h-4 w-4" />
-            Back to Services
+            <span className='hidden sm:inline'>Back to Services</span>
           </Button>
           {renderSubServiceOptions()}
         </div>

@@ -7,13 +7,15 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import type { FormData } from './types';
 import { postProductionSubServices } from './types';
+import { Plus, Minus } from 'lucide-react';
 
 type PostProductionOptionsProps = {
   formData: FormData;
   handleInputChange: (field: keyof FormData, value: any) => void;
+  validationError: boolean;
 };
 
-export function PostProductionOptions({ formData, handleInputChange }: PostProductionOptionsProps) {
+export function PostProductionOptions({ formData, handleInputChange, validationError }: PostProductionOptionsProps) {
     const photoEditingPrices = {
         basic: { min: 20, max: 50, label: "AED 20 - 50" },
         advanced: { min: 50, max: 250, label: "AED 50 - 250" },
@@ -24,27 +26,29 @@ export function PostProductionOptions({ formData, handleInputChange }: PostProdu
 
     return (
         <div className="space-y-4 animate-fade-in-up">
-            <h3 className="font-semibold mb-4 text-lg">Select Post-Production Type</h3>
-            <div className="grid grid-cols-2 gap-4">
-                {Object.entries(postProductionSubServices).map(([id, { name }]) => (
-                    <Button
-                        key={id}
-                        variant="outline"
-                        size="lg"
-                        onClick={() => {
-                            handleInputChange("postSubType", id)
-                            // Reset prices on change
-                            if (id === 'photo') {
-                                handleInputChange('postPhotoEditingPrice', photoEditingPrices.basic.min);
-                            }
-                        }}
-                        className={cn("h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
-                            formData.postSubType === id ? 'border-primary bg-accent' : 'border-border'
-                        )}
-                    >
-                        {name}
-                    </Button>
-                ))}
+            <div className={cn("p-4 border-2 rounded-lg transition-all", validationError ? 'border-destructive' : 'border-transparent')}>
+                <h3 className="font-semibold mb-4 text-lg">Select Post-Production Type</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(postProductionSubServices).map(([id, { name }]) => (
+                        <Button
+                            key={id}
+                            variant="outline"
+                            size="lg"
+                            onClick={() => {
+                                handleInputChange("postSubType", id)
+                                // Reset prices on change
+                                if (id === 'photo') {
+                                    handleInputChange('postPhotoEditingPrice', photoEditingPrices.basic.min);
+                                }
+                            }}
+                            className={cn("h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                                formData.postSubType === id ? 'border-primary bg-accent' : 'border-border'
+                            )}
+                        >
+                            {name}
+                        </Button>
+                    ))}
+                </div>
             </div>
 
             {formData.postSubType === 'video' && (
@@ -78,13 +82,16 @@ export function PostProductionOptions({ formData, handleInputChange }: PostProdu
                             <div>
                                 <Label>Price Per Minute (AED 500 - 1,500)</Label>
                                 <div className="flex items-center gap-4 mt-2">
+                                    <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingPerMinutePrice', Math.max(500, formData.postVideoEditingPerMinutePrice - 50))}><Minus /></Button>
                                     <Slider
                                         value={[formData.postVideoEditingPerMinutePrice]}
                                         onValueChange={(v) => handleInputChange('postVideoEditingPerMinutePrice', v[0])}
                                         min={500} max={1500} step={50}
+                                        className='flex-1'
                                     />
-                                    <span className="font-semibold w-24 text-center">{formData.postVideoEditingPerMinutePrice.toLocaleString()} AED</span>
+                                    <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingPerMinutePrice', Math.min(1500, formData.postVideoEditingPerMinutePrice + 50))}><Plus /></Button>
                                 </div>
+                                <div className="text-center font-semibold w-full mt-2">{formData.postVideoEditingPerMinutePrice.toLocaleString()} AED</div>
                             </div>
                         </div>
                     )}
@@ -92,13 +99,16 @@ export function PostProductionOptions({ formData, handleInputChange }: PostProdu
                          <div>
                             <Label>Price for 15-60s Edit (AED 500 - 1,500)</Label>
                             <div className="flex items-center gap-4 mt-2">
+                                <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingSocialPrice', Math.max(500, formData.postVideoEditingSocialPrice - 50))}><Minus /></Button>
                                 <Slider
                                     value={[formData.postVideoEditingSocialPrice]}
                                     onValueChange={(v) => handleInputChange('postVideoEditingSocialPrice', v[0])}
                                     min={500} max={1500} step={50}
+                                    className='flex-1'
                                 />
-                                <span className="font-semibold w-24 text-center">{formData.postVideoEditingSocialPrice.toLocaleString()} AED</span>
+                                <Button variant="outline" size="icon" onClick={() => handleInputChange('postVideoEditingSocialPrice', Math.min(1500, formData.postVideoEditingSocialPrice + 50))}><Plus /></Button>
                             </div>
+                            <div className="text-center font-semibold w-full mt-2">{formData.postVideoEditingSocialPrice.toLocaleString()} AED</div>
                         </div>
                     )}
                 </div>
@@ -131,13 +141,16 @@ export function PostProductionOptions({ formData, handleInputChange }: PostProdu
                     <div>
                         <Label>Price per Photo ({photoPriceConfig.label})</Label>
                         <div className="flex items-center gap-4 mt-2">
+                             <Button variant="outline" size="icon" onClick={() => handleInputChange('postPhotoEditingPrice', Math.max(photoPriceConfig.min, formData.postPhotoEditingPrice - 5))}><Minus /></Button>
                             <Slider
                                 value={[formData.postPhotoEditingPrice]}
                                 onValueChange={(v) => handleInputChange('postPhotoEditingPrice', v[0])}
                                 min={photoPriceConfig.min} max={photoPriceConfig.max} step={5}
+                                className='flex-1'
                             />
-                            <span className="font-semibold w-24 text-center">{formData.postPhotoEditingPrice.toLocaleString()} AED</span>
+                            <Button variant="outline" size="icon" onClick={() => handleInputChange('postPhotoEditingPrice', Math.min(photoPriceConfig.max, formData.postPhotoEditingPrice + 5))}><Plus /></Button>
                         </div>
+                        <div className="text-center font-semibold w-full mt-2">{formData.postPhotoEditingPrice.toLocaleString()} AED</div>
                     </div>
                 </div>
             )}

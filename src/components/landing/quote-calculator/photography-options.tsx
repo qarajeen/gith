@@ -9,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import type { FormData, RealEstateProperty } from './types';
 import { photographySubServices } from './types';
-import { PlusCircle, XCircle } from 'lucide-react';
+import { PlusCircle, XCircle, Minus, Plus } from 'lucide-react';
 
 type PhotographyOptionsProps = {
   formData: FormData;
@@ -17,6 +17,7 @@ type PhotographyOptionsProps = {
   handleRealEstateChange: (index: number, field: keyof RealEstateProperty, value: any) => void;
   addRealEstateProperty: () => void;
   removeRealEstateProperty: (index: number) => void;
+  validationError: boolean;
 };
 
 export function PhotographyOptions({ 
@@ -25,6 +26,7 @@ export function PhotographyOptions({
     handleRealEstateChange,
     addRealEstateProperty,
     removeRealEstateProperty,
+    validationError
 }: PhotographyOptionsProps) {
   const isProduct = formData.photographySubType === 'product';
   const isFood = formData.photographySubType === 'food';
@@ -41,25 +43,33 @@ export function PhotographyOptions({
     standard: { name: "Standard", price: "12,000 AED", description: "8 hours coverage, 2 photographers, photo album." },
     premium: { name: "Premium", price: "25,000 AED", description: "Full-day coverage, video highlights, premium album." },
   };
+  
+  const sliderProps = {
+    headshots: { field: 'photoHeadshotsPeople' as const, min: 1, max: 50, step: 1, unit: 'people' },
+    product: { field: 'photoProductPhotos' as const, min: 1, max: 100, step: 1, unit: 'photos' },
+    food: { field: 'photoFoodPhotos' as const, min: 1, max: 100, step: 1, unit: 'photos' },
+  }
 
   return (
     <div className="space-y-4 animate-fade-in-up">
-      <h3 className="font-semibold mb-4 text-lg">Select Photography Type</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {Object.entries(photographySubServices).map(([id, { name }]) => (
-          <Button
-            key={id}
-            variant="outline"
-            size="lg"
-            onClick={() => handleInputChange("photographySubType", id)}
-            className={cn(
-              "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
-              formData.photographySubType === id ? 'border-primary bg-accent' : 'border-border'
-            )}
-          >
-            {name}
-          </Button>
-        ))}
+       <div className={cn("p-4 border-2 rounded-lg transition-all", validationError ? 'border-destructive' : 'border-transparent')}>
+        <h3 className="font-semibold mb-4 text-lg">Select Photography Type</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {Object.entries(photographySubServices).map(([id, { name }]) => (
+            <Button
+                key={id}
+                variant="outline"
+                size="lg"
+                onClick={() => handleInputChange("photographySubType", id)}
+                className={cn(
+                "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                formData.photographySubType === id ? 'border-primary bg-accent' : 'border-border'
+                )}
+            >
+                {name}
+            </Button>
+            ))}
+        </div>
       </div>
 
       {formData.photographySubType === 'event' && (
@@ -138,15 +148,18 @@ export function PhotographyOptions({
           <div>
             <Label>Number of People</Label>
             <div className="flex items-center gap-4 mt-2">
+              <Button variant="outline" size="icon" onClick={() => handleInputChange('photoHeadshotsPeople', Math.max(sliderProps.headshots.min, formData.photoHeadshotsPeople - sliderProps.headshots.step))}><Minus /></Button>
               <Slider
                 value={[formData.photoHeadshotsPeople]}
                 onValueChange={(v) => handleInputChange('photoHeadshotsPeople', v[0])}
-                min={1}
-                max={50}
-                step={1}
+                min={sliderProps.headshots.min}
+                max={sliderProps.headshots.max}
+                step={sliderProps.headshots.step}
+                className='flex-1'
               />
-              <span className="font-semibold w-24 text-center">{formData.photoHeadshotsPeople} people</span>
+              <Button variant="outline" size="icon" onClick={() => handleInputChange('photoHeadshotsPeople', Math.min(sliderProps.headshots.max, formData.photoHeadshotsPeople + sliderProps.headshots.step))}><Plus /></Button>
             </div>
+            <div className="text-center font-semibold w-full mt-2">{formData.photoHeadshotsPeople} people</div>
           </div>
         </div>
       )}
@@ -158,15 +171,18 @@ export function PhotographyOptions({
             <div>
                 <Label>Number of Photos</Label>
                  <div className="flex items-center gap-4 mt-2">
+                      <Button variant="outline" size="icon" onClick={() => handleInputChange(isProduct ? "photoProductPhotos" : "photoFoodPhotos", Math.max(1, (isProduct ? formData.photoProductPhotos : formData.photoFoodPhotos) - 1))}><Minus /></Button>
                      <Slider
                         value={[isProduct ? formData.photoProductPhotos : formData.photoFoodPhotos]}
                         onValueChange={(v) => handleInputChange(isProduct ? "photoProductPhotos" : "photoFoodPhotos", v[0])}
                         min={1}
                         max={100}
                         step={1}
+                        className='flex-1'
                     />
-                    <span className="font-semibold w-24 text-center">{isProduct ? formData.photoProductPhotos : formData.photoFoodPhotos} photos</span>
+                     <Button variant="outline" size="icon" onClick={() => handleInputChange(isProduct ? "photoProductPhotos" : "photoFoodPhotos", Math.min(100, (isProduct ? formData.photoProductPhotos : formData.photoFoodPhotos) + 1))}><Plus /></Button>
                 </div>
+                 <div className="text-center font-semibold w-full mt-2">{isProduct ? formData.photoProductPhotos : formData.photoFoodPhotos} photos</div>
             </div>
              <div>
                 <Label>Complexity</Label>
