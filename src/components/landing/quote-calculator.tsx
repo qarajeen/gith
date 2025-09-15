@@ -439,13 +439,13 @@ export function QuoteCalculator() {
                 pdfQuote.classList.add('block');
             }
 
-            html2canvas(document.getElementById('pdf-quote-preview')!, { scale: 2, backgroundColor: '#ffffff', windowWidth: 1200 }).then((canvas) => {
+            html2canvas(document.getElementById('pdf-quote-preview')!, { scale: 1, backgroundColor: '#ffffff', windowWidth: 1200 }).then((canvas) => {
                 if (pdfQuote) {
                     pdfQuote.classList.remove('block');
                     pdfQuote.classList.add('hidden');
                 }
 
-                const imgData = canvas.toDataURL('image/png');
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -463,7 +463,7 @@ export function QuoteCalculator() {
                 const x = (pdfWidth - width) / 2;
                 const y = 0;
 
-                pdf.addImage(imgData, 'PNG', x, y, width, height);
+                pdf.addImage(imgData, 'JPEG', x, y, width, height);
                 pdf.save("wrh-enigma-quote.pdf");
             });
         }
@@ -572,3 +572,5 @@ export function QuoteCalculator() {
         </Card>
     );
 }
+
+    
