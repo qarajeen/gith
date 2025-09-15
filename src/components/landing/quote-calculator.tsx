@@ -1,13 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Download, ArrowRight, ArrowLeft, Camera, Video, Wand2, Orbit, Hourglass } from "lucide-react";
+import { Download, ArrowRight, ArrowLeft, Camera, Video, Wand2, Orbit, Hourglass, Loader2 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { SummarizeQuoteInput, summarizeQuote } from "@/ai/flows/summarize-quote-flow";
+import { Skeleton } from "@/components/ui/skeleton";
+
 
 const serviceOptions = {
     photography: { name: "Photography", basePrice: 150, perHour: 150, perProject: 1500, icon: <Camera className="w-8 h-8 mb-2" /> },
@@ -67,6 +70,8 @@ export function QuoteCalculator() {
         email: "",
         message: "",
     });
+    const [aiSummary, setAiSummary] = useState("");
+    const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
     const handleInputChange = (field: keyof FormData, value: string | number | boolean) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -75,6 +80,40 @@ export function QuoteCalculator() {
     const nextStep = () => setStep((prev) => (prev < 5 ? prev + 1 : prev));
     const prevStep = () => setStep((prev) => (prev > 1 ? prev - 1 : prev));
     
+    useEffect(() => {
+        if (step === 5 && !aiSummary) {
+          const generateSummary = async () => {
+            setIsGeneratingSummary(true);
+            try {
+              const selectedAddons: string[] = [];
+              if (formData.drone) selectedAddons.push(addonOptions.drone.name);
+              if (formData.script) selectedAddons.push(addonOptions.script.name);
+              if (formData.studio) selectedAddons.push(addonOptions.studio.name);
+              if (formData.additionalHours > 0) selectedAddons.push(`${formData.additionalHours} Additional Hours`);
+              if (formData.additionalCamera > 0) selectedAddons.push(`${formData.additionalCamera} Additional Cameras`);
+
+              const input: SummarizeQuoteInput = {
+                serviceType: serviceOptions[formData.serviceType].name,
+                packageType: formData.packageType,
+                hours: formData.packageType === 'perHour' ? formData.hours : undefined,
+                location: formData.location,
+                locationType: formData.locationType,
+                addons: selectedAddons,
+              };
+              const result = await summarizeQuote(input);
+              setAiSummary(result.summary);
+            } catch (error) {
+              console.error("Error generating AI summary:", error);
+              setAiSummary("Here is a summary of your quote selections.");
+            } finally {
+              setIsGeneratingSummary(false);
+            }
+          };
+          generateSummary();
+        }
+      }, [step, formData, aiSummary]);
+
+
     const quoteDetails = useMemo(() => {
         let total = 0;
         const items: { name: string; price: number | string }[] = [];
@@ -269,7 +308,16 @@ export function QuoteCalculator() {
                      <div className="printable-area">
                          <div id="quote-preview" className="p-6 bg-background rounded-lg">
                             <CardTitle className="font-headline text-2xl text-center pb-4">Your Quote</CardTitle>
-                             <CardDescription className="text-center">Your estimated project cost.</CardDescription>
+                             <CardDescription className="text-center pb-4">
+                                {isGeneratingSummary ? (
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-3/4 mx-auto" />
+                                        <Skeleton className="h-4 w-1/2 mx-auto" />
+                                    </div>
+                                ) : (
+                                    aiSummary
+                                )}
+                             </CardDescription>
                              <div className="mt-4 space-y-4">
                                 {quoteDetails.items.map((item, index) => (
                                     <div key={index} className="flex justify-between">
