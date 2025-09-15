@@ -33,14 +33,6 @@ export function Step4Quote({
     setIsGeneratingSummary
 }: Step4QuoteProps) {
     
-    const [logoUrl, setLogoUrl] = React.useState('');
-
-    React.useEffect(() => {
-        // Ensure this code runs only on the client side
-        setLogoUrl(`${window.location.origin}/logo1.png`);
-    }, []);
-
-
     React.useEffect(() => {
         if (!aiSummary) {
           const generateSummary = async () => {
@@ -139,7 +131,7 @@ export function Step4Quote({
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
                     <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
                         <div className="flex items-center gap-4">
-                            {logoUrl && <img src={logoUrl} alt="logo" width="48" height="48" />}
+                           <Image src="/logo1.png" alt="logo" width="48" height="48" />
                             <div>
                                 <h1 className="text-4xl font-bold text-violet-600 mb-0">WRH Enigma</h1>
                                 <p className="text-gray-500">Creative Media Production</p>
