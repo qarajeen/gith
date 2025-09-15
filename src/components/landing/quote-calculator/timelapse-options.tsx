@@ -14,7 +14,7 @@ type TimelapseOptionsProps = {
 export function TimelapseOptions({ formData, handleInputChange, validationError }: TimelapseOptionsProps) {
     
   return (
-    <div className="space-y-4 animate-fade-in-up pb-20 sm:pb-0">
+    <div className="space-y-4 animate-fade-in-up flex flex-col flex-grow pb-20 sm:pb-0">
       <div className={cn("p-4 border-2 rounded-lg transition-all", validationError ? 'border-destructive' : 'border-transparent')}>
         <h3 className="font-semibold mb-4 text-lg">Select Project Length</h3>
         <RadioGroup value={formData.timelapseSubType} onValueChange={(v) => handleInputChange("timelapseSubType", v)} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -32,8 +32,8 @@ export function TimelapseOptions({ formData, handleInputChange, validationError 
       </div>
 
        {!formData.timelapseSubType && (
-        <div className="text-center text-muted-foreground pt-10">
-          Please select a project length to see pricing.
+        <div className="text-center text-muted-foreground pt-10 flex-grow flex items-center justify-center">
+          <p>Please select a project length to see pricing.</p>
         </div>
       )}
     </div>
