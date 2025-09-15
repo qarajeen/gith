@@ -499,7 +499,20 @@ export function QuoteCalculator() {
     const handlePrint = () => {
         const input = document.getElementById('quote-preview');
         if (input) {
-            html2canvas(input, { scale: 2, backgroundColor: null }).then((canvas) => {
+            // Temporarily add a class to the hidden div to make it visible for capture
+            const pdfQuote = document.getElementById('pdf-quote-preview-container');
+            if (pdfQuote) {
+                pdfQuote.classList.remove('hidden');
+                pdfQuote.classList.add('block');
+            }
+
+            html2canvas(document.getElementById('pdf-quote-preview')!, { scale: 2, backgroundColor: null, windowWidth: 1200 }).then((canvas) => {
+                // Hide the div again after capture
+                if (pdfQuote) {
+                    pdfQuote.classList.remove('block');
+                    pdfQuote.classList.add('hidden');
+                }
+
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -507,17 +520,19 @@ export function QuoteCalculator() {
                 const canvasWidth = canvas.width;
                 const canvasHeight = canvas.height;
                 const ratio = canvasWidth / canvasHeight;
-                let width = pdfWidth - 20;
+                let width = pdfWidth;
                 let height = width / ratio;
-                 if (height > pdfHeight - 20) {
-                    height = pdfHeight - 20;
+
+                if (height > pdfHeight) {
+                    height = pdfHeight;
                     width = height * ratio;
                 }
+
                 const x = (pdfWidth - width) / 2;
-                const y = (pdfHeight - height) / 2;
+                const y = 0; // Start from top
 
                 pdf.addImage(imgData, 'PNG', x, y, width, height);
-                pdf.save("quote.pdf");
+                pdf.save("wrh-enigma-quote.pdf");
             });
         }
     };
@@ -1132,22 +1147,13 @@ export function QuoteCalculator() {
             case 4:
                 return (
                      <div className="printable-area animate-fade-in-up">
-                         <div id="quote-preview" className="p-8 bg-card rounded-lg border-2 border-primary/20">
-                            {isGeneratingSummary ? (
-                                <div className="space-y-6">
-                                    <div className="text-center space-y-2">
-                                        <Skeleton className="h-8 w-2/3 mx-auto" />
-                                        <Skeleton className="h-4 w-3/4 mx-auto" />
-                                        <Skeleton className="h-4 w-1/2 mx-auto" />
-                                    </div>
-                                    <Separator />
-                                    <div className="space-y-4 mt-6">
-                                        <Skeleton className="h-6 w-full" />
-                                        <Skeleton className="h-6 w-full" />
-                                        <Skeleton className="h-6 w-2/3" />
-                                    </div>
-                                    <Separator />
-                                    <Skeleton className="h-8 w-1/2 ml-auto mt-4" />
+                        <div id="quote-preview" className="p-8 bg-card rounded-lg border-2 border-primary/20">
+                           {isGeneratingSummary ? (
+                                <div className="space-y-4 text-center py-20">
+                                    <Wand2 className="mx-auto h-12 w-12 animate-pulse text-primary" />
+                                    <p className="text-lg text-muted-foreground">Generating your personalized quote...</p>
+                                    <Skeleton className="h-4 w-48 mx-auto mt-2" />
+                                    <Skeleton className="h-4 w-64 mx-auto" />
                                 </div>
                             ) : (
                                 <>
@@ -1179,6 +1185,74 @@ export function QuoteCalculator() {
                                 Download as PDF
                             </Button>
                         </div>
+                         {/* Hidden printable version */}
+                        <div id="pdf-quote-preview-container" className="hidden">
+                             <div id="pdf-quote-preview" className="p-12 bg-background text-foreground w-[1200px] text-base">
+                                <div className="flex justify-between items-start mb-12 border-b pb-8 border-border">
+                                    <div>
+                                        <h1 className="text-4xl font-bold text-primary mb-2">WRH Enigma</h1>
+                                        <p className="text-muted-foreground">Creative Media Production</p>
+                                    </div>
+                                    <div className="text-right text-muted-foreground">
+                                        <p>+971 50 123 4567</p>
+                                        <p>hello@wrhenigma.com</p>
+                                        <p>Dubai, United Arab Emirates</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-8 mb-12">
+                                    <div>
+                                        <h2 className="text-sm font-semibold uppercase text-muted-foreground mb-2">Billed To</h2>
+                                        <p className="font-bold text-lg">{formData.name}</p>
+                                        <p className="text-muted-foreground">{formData.email}</p>
+                                        <p className="text-muted-foreground">{formData.phone}</p>
+                                    </div>
+                                    <div className="text-right">
+                                         <h2 className="text-sm font-semibold uppercase text-muted-foreground mb-2">Quote Date</h2>
+                                         <p className="font-bold text-lg">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    </div>
+                                </div>
+                                 
+                                <div className="mb-12">
+                                    <h2 className="text-2xl font-bold mb-1">{aiProjectTitle}</h2>
+                                    <p className="text-muted-foreground">{aiSummary}</p>
+                                </div>
+                                
+                                <div className="space-y-2 mb-12">
+                                    <div className="flex bg-secondary/50 font-semibold rounded-t-lg">
+                                        <div className="flex-grow p-4">Description</div>
+                                        <div className="w-48 p-4 text-right">Price</div>
+                                    </div>
+                                    {quoteDetails.items.map((item, index) => (
+                                        <div key={index} className="flex border-b border-border last:border-0">
+                                            <div className="flex-grow p-4 text-muted-foreground">{item.name}</div>
+                                            <div className="w-48 p-4 text-right font-medium">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-end mb-16">
+                                    <div className="w-1/2">
+                                        <div className="flex justify-between py-4 border-b border-border">
+                                            <span className="text-muted-foreground">Subtotal</span>
+                                            <span className="font-medium">{quoteDetails.items.reduce((acc, item) => acc + (typeof item.price === 'number' ? item.price : 0), 0).toLocaleString()} AED</span>
+                                        </div>
+                                        <div className="flex justify-between text-2xl font-bold py-6 bg-primary/10 px-4 rounded-b-lg">
+                                            <span className="text-primary">Total Estimate</span>
+                                            <span className="text-primary">{quoteDetails.total.toLocaleString()} AED</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="text-center text-muted-foreground text-sm">
+                                    <h3 className="font-semibold mb-2 text-foreground">Terms & Conditions</h3>
+                                    <p>50% advance payment required to confirm the booking. Balance due upon project completion.</p>
+                                    <p>This quote is valid for 30 days.</p>
+                                    <p className="mt-8 font-bold text-lg">Thank you for your business!</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 )
             default:
