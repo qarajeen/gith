@@ -20,10 +20,6 @@ type Step4QuoteProps = {
     setIsGeneratingSummary: (isGenerating: boolean) => void;
 };
 
-// Base64 encoded SVG for the logo
-const logoSvgDataUri = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIxNSIgZmlsbD0iIzc2NGFmZiIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjYwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiPldSPC90ZXh0Pgo8L3N2Zz4K";
-
-
 export function Step4Quote({
     formData,
     quoteDetails,
@@ -133,9 +129,8 @@ export function Step4Quote({
             <div id="pdf-quote-preview-container" className="hidden">
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base font-sans">
                     <div className="flex justify-between items-start mb-12 border-b-2 pb-8 border-gray-200">
-                        <img src={logoSvgDataUri} alt="Company Logo" className="w-24 h-24" />
                         <div className="text-right">
-                            <div className="text-right">
+                             <div className="text-right">
                                 <h1 className="text-2xl font-bold text-violet-600"></h1>
                                 <p className="text-gray-500"></p>
                             </div>
