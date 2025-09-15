@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { SummarizeQuoteInput, summarizeQuote } from "@/ai/flows/summarize-quote-flow";
+import { summarizeQuote } from "@/ai/flows/summarize-quote-flow";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
@@ -35,6 +35,15 @@ const addonOptions = {
     drone: { name: "Drone Footage", price: 1500, type: 'toggle' },
     script: { name: "Scriptwriting", price: 800, type: 'toggle' },
     studio: { name: "Studio Rental", price: 1000, type: 'toggle' },
+};
+
+type SummarizeQuoteInput = {
+  serviceType: string;
+  packageType: string;
+  hours?: number;
+  location: string;
+  locationType: string;
+  addons: string[];
 };
 
 type FormData = {
@@ -258,6 +267,7 @@ export function QuoteCalculator() {
                     </div>
                 );
             case 3:
+                const service = formData.serviceType;
                 return (
                     <div className="space-y-6">
                         <h3 className="font-semibold text-lg">Add-ons</h3>
@@ -266,22 +276,34 @@ export function QuoteCalculator() {
                                 <Label htmlFor="additionalHours">Additional Hours</Label>
                                 <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                             </div>
-                            <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalCamera > 0 ? 'border-primary bg-accent/50' : 'border-muted')}>
-                                <Label htmlFor="additionalCamera">Additional Cameras</Label>
-                                <Input id="additionalCamera" type="number" value={formData.additionalCamera} onChange={(e) => handleInputChange("additionalCamera", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
-                            </div>
-                            <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.drone ? 'border-primary bg-accent/50' : 'border-muted')}>
-                                <Label htmlFor="drone" className="cursor-pointer">Drone Footage</Label>
-                                <Switch id="drone" checked={formData.drone} onCheckedChange={(v) => handleInputChange('drone', v)} />
-                            </div>
-                             <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.script ? 'border-primary bg-accent/50' : 'border-muted')}>
-                                <Label htmlFor="script" className="cursor-pointer">Scriptwriting</Label>
-                                <Switch id="script" checked={formData.script} onCheckedChange={(v) => handleInputChange('script', v)} />
-                            </div>
-                             <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.studio ? 'border-primary bg-accent/50' : 'border-muted')}>
-                                 <Label htmlFor="studio" className="cursor-pointer">Studio Rental</Label>
-                                <Switch id="studio" checked={formData.studio} onCheckedChange={(v) => handleInputChange('studio', v)} />
-                            </div>
+                            
+                            {(service === 'photography' || service === 'video') && (
+                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalCamera > 0 ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                    <Label htmlFor="additionalCamera">Additional Cameras</Label>
+                                    <Input id="additionalCamera" type="number" value={formData.additionalCamera} onChange={(e) => handleInputChange("additionalCamera", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
+                                </div>
+                            )}
+
+                            {(service === 'photography' || service === 'video') && (
+                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.drone ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                    <Label htmlFor="drone" className="cursor-pointer">Drone Footage</Label>
+                                    <Switch id="drone" checked={formData.drone} onCheckedChange={(v) => handleInputChange('drone', v)} />
+                                </div>
+                            )}
+
+                            {service === 'video' && (
+                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.script ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                    <Label htmlFor="script" className="cursor-pointer">Scriptwriting</Label>
+                                    <Switch id="script" checked={formData.script} onCheckedChange={(v) => handleInputChange('script', v)} />
+                                </div>
+                            )}
+
+                            {(service === 'photography' || service === 'video') && (
+                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.studio ? 'border-primary bg-accent/50' : 'border-muted')}>
+                                    <Label htmlFor="studio" className="cursor-pointer">Studio Rental</Label>
+                                    <Switch id="studio" checked={formData.studio} onCheckedChange={(v) => handleInputChange('studio', v)} />
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
