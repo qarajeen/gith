@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { summarizeQuote } from "@/ai/flows/summarize-quote-flow";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 
 const serviceOptions = {
@@ -59,6 +60,7 @@ type FormData = {
     studio: boolean;
     name: string;
     email: string;
+    phone: string;
     message: string;
 };
 
@@ -77,16 +79,30 @@ export function QuoteCalculator() {
         studio: false,
         name: "",
         email: "",
+        phone: "",
         message: "",
     });
     const [aiSummary, setAiSummary] = useState("");
     const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+    const { toast } = useToast();
 
     const handleInputChange = (field: keyof FormData, value: string | number | boolean) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const nextStep = () => setStep((prev) => (prev < 5 ? prev + 1 : prev));
+    const nextStep = () => {
+        if (step === 4) {
+            if (!formData.name || !formData.email || !formData.phone) {
+                toast({
+                    title: "Missing Information",
+                    description: "Please fill out your name, email, and phone number to continue.",
+                    variant: "destructive",
+                });
+                return;
+            }
+        }
+        setStep((prev) => (prev < 5 ? prev + 1 : prev));
+    }
     const prevStep = () => setStep((prev) => (prev > 1 ? prev - 1 : prev));
     
     useEffect(() => {
@@ -318,6 +334,10 @@ export function QuoteCalculator() {
                         <div>
                             <Label htmlFor="email">Email</Label>
                             <Input id="email" type="email" placeholder="your@email.com" value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} />
+                        </div>
+                         <div>
+                            <Label htmlFor="phone">Phone Number</Label>
+                            <Input id="phone" type="tel" placeholder="Your Phone Number" value={formData.phone} onChange={(e) => handleInputChange("phone", e.target.value)} />
                         </div>
                         <div>
                             <Label htmlFor="message">Message (Optional)</Label>
