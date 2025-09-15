@@ -125,9 +125,8 @@ export function Step4Quote({
                     Download as PDF
                 </Button>
             </div>
-             {/* Hidden printable version */}
-            <div id="pdf-quote-preview-container" className="hidden">
-                <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base font-sans">
+            <div id="pdf-quote-preview-container" style={{ position: 'absolute', left: '-9999px', top: 'auto', width: '1200px' }}>
+                <div id="pdf-quote-preview" className="p-12 bg-white text-black w-full text-base font-sans">
                     <div className="flex justify-between items-start mb-12 border-b-2 pb-8 border-gray-200">
                         <div>
                             <h1 className="text-2xl font-bold text-violet-600">WRH Enigma</h1>
