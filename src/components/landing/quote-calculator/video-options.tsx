@@ -57,8 +57,20 @@ export function VideoOptions({ formData, handleInputChange, validationError }: V
           </RadioGroup>
           {formData.videoEventDuration === 'perHour' && (
             <div>
-              <Label htmlFor="videoEventHours">Hours</Label>
-              <Input id="videoEventHours" type="number" value={formData.videoEventHours} onChange={(e) => handleInputChange("videoEventHours", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+              <Label>Hours</Label>
+              <div className="flex items-center gap-4 mt-2">
+                <Button variant="outline" size="icon" onClick={() => handleInputChange('videoEventHours', Math.max(1, formData.videoEventHours - 1))}><Minus /></Button>
+                <Slider
+                  value={[formData.videoEventHours]}
+                  onValueChange={(v) => handleInputChange('videoEventHours', v[0])}
+                  min={1}
+                  max={24}
+                  step={1}
+                  className='flex-1'
+                />
+                <Button variant="outline" size="icon" onClick={() => handleInputChange('videoEventHours', Math.min(24, formData.videoEventHours + 1))}><Plus /></Button>
+              </div>
+              <div className="text-center font-semibold w-full mt-2">{formData.videoEventHours} hours</div>
             </div>
           )}
         </div>
