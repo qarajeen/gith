@@ -21,6 +21,10 @@ type Step4QuoteProps = {
     setIsGeneratingSummary: (isGenerating: boolean) => void;
 };
 
+// Base64 encoded SVG for the logo
+const logoSvgDataUri = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGc+CiAgICA8cGF0aCBmaWxsPSIjNzY0YWZmIiBkPSJNNTAsMEMyMi4zOSwwLDAsMjIuMzksMCw1MGMwLDI3LjYxLDIyLjM5LDUwLDUwLDUwczUwLTIyLjM5LDUwLTUwQzEwMCwyMi4zOSw3Ny42MSwwLDUwLDBaIE01MCw5MC43MiBDMjcuNTYsOTAuNzIsOS4yOCw3Mi40NCw5LjI4LDUwQzkuMjgsMjcuNTYsMjcuNTYsOS4yOCw1MCw5LjI4QzcyLjQ0LDkuMjgsOTAuNzIsMjcuNTYsOTAuNzIsNTBDOTAuNzIsNzIuNDQsNzIuNDQsOTAuNzIsNTAsOTAuNzJaIi8+CiAgICA8cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNNTEuNzksNjJINDAuNDJjLTEuMjgsMC0yLjMyLDEuMDQtMi4zMiwyLjMydi0yOC42NGMwLDEuMjgsMS4wNCwyLjMyLDIuMzIsMi4zMmgxOS4xNGMxLjI4LDAsMi4zMi0xLjA0LDIuMzItMi4zMlYzNS45MWMwLTEuMjgtMS4wNC0yLjMyLTIuMzItMi4zMkg1MS43OVY2MloiLz4KICAgIDxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik02MS44OCwzMy41OGgtNC42NWMtMS4yOCwwLTIuMzIsMS4wNC0yLjMyLDIuMzJ2NC42NWgxMS4zdi00LjY1YzAtMS4yOC0xLjA0LTIuMzItMi4zMi0yLjMySDYxLjg4WiIvPgogIDwvZz4KPC9zdmc+";
+
+
 export function Step4Quote({
     formData,
     quoteDetails,
@@ -32,12 +36,8 @@ export function Step4Quote({
     isGeneratingSummary,
     setIsGeneratingSummary
 }: Step4QuoteProps) {
-    const [logoUrl, setLogoUrl] = React.useState('');
 
     React.useEffect(() => {
-        // Ensure this runs only on the client
-        setLogoUrl(`${window.location.origin}/logo1.png`);
-
         if (!aiSummary) {
           const generateSummary = async () => {
             setIsGeneratingSummary(true);
@@ -134,7 +134,7 @@ export function Step4Quote({
             <div id="pdf-quote-preview-container" className="hidden">
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
                     <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
-                        {logoUrl && <img src={logoUrl} alt="WRH Enigma Logo" className="w-24 h-24" />}
+                        <img src={logoSvgDataUri} alt="Company Logo" className="w-24 h-24" />
                         <div className="text-right text-gray-500">
                             <p>+971586583939</p>
                             <p>hi@wrh.ae</p>
