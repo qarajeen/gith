@@ -45,7 +45,7 @@ export function PhotographyOptions({
   return (
     <div className="space-y-4 animate-fade-in-up">
       <h3 className="font-semibold mb-4 text-lg">Select Photography Type</h3>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {Object.entries(photographySubServices).map(([id, { name }]) => (
           <Button
             key={id}

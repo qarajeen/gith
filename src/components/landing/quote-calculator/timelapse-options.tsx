@@ -15,7 +15,7 @@ export function TimelapseOptions({ formData, handleInputChange }: TimelapseOptio
   return (
     <div className="space-y-4 animate-fade-in-up">
       <h3 className="font-semibold mb-4 text-lg">Select Project Length</h3>
-      <RadioGroup value={formData.timelapseSubType} onValueChange={(v) => handleInputChange("timelapseSubType", v)} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <RadioGroup value={formData.timelapseSubType} onValueChange={(v) => handleInputChange("timelapseSubType", v)} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {Object.entries(timelapseSubServices).map(([id, { name }]) => (
           <div key={id}>
             <RadioGroupItem value={id} id={`tl-${id}`} className="sr-only" />
