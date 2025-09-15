@@ -32,8 +32,12 @@ export function Step4Quote({
     isGeneratingSummary,
     setIsGeneratingSummary
 }: Step4QuoteProps) {
-    
+    const [logoUrl, setLogoUrl] = React.useState('');
+
     React.useEffect(() => {
+        // Ensure this runs only on the client
+        setLogoUrl(`${window.location.origin}/logo1.png`);
+
         if (!aiSummary) {
           const generateSummary = async () => {
             setIsGeneratingSummary(true);
@@ -130,7 +134,7 @@ export function Step4Quote({
             <div id="pdf-quote-preview-container" className="hidden">
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
                     <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
-                        <Image src="/logo1.png" alt="WRH Enigma Logo" width={80} height={80} />
+                        {logoUrl && <img src={logoUrl} alt="WRH Enigma Logo" className="w-24 h-24" />}
                         <div className="text-right text-gray-500">
                             <p>+971586583939</p>
                             <p>hi@wrh.ae</p>
@@ -183,7 +187,7 @@ export function Step4Quote({
                     </div>
 
                     <div className="text-center text-gray-500 text-sm mt-12 pt-8 border-t border-gray-200">
-                        <h3 className="font-semibold mb-2 text-gray-800">Terms & Conditions</h3>
+                        <h3 className="font-semibold mb-2 text-gray-800">Terms &amp; Conditions</h3>
                         <p>50% advance payment required to confirm the booking. Balance due upon project completion.</p>
                         <p>This quote is valid for 30 days.</p>
                         <p className="mt-8 font-bold text-lg text-gray-800">Thank you for your business!</p>
