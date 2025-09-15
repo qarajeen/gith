@@ -18,24 +18,59 @@ import { cn } from "@/lib/utils";
 import { summarizeQuote } from "@/ai/flows/summarize-quote-flow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { Slider } from "@/components/ui/slider";
 
-
+// Base Services
 const serviceOptions = {
-    photography: { name: "Photography", basePrice: 150, perHour: 150, perProject: 1500, icon: <Camera className="w-8 h-8 mb-2" /> },
-    video: { name: "Video Production", basePrice: 300, perHour: 300, perProject: 3000, icon: <Video className="w-8 h-8 mb-2" /> },
-    post: { name: "Post Production", basePrice: 100, perHour: 100, perProject: 1000, icon: <Wand2 className="w-8 h-8 mb-2" /> },
-    '360tours': { name: "360 Tours", basePrice: 400, perHour: 400, perProject: 4000, icon: <Orbit className="w-8 h-8 mb-2" /> },
-    timelapse: { name: "Time Lapse", basePrice: 250, perHour: 250, perProject: 2500, icon: <Hourglass className="w-8 h-8 mb-2" /> },
+    photography: { name: "Photography", icon: <Camera className="w-8 h-8 mb-2" /> },
+    video: { name: "Video Production", icon: <Video className="w-8 h-8 mb-2" /> },
+    post: { name: "Post Production", icon: <Wand2 className="w-8 h-8 mb-2" /> },
+    '360tours': { name: "360 Tours", icon: <Orbit className="w-8 h-8 mb-2" /> },
+    timelapse: { name: "Time Lapse", icon: <Hourglass className="w-8 h-8 mb-2" /> },
 };
+
+// Photography Sub-Services
+const photographySubServices = {
+    event: { name: "Event Photography" },
+    real_estate: { name: "Real Estate Photography" },
+    headshots: { name: "Corporate/Business Headshots" },
+    product: { name: "Product Photography" },
+    food: { name: "Food Photography" },
+    fashion: { name: "Fashion/Lifestyle Photography" },
+    wedding: { name: "Wedding Photography" },
+}
 
 const locationTypeOptions = ["Indoor", "Outdoor", "Studio", "Exhibition Center", "Hotel", "Other"];
 
-const addonOptions = {
-    additionalHours: { name: "Additional Hours", price: 100, type: 'perUnit' },
-    additionalCamera: { name: "Additional Camera", price: 500, type: 'perUnit' },
-    drone: { name: "Drone Footage", price: 1500, type: 'toggle' },
-    script: { name: "Scriptwriting", price: 800, type: 'toggle' },
-    studio: { name: "Studio Rental", price: 1000, type: 'toggle' },
+type FormData = {
+    // Step 1: Service Selection
+    serviceType: keyof typeof serviceOptions | "";
+    photographySubType: keyof typeof photographySubServices | "";
+
+    // Step 1.5: Photography Details
+    eventDuration: "perHour" | "halfDay" | "fullDay";
+    eventHours: number;
+    realEstatePropertyType: "studio" | "1-bedroom" | "2-bedroom" | "3-bedroom" | "villa";
+    realEstateFurnished: boolean;
+    headshotsPeople: number;
+    productPhotos: number;
+    foodPhotos: number;
+    fashionPrice: number;
+    weddingPrice: number;
+    
+    // Step 2: Location
+    location: string;
+    locationType: string;
+
+    // Step 3: Add-ons
+    secondCamera: boolean;
+    additionalHours: number;
+
+    // Step 4: Contact
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
 };
 
 type SummarizeQuoteInput = {
@@ -47,36 +82,25 @@ type SummarizeQuoteInput = {
   addons: string[];
 };
 
-type FormData = {
-    serviceType: keyof typeof serviceOptions;
-    packageType: "perHour" | "perProject";
-    hours: number;
-    location: string;
-    locationType: string;
-    additionalHours: number;
-    additionalCamera: number;
-    drone: boolean;
-    script: boolean;
-    studio: boolean;
-    name: string;
-    email: string;
-    phone: string;
-    message: string;
-};
 
 export function QuoteCalculator() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState<FormData>({
-        serviceType: "photography",
-        packageType: "perHour",
-        hours: 1,
+        serviceType: "",
+        photographySubType: "",
+        eventDuration: "perHour",
+        eventHours: 1,
+        realEstatePropertyType: "studio",
+        realEstateFurnished: false,
+        headshotsPeople: 1,
+        productPhotos: 1,
+        foodPhotos: 1,
+        fashionPrice: 1500,
+        weddingPrice: 5000,
         location: "dubai",
         locationType: "Indoor",
+        secondCamera: false,
         additionalHours: 0,
-        additionalCamera: 0,
-        drone: false,
-        script: false,
-        studio: false,
         name: "",
         email: "",
         phone: "",
@@ -86,18 +110,22 @@ export function QuoteCalculator() {
     const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
     const { toast } = useToast();
 
-    const handleInputChange = (field: keyof FormData, value: string | number | boolean) => {
+    const handleInputChange = (field: keyof FormData, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
     const nextStep = () => {
+        if (step === 1 && formData.serviceType === '') {
+             toast({ title: "Service Required", description: "Please select a service type to continue.", variant: "destructive" });
+             return;
+        }
+        if (step === 1 && formData.serviceType === 'photography' && formData.photographySubType === '') {
+             toast({ title: "Photography Type Required", description: "Please select a photography sub-type to continue.", variant: "destructive" });
+             return;
+        }
         if (step === 4) {
             if (!formData.name || !formData.email || !formData.phone) {
-                toast({
-                    title: "Missing Information",
-                    description: "Please fill out your name, email, and phone number to continue.",
-                    variant: "destructive",
-                });
+                toast({ title: "Missing Information", description: "Please fill out your name, email, and phone number.", variant: "destructive" });
                 return;
             }
         }
@@ -110,17 +138,16 @@ export function QuoteCalculator() {
           const generateSummary = async () => {
             setIsGeneratingSummary(true);
             try {
+              const serviceName = formData.serviceType ? serviceOptions[formData.serviceType].name : '';
+              const subTypeName = formData.photographySubType ? photographySubServices[formData.photographySubType].name : '';
+              
               const selectedAddons: string[] = [];
-              if (formData.drone) selectedAddons.push(addonOptions.drone.name);
-              if (formData.script) selectedAddons.push(addonOptions.script.name);
-              if (formData.studio) selectedAddons.push(addonOptions.studio.name);
+              if (formData.secondCamera) selectedAddons.push("Second Camera");
               if (formData.additionalHours > 0) selectedAddons.push(`${formData.additionalHours} Additional Hours`);
-              if (formData.additionalCamera > 0) selectedAddons.push(`${formData.additionalCamera} Additional Cameras`);
-
-              const input: SummarizeQuoteInput = {
-                serviceType: serviceOptions[formData.serviceType].name,
-                packageType: formData.packageType,
-                hours: formData.packageType === 'perHour' ? formData.hours : undefined,
+              
+              const input = {
+                serviceType: `${serviceName}${subTypeName ? `: ${subTypeName}` : ''}`,
+                packageType: 'Custom', // Simplified for AI
                 location: formData.location,
                 locationType: formData.locationType,
                 addons: selectedAddons,
@@ -141,41 +168,87 @@ export function QuoteCalculator() {
 
     const quoteDetails = useMemo(() => {
         let total = 0;
+        let basePrice = 0;
         const items: { name: string; price: number | string }[] = [];
-        const selectedService = serviceOptions[formData.serviceType];
+        
+        if (!formData.serviceType) return { items, total };
 
-        items.push({ name: `${selectedService.name} (${formData.packageType === 'perHour' ? `${formData.hours} ${formData.hours > 1 ? 'hrs' : 'hr'}` : 'Project'})`, price: 0 });
+        const serviceName = serviceOptions[formData.serviceType].name;
+        let itemName = serviceName;
 
-        if (formData.packageType === 'perHour') {
-            total += selectedService.perHour * formData.hours;
-            items[0].price = total;
-        } else {
-            total += selectedService.perProject;
-            items[0].price = total;
+        if (formData.serviceType === 'photography' && formData.photographySubType) {
+             const subTypeName = photographySubServices[formData.photographySubType].name;
+             itemName = `${serviceName}: ${subTypeName}`;
+
+            switch (formData.photographySubType) {
+                case 'event':
+                    if (formData.eventDuration === 'perHour') {
+                        basePrice = formData.eventHours * 300;
+                        itemName += ` (${formData.eventHours} hrs)`;
+                    } else if (formData.eventDuration === 'halfDay') {
+                        basePrice = 1200;
+                        itemName += ' (Half Day)';
+                    } else { // fullDay
+                        basePrice = 2000;
+                        itemName += ' (Full Day)';
+                    }
+                    break;
+                case 'real_estate':
+                    const prices = {
+                        studio: [500, 8000],
+                        '1-bedroom': [700, 1100],
+                        '2-bedroom': [900, 1400],
+                        '3-bedroom': [1100, 1600],
+                        villa: [1500, 3000],
+                    };
+                    basePrice = prices[formData.realEstatePropertyType][formData.realEstateFurnished ? 1 : 0];
+                    itemName += ` (${formData.realEstatePropertyType}, ${formData.realEstateFurnished ? 'Furnished' : 'Unfurnished'})`;
+                    break;
+                case 'headshots':
+                    basePrice = formData.headshotsPeople * 350;
+                    itemName += ` (${formData.headshotsPeople} people)`;
+                    break;
+                case 'product':
+                    basePrice = formData.productPhotos * 250; // Using average for simplicity
+                    itemName += ` (${formData.productPhotos} photos)`;
+                    break;
+                case 'food':
+                    basePrice = formData.foodPhotos * 275; // Using average
+                    itemName += ` (${formData.foodPhotos} photos)`;
+                    break;
+                case 'fashion':
+                    basePrice = formData.fashionPrice;
+                    itemName += ' (Half Day)';
+                    break;
+                case 'wedding':
+                    basePrice = formData.weddingPrice;
+                    itemName += ' (Package)';
+                    break;
+            }
+        } else if (formData.serviceType !== 'photography') {
+            // Placeholder for other services
+            const otherServicePrices = { video: 3000, post: 1000, '360tours': 4000, timelapse: 2500 };
+            basePrice = otherServicePrices[formData.serviceType as keyof typeof otherServicePrices] || 0;
         }
 
-        if (formData.additionalHours > 0) {
-            const price = formData.additionalHours * addonOptions.additionalHours.price;
+        total += basePrice;
+        items.push({ name: itemName, price: basePrice });
+        
+        // Add-ons
+        const p = formData.photographySubType;
+        if (p === 'event' || p === 'fashion' || p === 'wedding') {
+            if (formData.secondCamera) {
+                const price = basePrice; // +100%
+                items.push({ name: 'Second Camera', price });
+                total += price;
+            }
+        }
+        if (p === 'event' && formData.additionalHours > 0) {
+            const price = formData.additionalHours * 300;
             items.push({ name: `Additional Hours (x${formData.additionalHours})`, price });
             total += price;
         }
-        if (formData.additionalCamera > 0) {
-            const price = formData.additionalCamera * addonOptions.additionalCamera.price;
-            items.push({ name: `Additional Camera (x${formData.additionalCamera})`, price });
-            total += price;
-        }
-        if (formData.drone) {
-            items.push({ name: "Drone Footage", price: addonOptions.drone.price });
-            total += addonOptions.drone.price;
-        }
-        if (formData.script) {
-            items.push({ name: "Scriptwriting", price: addonOptions.script.price });
-            total += addonOptions.script.price;
-        }
-        if (formData.studio) {
-            items.push({ name: "Studio Rental", price: addonOptions.studio.price });
-            total += addonOptions.studio.price;
-        }
+
 
         return { items, total };
     }, [formData]);
@@ -206,6 +279,115 @@ export function QuoteCalculator() {
         }
     };
     
+    const renderPhotographyOptions = () => (
+        <div className="space-y-4 animate-fade-in-up">
+            <h3 className="font-semibold mb-4 text-lg">Select Photography Type</h3>
+             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {Object.entries(photographySubServices).map(([id, { name }]) => (
+                    <Button key={id} variant="outline" size="lg"
+                        onClick={() => handleInputChange("photographySubType", id)}
+                        className={cn("h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                            formData.photographySubType === id ? 'border-primary bg-accent' : 'border-border'
+                        )}
+                    >
+                        {name}
+                    </Button>
+                ))}
+            </div>
+
+            {formData.photographySubType === 'event' && (
+                <div className="pt-4 space-y-4 animate-fade-in-up">
+                    <h4 className="font-semibold">Event Details</h4>
+                    <RadioGroup value={formData.eventDuration} onValueChange={(v) => handleInputChange("eventDuration", v)} className="flex gap-4">
+                        {['perHour', 'halfDay', 'fullDay'].map(dur => (
+                             <div className="flex-1" key={dur}>
+                                <RadioGroupItem value={dur} id={`event-${dur}`} className="sr-only" />
+                                <Label htmlFor={`event-${dur}`} className={cn("flex flex-col items-center justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
+                                    formData.eventDuration === dur ? 'border-primary bg-accent' : 'border-border'
+                                )}>
+                                    {dur === 'perHour' ? 'Per Hour' : dur === 'halfDay' ? 'Half Day (4hrs)' : 'Full Day (8hrs)'}
+                                </Label>
+                            </div>
+                        ))}
+                    </RadioGroup>
+                    {formData.eventDuration === 'perHour' && (
+                         <div>
+                            <Label htmlFor="eventHours">Hours</Label>
+                            <Input id="eventHours" type="number" value={formData.eventHours} onChange={(e) => handleInputChange("eventHours", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {formData.photographySubType === 'real_estate' && (
+                <div className="pt-4 space-y-4 animate-fade-in-up">
+                     <h4 className="font-semibold">Real Estate Details</h4>
+                     <div>
+                        <Label htmlFor="realEstatePropertyType">Property Type</Label>
+                        <Select value={formData.realEstatePropertyType} onValueChange={(v) => handleInputChange("realEstatePropertyType", v)}>
+                            <SelectTrigger id="realEstatePropertyType" className="mt-2">
+                                <SelectValue placeholder="Select property type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="studio">Studio</SelectItem>
+                                <SelectItem value="1-bedroom">1-Bedroom</SelectItem>
+                                <SelectItem value="2-bedroom">2-Bedroom</SelectItem>
+                                <SelectItem value="3-bedroom">3-Bedroom</SelectItem>
+                                <SelectItem value="villa">Villa</SelectItem>
+                            </SelectContent>
+                        </Select>
+                     </div>
+                     <div className="flex items-center justify-between p-4 border rounded-lg">
+                        <Label htmlFor="realEstateFurnished">Property is Furnished / Staged</Label>
+                        <Switch id="realEstateFurnished" checked={formData.realEstateFurnished} onCheckedChange={(v) => handleInputChange("realEstateFurnished", v)} />
+                     </div>
+                </div>
+            )}
+             {formData.photographySubType === 'headshots' && (
+                <div className="pt-4 space-y-4 animate-fade-in-up">
+                    <h4 className="font-semibold">Headshot Details</h4>
+                    <div>
+                        <Label htmlFor="headshotsPeople">Number of People</Label>
+                        <Input id="headshotsPeople" type="number" value={formData.headshotsPeople} onChange={(e) => handleInputChange("headshotsPeople", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                    </div>
+                </div>
+            )}
+
+            {(formData.photographySubType === 'product' || formData.photographySubType === 'food') && (
+                 <div className="pt-4 space-y-4 animate-fade-in-up">
+                    <h4 className="font-semibold">{formData.photographySubType === 'product' ? 'Product' : 'Food'} Photography Details</h4>
+                    <div>
+                        <Label htmlFor="photosCount">Number of Photos</Label>
+                        <Input id="photosCount" type="number" value={formData.photographySubType === 'product' ? formData.productPhotos : formData.foodPhotos}
+                               onChange={(e) => handleInputChange(formData.photographySubType === 'product' ? "productPhotos" : "foodPhotos", Math.max(1, parseInt(e.target.value, 10) || 1))} min="1" className="mt-2" />
+                        <p className="text-sm text-muted-foreground mt-2">{formData.photographySubType === 'product' ? 'AED 100 - 400 per photo' : 'AED 150 - 400 per photo'}. Final price depends on complexity.</p>
+                    </div>
+                </div>
+            )}
+
+            {(formData.photographySubType === 'fashion' || formData.photographySubType === 'wedding') && (
+                 <div className="pt-4 space-y-4 animate-fade-in-up">
+                     <h4 className="font-semibold">{formData.photographySubType === 'fashion' ? 'Fashion/Lifestyle' : 'Wedding'} Details</h4>
+                    <div>
+                        <Label>Base Price (AED {formData.photographySubType === 'fashion' ? '1,500 - 5,000' : '5,000 - 25,000'})</Label>
+                        <div className="flex items-center gap-4 mt-2">
+                             <Slider
+                                value={[formData.photographySubType === 'fashion' ? formData.fashionPrice : formData.weddingPrice]}
+                                onValueChange={(v) => handleInputChange(formData.photographySubType === 'fashion' ? 'fashionPrice' : 'weddingPrice', v[0])}
+                                min={formData.photographySubType === 'fashion' ? 1500 : 5000}
+                                max={formData.photographySubType === 'fashion' ? 5000 : 25000}
+                                step={100}
+                            />
+                             <span className="font-semibold w-24 text-center">{
+                                 (formData.photographySubType === 'fashion' ? formData.fashionPrice : formData.weddingPrice).toLocaleString()
+                             } AED</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+    
     const renderStep = () => {
         switch (step) {
             case 1:
@@ -224,33 +406,7 @@ export function QuoteCalculator() {
                                 ))}
                             </div>
                         </div>
-                        <div>
-                            <h3 className="font-semibold mb-4 text-lg">Select Package</h3>
-                            <RadioGroup value={formData.packageType} onValueChange={(v) => handleInputChange("packageType", v as "perHour" | "perProject")} className="flex gap-4">
-                                <div className="flex-1">
-                                    <RadioGroupItem value="perHour" id="perHour" className="sr-only" />
-                                    <Label htmlFor="perHour" className={cn("flex flex-col items-center justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
-                                        formData.packageType === 'perHour' ? 'border-primary bg-accent' : 'border-border'
-                                    )}>
-                                        Per Hour
-                                    </Label>
-                                </div>
-                                <div className="flex-1">
-                                    <RadioGroupItem value="perProject" id="perProject" className="sr-only" />
-                                    <Label htmlFor="perProject" className={cn("flex flex-col items-center justify-between rounded-lg border-2 p-4 cursor-pointer w-full transition-colors hover:bg-accent/50",
-                                        formData.packageType === 'perProject' ? 'border-primary bg-accent' : 'border-border'
-                                    )}>
-                                        Per Project
-                                    </Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                         {formData.packageType === 'perHour' && (
-                            <div className="animate-fade-in-up">
-                                <Label htmlFor="hours" className="font-semibold text-lg">Hours</Label>
-                                <Input id="hours" type="number" value={formData.hours} onChange={(e) => handleInputChange("hours", parseInt(e.target.value, 10) || 1)} min="1" className="mt-2" />
-                            </div>
-                        )}
+                        {formData.serviceType === 'photography' && renderPhotographyOptions()}
                     </div>
                 );
             case 2:
@@ -290,41 +446,28 @@ export function QuoteCalculator() {
                     </div>
                 );
             case 3:
-                const service = formData.serviceType;
+                const p = formData.photographySubType;
+                const canHaveSecondCamera = p === 'event' || p === 'fashion' || p === 'wedding';
+                const canHaveAdditionalHours = p === 'event';
+
+                if (!canHaveSecondCamera && !canHaveAdditionalHours) {
+                    return <p className="text-muted-foreground text-center py-10 animate-fade-in-up">No add-ons available for this service.</p>;
+                }
+
                 return (
                     <div className="space-y-6 animate-fade-in-up">
                         <h3 className="font-semibold text-lg">Add-ons</h3>
-                        <div className="space-y-4">
-                            <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalHours > 0 ? 'border-primary bg-accent' : 'border-border')}>
-                                <Label htmlFor="additionalHours">Additional Hours</Label>
-                                <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
-                            </div>
-                            
-                            {(service === 'photography' || service === 'video') && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalCamera > 0 ? 'border-primary bg-accent' : 'border-border')}>
-                                    <Label htmlFor="additionalCamera">Additional Cameras</Label>
-                                    <Input id="additionalCamera" type="number" value={formData.additionalCamera} onChange={(e) => handleInputChange("additionalCamera", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
+                         <div className="space-y-4">
+                            {canHaveAdditionalHours && (
+                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.additionalHours > 0 ? 'border-primary bg-accent' : 'border-border')}>
+                                    <Label htmlFor="additionalHours">Additional Hours (AED 300/hr)</Label>
+                                    <Input id="additionalHours" type="number" value={formData.additionalHours} onChange={(e) => handleInputChange("additionalHours", parseInt(e.target.value, 10) || 0)} min="0" className="w-24 text-center" />
                                 </div>
                             )}
-
-                            {(service === 'photography' || service === 'video') && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.drone ? 'border-primary bg-accent' : 'border-border')}>
-                                    <Label htmlFor="drone" className="cursor-pointer flex-grow">Drone Footage</Label>
-                                    <Switch id="drone" checked={formData.drone} onCheckedChange={(v) => handleInputChange('drone', v)} />
-                                </div>
-                            )}
-
-                            {service === 'video' && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.script ? 'border-primary bg-accent' : 'border-border')}>
-                                    <Label htmlFor="script" className="cursor-pointer flex-grow">Scriptwriting</Label>
-                                    <Switch id="script" checked={formData.script} onCheckedChange={(v) => handleInputChange('script', v)} />
-                                </div>
-                            )}
-
-                            {(service === 'photography' || service === 'video') && (
-                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.studio ? 'border-primary bg-accent' : 'border-border')}>
-                                    <Label htmlFor="studio" className="cursor-pointer flex-grow">Studio Rental</Label>
-                                    <Switch id="studio" checked={formData.studio} onCheckedChange={(v) => handleInputChange('studio', v)} />
+                             {canHaveSecondCamera && (
+                                <div className={cn("flex items-center justify-between p-4 border rounded-lg transition-colors", formData.secondCamera ? 'border-primary bg-accent' : 'border-border')}>
+                                    <Label htmlFor="secondCamera" className="cursor-pointer flex-grow">Second Camera (+100% of Base Price)</Label>
+                                    <Switch id="secondCamera" checked={formData.secondCamera} onCheckedChange={(v) => handleInputChange('secondCamera', v)} />
                                 </div>
                             )}
                         </div>
