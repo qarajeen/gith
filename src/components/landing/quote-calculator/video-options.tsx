@@ -30,7 +30,7 @@ export function VideoOptions({ formData, handleInputChange, validationError }: V
               size="lg"
               onClick={() => handleInputChange("videoSubType", id)}
               className={cn(
-                "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                "h-auto min-h-[6rem] py-4 text-base transition-all hover:bg-accent/50 text-center justify-center whitespace-normal",
                 formData.videoSubType === id ? 'border-primary bg-accent' : 'border-border'
               )}
             >
@@ -116,7 +116,7 @@ export function VideoOptions({ formData, handleInputChange, validationError }: V
               <Switch id="videoPromoFullDay" checked={formData.videoPromoFullDay} onCheckedChange={(v) => handleInputChange("videoPromoFullDay", v)} />
             </div>
             <div>
-              <Label htmlFor="videoPromoMultiLoc">Additional Locations (+ AED 2,000 each)</Label>
+              <Label>Additional Locations (+ AED 2,000 each)</Label>
               <div className="flex items-center gap-4 mt-2">
                 <Button variant="outline" size="icon" onClick={() => handleInputChange('videoPromoMultiLoc', Math.max(0, formData.videoPromoMultiLoc - 1))}><Minus /></Button>
                 <Slider

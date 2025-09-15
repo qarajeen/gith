@@ -23,7 +23,7 @@ export function ToursOptions({ formData, handleInputChange, validationError }: T
               size="lg"
               onClick={() => handleInputChange("toursSubType", id)}
               className={cn(
-                "h-auto py-4 text-base transition-all hover:bg-accent/50 text-center justify-center",
+                "h-auto min-h-[6rem] py-4 text-base transition-all hover:bg-accent/50 text-center justify-center whitespace-normal",
                 formData.toursSubType === id ? 'border-primary bg-accent' : 'border-border'
               )}
             >
