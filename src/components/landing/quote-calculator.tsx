@@ -1132,23 +1132,24 @@ export function QuoteCalculator() {
                 return (
                      <div className="printable-area animate-fade-in-up">
                          <div id="quote-preview" className="p-8 bg-card rounded-lg border-2 border-primary/20">
-                            <CardTitle className="text-3xl font-bold text-center pb-2">
-                                {isGeneratingSummary ? (
+                            {isGeneratingSummary ? (
+                                <div className="text-center">
                                     <Skeleton className="h-8 w-2/3 mx-auto" />
-                                ) : (
-                                    aiProjectTitle
-                                )}
-                            </CardTitle>
-                             <CardDescription className="text-center pb-6 min-h-[40px] text-lg">
-                                {isGeneratingSummary ? (
-                                    <div className="space-y-2 mt-2">
+                                    <div className="space-y-2 mt-4">
                                         <Skeleton className="h-4 w-3/4 mx-auto" />
                                         <Skeleton className="h-4 w-1/2 mx-auto" />
                                     </div>
-                                ) : (
-                                    aiSummary
-                                )}
-                             </CardDescription>
+                                </div>
+                            ) : (
+                                <>
+                                    <CardTitle className="text-3xl font-bold text-center pb-2">
+                                        {aiProjectTitle}
+                                    </CardTitle>
+                                    <CardDescription className="text-center pb-6 min-h-[40px] text-lg">
+                                        {aiSummary}
+                                    </CardDescription>
+                                </>
+                            )}
                              <div className="mt-4 space-y-4 text-base">
                                 {quoteDetails.items.map((item, index) => (
                                     <div key={index} className="flex justify-between items-center py-2 border-b border-white/10">
