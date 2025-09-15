@@ -1133,12 +1133,19 @@ export function QuoteCalculator() {
                      <div className="printable-area animate-fade-in-up">
                          <div id="quote-preview" className="p-8 bg-card rounded-lg border-2 border-primary/20">
                             {isGeneratingSummary ? (
-                                <div className="text-center">
-                                    <Skeleton className="h-8 w-2/3 mx-auto" />
-                                    <div className="space-y-2 mt-4">
+                                <div className="space-y-6">
+                                    <div className="text-center space-y-2">
+                                        <Skeleton className="h-8 w-2/3 mx-auto" />
                                         <Skeleton className="h-4 w-3/4 mx-auto" />
                                         <Skeleton className="h-4 w-1/2 mx-auto" />
                                     </div>
+                                    <div className="space-y-4">
+                                        <Skeleton className="h-6 w-full" />
+                                        <Skeleton className="h-6 w-full" />
+                                        <Skeleton className="h-6 w-2/3" />
+                                    </div>
+                                    <Separator />
+                                    <Skeleton className="h-8 w-1/2 ml-auto" />
                                 </div>
                             ) : (
                                 <>
@@ -1148,21 +1155,21 @@ export function QuoteCalculator() {
                                     <CardDescription className="text-center pb-6 min-h-[40px] text-lg">
                                         {aiSummary}
                                     </CardDescription>
+                                    <div className="mt-4 space-y-4 text-base">
+                                        {quoteDetails.items.map((item, index) => (
+                                            <div key={index} className="flex justify-between items-center py-2 border-b border-white/10">
+                                                <span className="text-muted-foreground">{item.name}</span>
+                                                <span className="font-medium">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</span>
+                                            </div>
+                                        ))}
+                                        <Separator className="my-4 bg-primary/30" />
+                                        <div className="flex justify-between font-bold text-xl">
+                                            <span>Total Estimate</span>
+                                            <span>{quoteDetails.total.toLocaleString()} AED</span>
+                                        </div>
+                                    </div>
                                 </>
                             )}
-                             <div className="mt-4 space-y-4 text-base">
-                                {quoteDetails.items.map((item, index) => (
-                                    <div key={index} className="flex justify-between items-center py-2 border-b border-white/10">
-                                        <span className="text-muted-foreground">{item.name}</span>
-                                        <span className="font-medium">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</span>
-                                    </div>
-                                ))}
-                                <Separator className="my-4 bg-primary/30" />
-                                <div className="flex justify-between font-bold text-xl">
-                                    <span>Total Estimate</span>
-                                    <span>{quoteDetails.total.toLocaleString()} AED</span>
-                                </div>
-                            </div>
                         </div>
                          <div className="flex justify-end mt-6 gap-2">
                             <Button onClick={handlePrint} size="lg" className="w-full">
