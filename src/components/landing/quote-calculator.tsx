@@ -449,7 +449,7 @@ export function QuoteCalculator() {
         let currentY = 0;
     
         // Colors
-        const primaryColor = [124, 40, 251]; // approx hsl(262, 84%, 59%)
+        const primaryColor = [48, 25, 52]; // Deep dark purple
         const lightGray = [248, 248, 250];
         const darkGray = [100, 100, 100];
         const black = [0, 0, 0];
