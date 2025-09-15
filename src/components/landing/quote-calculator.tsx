@@ -506,7 +506,7 @@ export function QuoteCalculator() {
                 pdfQuote.classList.add('block');
             }
 
-            html2canvas(document.getElementById('pdf-quote-preview')!, { scale: 2, backgroundColor: null, windowWidth: 1200 }).then((canvas) => {
+            html2canvas(document.getElementById('pdf-quote-preview')!, { scale: 2, backgroundColor: '#ffffff', windowWidth: 1200 }).then((canvas) => {
                 // Hide the div again after capture
                 if (pdfQuote) {
                     pdfQuote.classList.remove('block');
@@ -1187,13 +1187,13 @@ export function QuoteCalculator() {
                         </div>
                          {/* Hidden printable version */}
                         <div id="pdf-quote-preview-container" className="hidden">
-                             <div id="pdf-quote-preview" className="p-12 bg-background text-foreground w-[1200px] text-base">
-                                <div className="flex justify-between items-start mb-12 border-b pb-8 border-border">
+                            <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
+                                <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
                                     <div>
-                                        <h1 className="text-4xl font-bold text-primary mb-2">WRH Enigma</h1>
-                                        <p className="text-muted-foreground">Creative Media Production</p>
+                                        <h1 className="text-4xl font-bold text-violet-600 mb-2">WRH Enigma</h1>
+                                        <p className="text-gray-500">Creative Media Production</p>
                                     </div>
-                                    <div className="text-right text-muted-foreground">
+                                    <div className="text-right text-gray-500">
                                         <p>+971 50 123 4567</p>
                                         <p>hello@wrhenigma.com</p>
                                         <p>Dubai, United Arab Emirates</p>
@@ -1202,53 +1202,53 @@ export function QuoteCalculator() {
 
                                 <div className="grid grid-cols-2 gap-8 mb-12">
                                     <div>
-                                        <h2 className="text-sm font-semibold uppercase text-muted-foreground mb-2">Billed To</h2>
-                                        <p className="font-bold text-lg">{formData.name}</p>
-                                        <p className="text-muted-foreground">{formData.email}</p>
-                                        <p className="text-muted-foreground">{formData.phone}</p>
+                                        <h2 className="text-sm font-semibold uppercase text-gray-500 mb-2">Billed To</h2>
+                                        <p className="font-bold text-lg text-gray-900">{formData.name}</p>
+                                        <p className="text-gray-500">{formData.email}</p>
+                                        <p className="text-gray-500">{formData.phone}</p>
                                     </div>
                                     <div className="text-right">
-                                         <h2 className="text-sm font-semibold uppercase text-muted-foreground mb-2">Quote Date</h2>
-                                         <p className="font-bold text-lg">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                         <h2 className="text-sm font-semibold uppercase text-gray-500 mb-2">Quote Date</h2>
+                                         <p className="font-bold text-lg text-gray-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                                     </div>
                                 </div>
                                  
                                 <div className="mb-12">
-                                    <h2 className="text-2xl font-bold mb-1">{aiProjectTitle}</h2>
-                                    <p className="text-muted-foreground">{aiSummary}</p>
+                                    <h2 className="text-2xl font-bold mb-1 text-gray-900">{aiProjectTitle}</h2>
+                                    <p className="text-gray-500">{aiSummary}</p>
                                 </div>
                                 
                                 <div className="space-y-2 mb-12">
-                                    <div className="flex bg-secondary/50 font-semibold rounded-t-lg">
+                                    <div className="flex bg-gray-100 font-semibold rounded-t-lg text-gray-800">
                                         <div className="flex-grow p-4">Description</div>
                                         <div className="w-48 p-4 text-right">Price</div>
                                     </div>
                                     {quoteDetails.items.map((item, index) => (
-                                        <div key={index} className="flex border-b border-border last:border-0">
-                                            <div className="flex-grow p-4 text-muted-foreground">{item.name}</div>
-                                            <div className="w-48 p-4 text-right font-medium">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</div>
+                                        <div key={index} className="flex border-b border-gray-200 last:border-0">
+                                            <div className="flex-grow p-4 text-gray-600">{item.name}</div>
+                                            <div className="w-48 p-4 text-right font-medium text-gray-800">{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</div>
                                         </div>
                                     ))}
                                 </div>
 
                                 <div className="flex justify-end mb-16">
                                     <div className="w-1/2">
-                                        <div className="flex justify-between py-4 border-b border-border">
-                                            <span className="text-muted-foreground">Subtotal</span>
-                                            <span className="font-medium">{quoteDetails.items.reduce((acc, item) => acc + (typeof item.price === 'number' ? item.price : 0), 0).toLocaleString()} AED</span>
+                                        <div className="flex justify-between py-4 border-b border-gray-200">
+                                            <span className="text-gray-500">Subtotal</span>
+                                            <span className="font-medium text-gray-800">{quoteDetails.items.reduce((acc, item) => acc + (typeof item.price === 'number' ? item.price : 0), 0).toLocaleString()} AED</span>
                                         </div>
-                                        <div className="flex justify-between text-2xl font-bold py-6 bg-primary/10 px-4 rounded-b-lg">
-                                            <span className="text-primary">Total Estimate</span>
-                                            <span className="text-primary">{quoteDetails.total.toLocaleString()} AED</span>
+                                        <div className="flex justify-between text-2xl font-bold py-6 bg-violet-100/50 px-4 rounded-b-lg">
+                                            <span className="text-violet-600">Total Estimate</span>
+                                            <span className="text-violet-600">{quoteDetails.total.toLocaleString()} AED</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="text-center text-muted-foreground text-sm">
-                                    <h3 className="font-semibold mb-2 text-foreground">Terms & Conditions</h3>
+                                <div className="text-center text-gray-500 text-sm">
+                                    <h3 className="font-semibold mb-2 text-gray-800">Terms & Conditions</h3>
                                     <p>50% advance payment required to confirm the booking. Balance due upon project completion.</p>
                                     <p>This quote is valid for 30 days.</p>
-                                    <p className="mt-8 font-bold text-lg">Thank you for your business!</p>
+                                    <p className="mt-8 font-bold text-lg text-gray-800">Thank you for your business!</p>
                                 </div>
                             </div>
                         </div>
