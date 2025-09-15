@@ -448,6 +448,9 @@ export function QuoteCalculator() {
         const margin = 15;
         let currentY = 0;
     
+        // 1. PASTE YOUR BASE64 STRING HERE
+        const logoDataUri = ""; // e.g., "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."
+
         // Colors
         const primaryColor = [48, 25, 52]; // Deep dark purple
         const lightGray = [248, 248, 250];
@@ -460,7 +463,18 @@ export function QuoteCalculator() {
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(255, 255, 255);
-        doc.text("WRH Production", margin, 18);
+
+        // 2. ADD LOGO IMAGE
+        if (logoDataUri) {
+            const imgProps = doc.getImageProperties(logoDataUri);
+            const imgWidth = 20; // Adjust width as needed
+            const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+            doc.addImage(logoDataUri, 'PNG', margin, (30 - imgHeight) / 2, imgWidth, imgHeight);
+        }
+        
+        // Adjust text position if logo is present
+        const textX = logoDataUri ? margin + 25 : margin;
+        doc.text("WRH Production", textX, 18);
     
         doc.setFontSize(22);
         doc.text("QUOTE", pageWidth - margin, 18, { align: 'right' });
@@ -531,7 +545,7 @@ export function QuoteCalculator() {
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(black[0], black[1], black[2]);
         quoteDetails.items.forEach(item => {
-            if (currentY > pageHeight - 50) { // Add new page if content overflows
+            if (currentY > pageHeight - 80) { // Check for footer space
                 doc.addPage();
                 currentY = margin;
             }
@@ -544,6 +558,11 @@ export function QuoteCalculator() {
     
         // -- Total Section --
         const totalSectionY = Math.max(currentY + 10, pageHeight - 80);
+        if (totalSectionY > pageHeight - 80) {
+            doc.addPage();
+            currentY = margin;
+        }
+
         doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
         doc.rect(pageWidth / 2, totalSectionY, pageWidth / 2, 20, 'F');
         
