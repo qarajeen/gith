@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useState, useMemo } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -73,13 +75,6 @@ export function QuoteCalculator() {
     const nextStep = () => setStep((prev) => (prev < 5 ? prev + 1 : prev));
     const prevStep = () => setStep((prev) => (prev > 1 ? prev - 1 : prev));
     
-    const handleQuoteSubmission = () => {
-        // Here you would typically send the data to a server
-        console.log("Final Quote Data:", formData, quoteDetails);
-        alert("Quote submitted! We'll be in touch shortly.");
-        // Optionally move to a "thank you" step or reset
-    };
-
     const quoteDetails = useMemo(() => {
         let total = 0;
         const items: { name: string; price: number | string }[] = [];
@@ -122,7 +117,22 @@ export function QuoteCalculator() {
     }, [formData]);
 
     const handlePrint = () => {
-        window.print();
+        const input = document.getElementById('quote-preview');
+        if (input) {
+            html2canvas(input, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                const ratio = canvasWidth / canvasHeight;
+                const width = pdfWidth - 20;
+                const height = width / ratio;
+                pdf.addImage(imgData, 'PNG', 10, 10, width, height);
+                pdf.save("quote.pdf");
+            });
+        }
     };
     
     const renderStep = () => {
@@ -256,28 +266,28 @@ export function QuoteCalculator() {
                 );
             case 5:
                 return (
-                     <div id="quote-preview">
-                         <CardDescription>Your estimated project cost.</CardDescription>
-                         <div className="mt-4 space-y-4">
-                            {quoteDetails.items.map((item, index) => (
-                                <div key={index} className="flex justify-between">
-                                    <span>{item.name}</span>
-                                    <span>{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</span>
+                     <div className="printable-area">
+                         <div id="quote-preview" className="p-6 bg-background rounded-lg">
+                            <CardTitle className="font-headline text-2xl text-center pb-4">Your Quote</CardTitle>
+                             <CardDescription className="text-center">Your estimated project cost.</CardDescription>
+                             <div className="mt-4 space-y-4">
+                                {quoteDetails.items.map((item, index) => (
+                                    <div key={index} className="flex justify-between">
+                                        <span>{item.name}</span>
+                                        <span>{typeof item.price === 'number' ? `${item.price.toLocaleString()} AED` : item.price}</span>
+                                    </div>
+                                ))}
+                                <Separator className="my-4" />
+                                <div className="flex justify-between font-bold text-lg">
+                                    <span>Total Estimate</span>
+                                    <span>{quoteDetails.total.toLocaleString()} AED</span>
                                 </div>
-                            ))}
-                            <Separator className="my-4" />
-                            <div className="flex justify-between font-bold text-lg">
-                                <span>Total Estimate</span>
-                                <span>{quoteDetails.total.toLocaleString()} AED</span>
                             </div>
                         </div>
                          <div className="flex justify-end mt-6 gap-2">
-                            <Button onClick={handlePrint} variant="outline">
+                            <Button onClick={handlePrint} variant="outline" className="w-full">
                                 <Download className="mr-2 h-4 w-4" />
                                 Download as PDF
-                            </Button>
-                            <Button onClick={handleQuoteSubmission} className="bg-primary hover:bg-primary/90">
-                                Submit Quote
                             </Button>
                         </div>
                     </div>
@@ -320,26 +330,6 @@ export function QuoteCalculator() {
                     <Button onClick={nextStep}>{step === 4 ? 'See Your Quote' : 'Next'} <ArrowRight className="ml-2 h-4 w-4"/></Button>
                 )}
             </CardFooter>
-            
-            <style>{`
-                @media print {
-                  body * {
-                    visibility: hidden;
-                  }
-                  #quote-preview, #quote-preview * {
-                    visibility: visible;
-                  }
-                  #quote-preview {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                  }
-                  .printable-area button {
-                    display: none;
-                  }
-                }
-            `}</style>
         </Card>
     );
 }
