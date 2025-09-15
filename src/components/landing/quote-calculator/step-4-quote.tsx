@@ -7,6 +7,7 @@ import { summarizeQuote } from "@/ai/flows/summarize-quote-flow";
 import { Download, Wand2 } from 'lucide-react';
 import type { FormData } from './types';
 import { serviceOptions, photographySubServices, videoSubServices, timelapseSubServices, toursSubServices, postProductionSubServices } from './types';
+import Image from 'next/image';
 
 type Step4QuoteProps = {
     formData: FormData;
@@ -31,6 +32,14 @@ export function Step4Quote({
     isGeneratingSummary,
     setIsGeneratingSummary
 }: Step4QuoteProps) {
+    
+    const [logoUrl, setLogoUrl] = React.useState('');
+
+    React.useEffect(() => {
+        // Ensure this code runs only on the client side
+        setLogoUrl(`${window.location.origin}/logo1.png`);
+    }, []);
+
 
     React.useEffect(() => {
         if (!aiSummary) {
@@ -130,11 +139,7 @@ export function Step4Quote({
                 <div id="pdf-quote-preview" className="p-12 bg-white text-black w-[1200px] text-base">
                     <div className="flex justify-between items-start mb-12 border-b pb-8 border-gray-300">
                         <div className="flex items-center gap-4">
-                             <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M24.0002 4.68652L43.3137 14.3433L37.3137 17.3433L24.0002 11.3433L10.6867 17.3433L4.68672 14.3433L24.0002 4.68652Z" fill="#A78BFA"/>
-                                <path d="M4.68672 24.0002L10.6867 27.0002L24.0002 21.0002L37.3137 27.0002L43.3137 24.0002L24.0002 14.3434L4.68672 24.0002Z" fill="#8B5CF6"/>
-                                <path d="M10.6867 36.6569L24.0002 30.6569L37.3137 36.6569L24.0002 43.3136L10.6867 36.6569Z" fill="#7C3AED"/>
-                            </svg>
+                            {logoUrl && <img src={logoUrl} alt="logo" width="48" height="48" />}
                             <div>
                                 <h1 className="text-4xl font-bold text-violet-600 mb-0">WRH Enigma</h1>
                                 <p className="text-gray-500">Creative Media Production</p>
