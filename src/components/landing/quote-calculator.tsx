@@ -1014,24 +1014,29 @@ export function QuoteCalculator() {
             case 1:
                 return (
                     <div className="space-y-8 animate-fade-in-up">
-                        <div>
-                            <h3 className="font-semibold mb-4 text-lg">Select Service Type</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.entries(serviceOptions).map(([id, { name, icon }]) => (
-                                    <div key={id} onClick={() => handleInputChange("serviceType", id)}
-                                         className={cn("p-4 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center hover:bg-accent/50",
-                                         formData.serviceType === id ? 'border-primary bg-accent text-primary-foreground' : 'border-border')}>
-                                        {icon}
-                                        <span className="font-medium text-center">{name}</span>
-                                    </div>
-                                ))}
+                        {formData.serviceType === '' ? (
+                            <div>
+                                <h3 className="font-semibold mb-4 text-lg">Select Service Type</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {Object.entries(serviceOptions).map(([id, { name, icon }]) => (
+                                        <div key={id} onClick={() => handleInputChange("serviceType", id)}
+                                             className={cn("p-4 border-2 rounded-lg cursor-pointer transition-all flex flex-col items-center justify-center hover:bg-accent/50",
+                                             formData.serviceType === id ? 'border-primary bg-accent text-primary-foreground' : 'border-border')}>
+                                            {icon}
+                                            <span className="font-medium text-center">{name}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                        {formData.serviceType === 'photography' && renderPhotographyOptions()}
-                        {formData.serviceType === 'video' && renderVideoOptions()}
-                        {formData.serviceType === 'timelapse' && renderTimelapseOptions()}
-                        {formData.serviceType === '360tours' && render360ToursOptions()}
-                        {formData.serviceType === 'post' && renderPostProductionOptions()}
+                        ) : (
+                            <>
+                                {formData.serviceType === 'photography' && renderPhotographyOptions()}
+                                {formData.serviceType === 'video' && renderVideoOptions()}
+                                {formData.serviceType === 'timelapse' && renderTimelapseOptions()}
+                                {formData.serviceType === '360tours' && render360ToursOptions()}
+                                {formData.serviceType === 'post' && renderPostProductionOptions()}
+                            </>
+                        )}
                     </div>
                 );
             case 2:
