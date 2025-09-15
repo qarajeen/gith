@@ -367,6 +367,41 @@ export function QuoteCalculator() {
         
         let total = subtotal;
 
+        // Studio Rental Fee
+        if (formData.locationType === 'Studio') {
+            let studioFee = 0;
+            let studioItemName = 'Studio Rental';
+            let duration = '';
+            
+            if (formData.serviceType === 'photography' && formData.photographySubType === 'event') {
+                duration = formData.photoEventDuration;
+            } else if (formData.serviceType === 'video' && formData.videoSubType === 'event') {
+                duration = formData.videoEventDuration;
+            }
+
+            switch(duration) {
+                case 'perHour':
+                    const hours = formData.serviceType === 'photography' ? formData.photoEventHours : formData.videoEventHours;
+                    studioFee = hours * 700;
+                    studioItemName += ` (${hours} hrs)`;
+                    break;
+                case 'halfDay':
+                    studioFee = 2000;
+                    studioItemName += ' (Half Day)';
+                    break;
+                case 'fullDay':
+                    studioFee = 3000;
+                    studioItemName += ' (Full Day)';
+                    break;
+            }
+
+            if (studioFee > 0) {
+                items.push({ name: studioItemName, price: studioFee });
+                total += studioFee;
+            }
+        }
+
+
         // Universal Modifiers
         const travelFees = {
             dubai: 0,
