@@ -294,7 +294,9 @@ export function QuoteCalculator() {
             const subTypeName = timelapseSubServices[formData.timelapseSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
             const prices = { short: 3000, long: 6000, extreme: 15000 };
-            basePrice = prices[formData.timelapseSubType as keyof typeof prices];
+            if (formData.timelapseSubType) {
+                basePrice = prices[formData.timelapseSubType];
+            }
         } else if (formData.serviceType === '360tours' && formData.toursSubType) {
             const subTypeName = toursSubServices[formData.toursSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
@@ -320,7 +322,7 @@ export function QuoteCalculator() {
                         break;
                 }
             } else { // photo
-                const photoEditingPrices = {
+                 const photoEditingPrices = {
                     basic: 20,
                     advanced: 50,
                     restoration: 100,
@@ -459,7 +461,7 @@ export function QuoteCalculator() {
         const lightGray = [248, 248, 250];
         const darkGray = [100, 100, 100];
         const black = [0, 0, 0];
-    
+        
         // -- Header --
         doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.rect(0, 0, pageWidth, 30, 'F');
