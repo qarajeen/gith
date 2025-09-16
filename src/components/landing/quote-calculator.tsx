@@ -295,7 +295,7 @@ export function QuoteCalculator() {
             itemName = `${serviceName}: ${subTypeName}`;
             const prices = { short: 3000, long: 6000, extreme: 15000 };
             if (formData.timelapseSubType) {
-                basePrice = prices[formData.timelapseSubType];
+                basePrice = prices[formData.timelapseSubType as keyof typeof prices];
             }
         } else if (formData.serviceType === '360tours' && formData.toursSubType) {
             const subTypeName = toursSubServices[formData.toursSubType].name;
