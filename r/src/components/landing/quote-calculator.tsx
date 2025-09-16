@@ -294,7 +294,9 @@ export function QuoteCalculator() {
             const subTypeName = timelapseSubServices[formData.timelapseSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
             const prices = { short: 3000, long: 6000, extreme: 15000 };
-            basePrice = prices[formData.timelapseSubType];
+            if (formData.timelapseSubType) {
+                basePrice = prices[formData.timelapseSubType];
+            }
         } else if (formData.serviceType === '360tours' && formData.toursSubType) {
             const subTypeName = toursSubServices[formData.toursSubType].name;
             itemName = `${serviceName}: ${subTypeName}`;
@@ -455,11 +457,11 @@ export function QuoteCalculator() {
         let currentY = 0;
     
         // Colors
-        const primaryColor = [48, 25, 52]; // Deep dark purple
+        const primaryColor = [48, 63, 159];
         const lightGray = [248, 248, 250];
         const darkGray = [100, 100, 100];
         const black = [0, 0, 0];
-    
+        
         // -- Header --
         doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.rect(0, 0, pageWidth, 30, 'F');
@@ -469,10 +471,9 @@ export function QuoteCalculator() {
         
         const textX = margin;
         
-        doc.setFont('helvetica', 'bold');
         doc.text("WRH", textX, 18);
-        
         const wrhWidth = doc.getTextWidth("WRH");
+
         doc.setFont('helvetica', 'normal');
         doc.text("Production", textX + wrhWidth + 2, 18);
     
@@ -565,7 +566,7 @@ export function QuoteCalculator() {
         }
 
         doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
-        doc.rect(pageWidth / 2, totalSectionY, pageWidth / 2, 20, 'F');
+        doc.rect(pageWidth / 2, totalSectionY, pageWidth / 2 - margin, 20, 'F');
         
         doc.setFontSize(14);
         doc.setFont('helvetica', 'bold');
